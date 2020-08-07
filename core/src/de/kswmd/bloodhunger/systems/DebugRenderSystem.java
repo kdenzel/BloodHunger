@@ -20,11 +20,12 @@ public class DebugRenderSystem extends EntitySystem {
     private ImmutableArray<Entity> entities;
 
     private ComponentMapper<BoundsComponent> cmbc = ComponentMapper.getFor(BoundsComponent.class);
+    private ComponentMapper<DimensionComponent> cmdc = ComponentMapper.getFor(DimensionComponent.class);
     private ComponentMapper<PositionComponent> cmpc = ComponentMapper.getFor(PositionComponent.class);
 
-    public DebugRenderSystem(Camera camera) {
+    public DebugRenderSystem(ShapeRenderer debugRenderer, Camera camera) {
         family = Family.all(PositionComponent.class).get();
-        debugRenderer = new ShapeRenderer();
+        this.debugRenderer = debugRenderer;
         this.camera = camera;
     }
 
@@ -41,17 +42,21 @@ public class DebugRenderSystem extends EntitySystem {
     @Override
     public void update(float deltaTime) {
         debugRenderer.setProjectionMatrix(camera.combined);
-        debugRenderer.begin(ShapeRenderer.ShapeType.Line);
-        debugRenderer.setColor(Color.CYAN);
+        debugRenderer.set(ShapeRenderer.ShapeType.Line);
         for (int i = 0; i < entities.size(); ++i) {
             Entity entity = entities.get(i);
             PositionComponent pc = cmpc.get(entity);
+            if(cmdc.has(entity)){
+                debugRenderer.setColor(Color.YELLOW);
+                DimensionComponent dc = cmdc.get(entity);
+                debugRenderer.rect(pc.x,pc.y,dc.width,dc.height);
+            }
             if(cmbc.has(entity)){
+                debugRenderer.setColor(Color.CYAN);
                 BoundsComponent bc = cmbc.get(entity);
                 debugRenderer.polygon(bc.boundaryPolygon.getTransformedVertices());
             }
 
         }
-        debugRenderer.end();
     }
 }

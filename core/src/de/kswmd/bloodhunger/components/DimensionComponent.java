@@ -25,16 +25,4 @@ public class DimensionComponent implements Component {
         this.width = width;
         this.height = height;
     }
-
-    public DimensionComponent(float width, float height, int numSides){
-        this.width = width;
-        this.height = height;
-    }
-
-    public DimensionComponent(float width, float height, float scaleX, float scaleY, int numSides){
-        this.width = width;
-        this.height = height;
-        this.scaleX = scaleX;
-        this.scaleY = scaleY;
-    }
 }

@@ -6,7 +6,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
-import de.kswmd.bloodhunger.components.DimensionComponent;
 import de.kswmd.bloodhunger.components.FollowMouseComponent;
 import de.kswmd.bloodhunger.components.PositionComponent;
 import de.kswmd.bloodhunger.components.RotationComponent;
@@ -52,7 +51,8 @@ public class FollowMouseSystem extends EntitySystem {
             float angle = (MathUtils.atan2(playerPosY - screenVector.y, playerPosX - screenVector.x) / MathUtils.PI) * 180;
             angle = 180 + angle;
             RotationComponent rc = cmrc.get(entity);
-            rc.angle = angle;
+            rc.movementAngle = angle;
+            rc.lookingAngle = angle;
         }
     }
 }

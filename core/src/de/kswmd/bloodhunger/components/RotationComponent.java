@@ -4,10 +4,12 @@ import com.badlogic.ashley.core.Component;
 
 public class RotationComponent implements Component {
 
-    public float angle;
+    public float movementAngle;
+    public float lookingAngle;
 
-    public RotationComponent(float angle) {
-        this.angle = angle;
+    public RotationComponent(float movementAngle) {
+        this.movementAngle = movementAngle;
+        this.lookingAngle = movementAngle;
     }
 
     public RotationComponent() {

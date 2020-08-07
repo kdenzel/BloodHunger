@@ -5,12 +5,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public class TextureComponent implements Component {
+public class TextureRegionComponent implements Component {
 
-    public Texture texture = null;
+    public TextureRegion textureRegion;
 
-    public TextureComponent() {
-        texture = new Texture(Gdx.files.internal("badlogic.jpg"));
+    public TextureRegionComponent(TextureRegion textureRegion) {
+        this.textureRegion = textureRegion;
     }
 
 
