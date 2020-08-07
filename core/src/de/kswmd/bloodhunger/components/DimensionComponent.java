@@ -25,4 +25,12 @@ public class DimensionComponent implements Component {
         this.width = width;
         this.height = height;
     }
+
+    public float getOriginX() {
+        return (width / 2) * scaleX;
+    }
+
+    public float getOriginY() {
+        return (height / 2) * scaleY;
+    }
 }

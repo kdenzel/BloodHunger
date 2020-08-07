@@ -3,20 +3,19 @@ package de.kswmd.bloodhunger.systems;
 import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import de.kswmd.bloodhunger.components.BoundsComponent;
 import de.kswmd.bloodhunger.components.BulletComponent;
 import de.kswmd.bloodhunger.components.EnemyComponent;
 import de.kswmd.bloodhunger.factories.EntityFactory;
 import de.kswmd.bloodhunger.screens.GameScreen;
+import de.kswmd.bloodhunger.utils.Mapper;
 
 public class BulletSystem extends EntitySystem {
 
     private ImmutableArray<Entity> bulletEntities;
     private ImmutableArray<Entity> boundsEntities;
-
-    private ComponentMapper<BoundsComponent> cmbc = ComponentMapper.getFor(BoundsComponent.class);
-    private ComponentMapper<EnemyComponent> cmec = ComponentMapper.getFor(EnemyComponent.class);
 
     @Override
     public void addedToEngine(Engine engine) {
@@ -33,21 +32,26 @@ public class BulletSystem extends EntitySystem {
     @Override
     public void update(float deltaTime) {
         for(Entity bullet : bulletEntities){
-            BoundsComponent bulletBoundsComponent = cmbc.get(bullet);
+            BoundsComponent bulletBoundsComponent = Mapper.boundsComponent.get(bullet);
             for(Entity otherBoundsEntity : boundsEntities){
-                BoundsComponent otherBoundsComponent = cmbc.get(otherBoundsEntity);
+                BoundsComponent otherBoundsComponent = Mapper.boundsComponent.get(otherBoundsEntity);
                 if(!bulletBoundsComponent.boundaryPolygon.getBoundingRectangle().overlaps(otherBoundsComponent.boundaryPolygon.getBoundingRectangle())){
                     continue;
                 }
                 this.getEngine().removeEntity(bullet);
-                if(cmec.has(otherBoundsEntity)){
-                    EnemyComponent enemyComponent = cmec.get(otherBoundsEntity);
+                if(Mapper.enemyComponent.has(otherBoundsEntity)){
+                    EnemyComponent enemyComponent = Mapper.enemyComponent.get(otherBoundsEntity);
                     enemyComponent.health -= MathUtils.random(20,40);
                     if(enemyComponent.health < 0){
                         this.getEngine().removeEntity(otherBoundsEntity);
                     }
                 }
             }
+            BulletComponent bc = Mapper.bulletComponent.get(bullet);
+            if(bc.lifeTime >= BulletComponent.LIFE_TIME){
+                getEngine().removeEntity(bullet);
+            }
+            bc.lifeTime += deltaTime;
         }
     }
 }

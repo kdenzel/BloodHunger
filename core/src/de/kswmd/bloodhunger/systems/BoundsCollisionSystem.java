@@ -6,21 +6,17 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Polygon;
 import de.kswmd.bloodhunger.components.*;
+import de.kswmd.bloodhunger.utils.Mapper;
 
 public class BoundsCollisionSystem extends EntitySystem {
 
     private ImmutableArray<Entity> boundEntitiesWithoutPlayerAndBullets;
     private ImmutableArray<Entity> playerEntities;
 
-    private ComponentMapper<BoundsComponent> cmbc = ComponentMapper.getFor(BoundsComponent.class);
-    private ComponentMapper<PositionComponent> cmpc = ComponentMapper.getFor(PositionComponent.class);
-    private ComponentMapper<VelocityComponent> cmvc = ComponentMapper.getFor(VelocityComponent.class);
-    private ComponentMapper<EnemyComponent> cmec = ComponentMapper.getFor(EnemyComponent.class);
-
     @Override
     public void addedToEngine(Engine engine) {
-        this.boundEntitiesWithoutPlayerAndBullets = engine.getEntitiesFor(Family.all(BoundsComponent.class).exclude(BulletComponent.class, PlayerControlComponent.class).get());
-        this.playerEntities = engine.getEntitiesFor(Family.all(PlayerControlComponent.class).get());
+        this.boundEntitiesWithoutPlayerAndBullets = engine.getEntitiesFor(Family.all(BoundsComponent.class).exclude(BulletComponent.class, PlayerComponent.class).get());
+        this.playerEntities = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
     }
 
     @Override
@@ -33,8 +29,8 @@ public class BoundsCollisionSystem extends EntitySystem {
         //Check if player collides with entities like enemies or static objects (Objects without velocity)
         for (Entity playerEntity : playerEntities) {
             for (Entity otherBoundsEntity : boundEntitiesWithoutPlayerAndBullets) {
-                BoundsComponent entityBounds = cmbc.get(playerEntity);
-                BoundsComponent otherBounds = cmbc.get(otherBoundsEntity);
+                BoundsComponent entityBounds = Mapper.boundsComponent.get(playerEntity);
+                BoundsComponent otherBounds = Mapper.boundsComponent.get(otherBoundsEntity);
                 Polygon poly1 = entityBounds.boundaryPolygon;
                 Polygon poly2 = otherBounds.boundaryPolygon;
                 if (!poly1.getBoundingRectangle().overlaps(poly2.getBoundingRectangle())) {
@@ -42,15 +38,15 @@ public class BoundsCollisionSystem extends EntitySystem {
                 }
                 Intersector.MinimumTranslationVector mtv = new Intersector.MinimumTranslationVector();
                 boolean polygonOverlap = Intersector.overlapConvexPolygons(poly1, poly2, mtv);
-                if (polygonOverlap && !cmvc.has(otherBoundsEntity)) {
+                if (polygonOverlap && !Mapper.velocityComponent.has(otherBoundsEntity)) {
                     //If velocity is attached to the entity, it is a dynamic object that can be moved
-                    if (cmpc.has(playerEntity) && cmvc.has(playerEntity)) {
-                        PositionComponent pc = cmpc.get(playerEntity);
+                    if (Mapper.positionComponent.has(playerEntity) && Mapper.velocityComponent.has(playerEntity)) {
+                        PositionComponent pc = Mapper.positionComponent.get(playerEntity);
                         pc.x += mtv.normal.x * mtv.depth;
                         pc.y += mtv.normal.y * mtv.depth;
                     }
                 } //Otherwise the player overlaps with an enemy, take damage
-                else if(polygonOverlap && cmec.has(otherBoundsEntity)) {
+                else if(polygonOverlap && Mapper.enemyComponent.has(otherBoundsEntity)) {
                     Gdx.app.debug("DAMAGE", "OUCH " + System.currentTimeMillis());
                 }
 
@@ -64,8 +60,8 @@ public class BoundsCollisionSystem extends EntitySystem {
                 if (i == j) {
                     continue;
                 }
-                BoundsComponent entityBounds = cmbc.get(entity);
-                BoundsComponent otherBounds = cmbc.get(entityToCollideWith);
+                BoundsComponent entityBounds = Mapper.boundsComponent.get(entity);
+                BoundsComponent otherBounds = Mapper.boundsComponent.get(entityToCollideWith);
                 Polygon poly1 = entityBounds.boundaryPolygon;
                 Polygon poly2 = otherBounds.boundaryPolygon;
                 if (!poly1.getBoundingRectangle().overlaps(poly2.getBoundingRectangle())) {
@@ -76,8 +72,8 @@ public class BoundsCollisionSystem extends EntitySystem {
 
                 if (polygonOverlap) {
                     //If velocity is attached to the entity, it is a dynamic object that can be moved
-                    if (cmpc.has(entity) && cmvc.has(entity)) {
-                        PositionComponent pc = cmpc.get(entity);
+                    if (Mapper.positionComponent.has(entity) && Mapper.velocityComponent.has(entity)) {
+                        PositionComponent pc = Mapper.positionComponent.get(entity);
                         pc.x += mtv.normal.x * mtv.depth;
                         pc.y += mtv.normal.y * mtv.depth;
                     }

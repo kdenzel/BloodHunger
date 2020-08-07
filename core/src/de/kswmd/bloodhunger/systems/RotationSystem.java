@@ -7,12 +7,9 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import de.kswmd.bloodhunger.components.BoundsComponent;
 import de.kswmd.bloodhunger.components.RotationComponent;
 import de.kswmd.bloodhunger.components.VelocityComponent;
+import de.kswmd.bloodhunger.utils.Mapper;
 
 public class RotationSystem extends IteratingSystem {
-
-    private ComponentMapper<RotationComponent> cmrc = ComponentMapper.getFor(RotationComponent.class);
-    private ComponentMapper<BoundsComponent> cmbc = ComponentMapper.getFor(BoundsComponent.class);
-    private ComponentMapper<VelocityComponent> cmvc = ComponentMapper.getFor(VelocityComponent.class);
 
     public RotationSystem() {
         super(Family.all(RotationComponent.class).get());
@@ -20,9 +17,9 @@ public class RotationSystem extends IteratingSystem {
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        RotationComponent rc = cmrc.get(entity);
-        if(cmbc.has(entity)){
-            cmbc.get(entity).rotate(rc.movementAngle);
+        RotationComponent rc = Mapper.rotationComponent.get(entity);
+        if(Mapper.boundsComponent.has(entity)){
+            Mapper.boundsComponent.get(entity).rotate(rc.movementAngle);
         }
     }
 }

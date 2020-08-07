@@ -11,6 +11,7 @@ import de.kswmd.bloodhunger.components.BoundsComponent;
 import de.kswmd.bloodhunger.components.DimensionComponent;
 import de.kswmd.bloodhunger.components.PositionComponent;
 import de.kswmd.bloodhunger.components.RotationComponent;
+import de.kswmd.bloodhunger.utils.Mapper;
 
 public class DebugRenderSystem extends EntitySystem {
 
@@ -18,10 +19,6 @@ public class DebugRenderSystem extends EntitySystem {
     private Camera camera;
     private Family family;
     private ImmutableArray<Entity> entities;
-
-    private ComponentMapper<BoundsComponent> cmbc = ComponentMapper.getFor(BoundsComponent.class);
-    private ComponentMapper<DimensionComponent> cmdc = ComponentMapper.getFor(DimensionComponent.class);
-    private ComponentMapper<PositionComponent> cmpc = ComponentMapper.getFor(PositionComponent.class);
 
     public DebugRenderSystem(ShapeRenderer debugRenderer, Camera camera) {
         family = Family.all(PositionComponent.class).get();
@@ -41,22 +38,23 @@ public class DebugRenderSystem extends EntitySystem {
 
     @Override
     public void update(float deltaTime) {
+        debugRenderer.begin();
         debugRenderer.setProjectionMatrix(camera.combined);
         debugRenderer.set(ShapeRenderer.ShapeType.Line);
         for (int i = 0; i < entities.size(); ++i) {
             Entity entity = entities.get(i);
-            PositionComponent pc = cmpc.get(entity);
-            if(cmdc.has(entity)){
+            PositionComponent pc = Mapper.positionComponent.get(entity);
+            if(Mapper.dimensionComponent.has(entity)){
                 debugRenderer.setColor(Color.YELLOW);
-                DimensionComponent dc = cmdc.get(entity);
+                DimensionComponent dc = Mapper.dimensionComponent.get(entity);
                 debugRenderer.rect(pc.x,pc.y,dc.width,dc.height);
             }
-            if(cmbc.has(entity)){
+            if(Mapper.boundsComponent.has(entity)){
                 debugRenderer.setColor(Color.CYAN);
-                BoundsComponent bc = cmbc.get(entity);
+                BoundsComponent bc = Mapper.boundsComponent.get(entity);
                 debugRenderer.polygon(bc.boundaryPolygon.getTransformedVertices());
             }
-
         }
+        debugRenderer.end();
     }
 }

@@ -2,6 +2,7 @@ package de.kswmd.bloodhunger.factories;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.kswmd.bloodhunger.components.*;
 import de.kswmd.bloodhunger.screens.GameScreen;
@@ -10,17 +11,17 @@ public final class EntityFactory {
 
     private EntityFactory() {}
 
-    public static Entity createPlayer(TextureRegion textureRegion){
+    public static Entity createPlayer(AssetManager manager){
         Entity player = new Entity();
         player.add(new PositionComponent());
         player.add(new VelocityComponent());
-        player.add(new TextureRegionComponent(textureRegion));
-        player.add(new PlayerControlComponent());
-        player.add(new DimensionComponent(20,20));
+        player.add(new PlayerComponent());
+        player.add(new DimensionComponent(64,64));
         player.add(new RotationComponent());
         player.add(new FollowMouseComponent());
         player.add(new CenterCameraComponent());
         player.add(new BoundsComponent(player.getComponent(DimensionComponent.class)));
+        player.add(new PlayerAnimationComponent(manager));
         return player;
     }
 

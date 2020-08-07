@@ -7,10 +7,11 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.utils.Logger;
 import de.kswmd.bloodhunger.screens.GameScreen;
+import de.kswmd.bloodhunger.screens.LoadingScreen;
 
 public class BloodHungerGame extends Game {
 
-	private AssetManager assetManager = new AssetManager();
+	public final AssetManager assetManager = new AssetManager();
 
 	@Override
 	public void create () {
@@ -18,16 +19,12 @@ public class BloodHungerGame extends Game {
 		assetManager.getLogger().setLevel(Logger.DEBUG);
 		InputMultiplexer im = new InputMultiplexer();
 		Gdx.input.setInputProcessor(im);
-		setScreen(new GameScreen(this));
+		setScreen(new LoadingScreen(this));
 	}
 
 	@Override
 	public void dispose() {
 		super.dispose();
 		assetManager.dispose();
-	}
-
-	public AssetManager getAssetManager() {
-		return assetManager;
 	}
 }
