@@ -1,6 +1,5 @@
 package de.kswmd.bloodhunger.screens;
 
-import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
@@ -13,7 +12,6 @@ import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.DimensionComponent;
 import de.kswmd.bloodhunger.components.PlayerComponent;
 import de.kswmd.bloodhunger.components.PositionComponent;
-import de.kswmd.bloodhunger.components.RotationComponent;
 import de.kswmd.bloodhunger.factories.EntityFactory;
 import de.kswmd.bloodhunger.systems.*;
 import de.kswmd.bloodhunger.utils.Mapper;
@@ -31,7 +29,7 @@ public class GameScreen extends BaseScreen {
     private CenterCameraSystem centerCameraSystem;
     private DebugRenderSystem debugRenderSystem;
     private EnemyFollowPlayerSystem enemyFollowPlayerSystem;
-    private PlayerAnimationSystem playerAnimationSystem;
+    private RenderingSystem renderingSystem;
     private BulletSystem bulletSystem;
 
     private Engine engine;
@@ -59,7 +57,7 @@ public class GameScreen extends BaseScreen {
         centerCameraSystem = new CenterCameraSystem(camera);
         debugRenderSystem = new DebugRenderSystem(shapeRenderer, camera);
         enemyFollowPlayerSystem = new EnemyFollowPlayerSystem();
-        playerAnimationSystem = new PlayerAnimationSystem(spriteBatch,camera);
+        renderingSystem = new RenderingSystem(spriteBatch, camera, game.assetManager);
         bulletSystem = new BulletSystem();
 
         engine.addSystem(followMouseSystem);
@@ -70,7 +68,7 @@ public class GameScreen extends BaseScreen {
         engine.addSystem(boundsCollisionSystem);
         engine.addSystem(bulletSystem);
         engine.addSystem(centerCameraSystem);
-        engine.addSystem(playerAnimationSystem);
+        engine.addSystem(renderingSystem);
         engine.addSystem(debugRenderSystem);
 
 
@@ -84,6 +82,27 @@ public class GameScreen extends BaseScreen {
 
     @Override
     protected void update(float delta) {
+        drawBackgroundGrid();
+        engine.update(delta);
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+        PositionComponent pc = Mapper.positionComponent.get(player);
+        DimensionComponent dc = Mapper.dimensionComponent.get(player);
+        Entity bullet = EntityFactory.createBullet(0, 0, Mapper.rotationComponent.get(player).lookingAngle);
+        PositionComponent bulletPos = Mapper.positionComponent.get(bullet);
+        DimensionComponent bulletDim = Mapper.dimensionComponent.get(bullet);
+        bulletOffset.set(dc.getOriginX()+bulletDim.getOriginX(),0);
+        bulletOffset.setAngle(Mapper.rotationComponent.get(player).lookingAngle);
+        bulletPos.x = pc.x + dc.getOriginX() - bulletDim.getOriginX() + bulletOffset.x;
+        bulletPos.y = pc.y + dc.getOriginY() - bulletDim.getOriginY() + bulletOffset.y;
+        engine.addEntity(bullet);
+        return false;
+    }
+
+    private void drawBackgroundGrid() {
         shapeRenderer.begin();
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.setColor(Color.WHITE);
@@ -95,23 +114,5 @@ public class GameScreen extends BaseScreen {
             shapeRenderer.line(0, y, UNIT_SIZE * gridSize, y);
         }
         shapeRenderer.end();
-        engine.update(delta);
-
-    }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-        PositionComponent pc = Mapper.positionComponent.get(player);
-        DimensionComponent dc = Mapper.dimensionComponent.get(player);
-        Entity bullet = EntityFactory.createBullet(0, 0, Mapper.rotationComponent.get(player).lookingAngle);
-        PositionComponent bulletPos = Mapper.positionComponent.get(bullet);
-        DimensionComponent bulletDim = Mapper.dimensionComponent.get(bullet);
-        bulletOffset.set(dc.getOriginX()*2,dc.getOriginY()*2);
-        bulletOffset.setAngle(Mapper.rotationComponent.get(player).lookingAngle);
-        bulletPos.x = -bulletDim.getOriginX() + dc.getOriginX() + pc.x + bulletOffset.x;
-        bulletPos.y = -bulletDim.getOriginY() + dc.getOriginY() + pc.y + bulletOffset.y;
-        engine.addEntity(bullet);
-        return false;
     }
 }

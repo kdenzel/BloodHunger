@@ -21,5 +21,8 @@ public class RotationSystem extends IteratingSystem {
         if(Mapper.boundsComponent.has(entity)){
             Mapper.boundsComponent.get(entity).rotate(rc.movementAngle);
         }
+        if(Mapper.velocityComponent.has(entity)){
+            Mapper.velocityComponent.get(entity).velocityVec.setAngle(rc.movementAngle);
+        }
     }
 }

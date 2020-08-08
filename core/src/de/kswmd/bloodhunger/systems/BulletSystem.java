@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import de.kswmd.bloodhunger.components.BoundsComponent;
 import de.kswmd.bloodhunger.components.BulletComponent;
@@ -31,24 +32,27 @@ public class BulletSystem extends EntitySystem {
 
     @Override
     public void update(float deltaTime) {
-        for(Entity bullet : bulletEntities){
+        for (Entity bullet : bulletEntities) {
             BoundsComponent bulletBoundsComponent = Mapper.boundsComponent.get(bullet);
-            for(Entity otherBoundsEntity : boundsEntities){
+            for (Entity otherBoundsEntity : boundsEntities) {
                 BoundsComponent otherBoundsComponent = Mapper.boundsComponent.get(otherBoundsEntity);
-                if(!bulletBoundsComponent.boundaryPolygon.getBoundingRectangle().overlaps(otherBoundsComponent.boundaryPolygon.getBoundingRectangle())){
+                if (!bulletBoundsComponent.boundaryPolygon.getBoundingRectangle().overlaps(otherBoundsComponent.boundaryPolygon.getBoundingRectangle())) {
                     continue;
                 }
-                this.getEngine().removeEntity(bullet);
-                if(Mapper.enemyComponent.has(otherBoundsEntity)){
-                    EnemyComponent enemyComponent = Mapper.enemyComponent.get(otherBoundsEntity);
-                    enemyComponent.health -= MathUtils.random(20,40);
-                    if(enemyComponent.health < 0){
-                        this.getEngine().removeEntity(otherBoundsEntity);
+                boolean overlaps = Intersector.overlapConvexPolygons(bulletBoundsComponent.boundaryPolygon, otherBoundsComponent.boundaryPolygon);
+                if (overlaps) {
+                    this.getEngine().removeEntity(bullet);
+                    if (Mapper.enemyComponent.has(otherBoundsEntity)) {
+                        EnemyComponent enemyComponent = Mapper.enemyComponent.get(otherBoundsEntity);
+                        enemyComponent.health -= MathUtils.random(20, 40);
+                        if (enemyComponent.health < 0) {
+                            this.getEngine().removeEntity(otherBoundsEntity);
+                        }
                     }
                 }
             }
             BulletComponent bc = Mapper.bulletComponent.get(bullet);
-            if(bc.lifeTime >= BulletComponent.LIFE_TIME){
+            if (bc.lifeTime >= BulletComponent.LIFE_TIME) {
                 getEngine().removeEntity(bullet);
             }
             bc.lifeTime += deltaTime;

@@ -15,13 +15,12 @@ public final class EntityFactory {
         Entity player = new Entity();
         player.add(new PositionComponent());
         player.add(new VelocityComponent());
-        player.add(new PlayerComponent());
-        player.add(new DimensionComponent(64,64));
+        player.add(new DimensionComponent(150,150));
         player.add(new RotationComponent());
         player.add(new FollowMouseComponent());
         player.add(new CenterCameraComponent());
         player.add(new BoundsComponent(player.getComponent(DimensionComponent.class)));
-        player.add(new PlayerAnimationComponent(manager));
+        player.add(new PlayerComponent(manager));
         return player;
     }
 

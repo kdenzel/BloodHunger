@@ -35,8 +35,7 @@ public class EnemyFollowPlayerSystem extends EntitySystem {
             float angleInRadians = MathUtils.atan2(enemyEntityPosition.y - playerEntityPosition.y, enemyEntityPosition.x - playerEntityPosition.x);
             float angleInDegrees = (angleInRadians * MathUtils.radiansToDegrees) +180;
             Mapper.rotationComponent.get(enemyEntity).movementAngle = angleInDegrees;
-            enemyVelocity.velocityVec.set(enemyComponent.speed,0).setAngle(angleInDegrees);
-
+            enemyVelocity.velocityVec.set(enemyComponent.speed,0);
         }
     }
 }

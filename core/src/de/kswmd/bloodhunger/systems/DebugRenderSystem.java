@@ -48,6 +48,8 @@ public class DebugRenderSystem extends EntitySystem {
                 debugRenderer.setColor(Color.YELLOW);
                 DimensionComponent dc = Mapper.dimensionComponent.get(entity);
                 debugRenderer.rect(pc.x,pc.y,dc.width,dc.height);
+
+                debugRenderer.circle(pc.x+dc.getOriginX(),pc.y + dc.getOriginY(),2);
             }
             if(Mapper.boundsComponent.has(entity)){
                 debugRenderer.setColor(Color.CYAN);
