@@ -26,7 +26,7 @@ public class BoundsComponent implements Component {
         setBoundaryPolygon(numSides);
     }
 
-    public BoundsComponent(DimensionComponent dimensionComponent,float scale) {
+    public BoundsComponent(DimensionComponent dimensionComponent, float scale) {
         this.width = dimensionComponent.width * scale;
         this.height = dimensionComponent.height * scale;
         setBoundaryRectangle();
@@ -38,7 +38,7 @@ public class BoundsComponent implements Component {
         setBoundaryPolygon(numSides);
     }
 
-    public BoundsComponent(DimensionComponent dimensionComponent,float scaleX, float scaleY) {
+    public BoundsComponent(DimensionComponent dimensionComponent, float scaleX, float scaleY) {
         this.width = dimensionComponent.width * scaleX;
         this.height = dimensionComponent.height * scaleY;
         setBoundaryRectangle();
@@ -62,6 +62,17 @@ public class BoundsComponent implements Component {
         setBoundaryPolygon(numSides);
     }
 
+    public BoundsComponent(float width, float height, float[] vertices) {
+        this.width = width;
+        this.height = height;
+        setPolygon(vertices);
+    }
+
+    public void rotate(float degree) {
+        boundaryPolygon.setOrigin(width / 2, height / 2);
+        boundaryPolygon.setRotation(degree);
+    }
+
     private void setBoundaryRectangle() {
         float w = width;
         float h = height;
@@ -73,22 +84,25 @@ public class BoundsComponent implements Component {
         rotate(0);
     }
 
-    public void rotate(float degree){
-        boundaryPolygon.setOrigin(width/2,height/2);
-        boundaryPolygon.setRotation(degree);
-    }
-
     public void setBoundaryPolygon(int numSides) {
         float w = width;
         float h = height;
         float[] vertices = new float[2 * numSides];
         for (int i = 0; i < numSides; i++) {
-            float angle = i * (MathUtils.PI*2) / numSides;
+            float angle = i * (MathUtils.PI * 2) / numSides;
             // x-coordinate
             vertices[2 * i] = w / 2 * MathUtils.cos(angle) + w / 2;
             // y-coordinate
             vertices[2 * i + 1] = h / 2 * MathUtils.sin(angle) + h / 2;
         }
+        if (boundaryPolygon == null)
+            boundaryPolygon = new Polygon(vertices);
+        else
+            boundaryPolygon.setVertices(vertices);
+        rotate(0);
+    }
+
+    public void setPolygon(float[] vertices) {
         if (boundaryPolygon == null)
             boundaryPolygon = new Polygon(vertices);
         else

@@ -19,7 +19,7 @@ public class RotationSystem extends IteratingSystem {
     protected void processEntity(Entity entity, float deltaTime) {
         RotationComponent rc = Mapper.rotationComponent.get(entity);
         if(Mapper.boundsComponent.has(entity)){
-            Mapper.boundsComponent.get(entity).rotate(rc.movementAngle);
+            Mapper.boundsComponent.get(entity).rotate(rc.lookingAngle);
         }
         if(Mapper.velocityComponent.has(entity)){
             Mapper.velocityComponent.get(entity).velocityVec.setAngle(rc.movementAngle);

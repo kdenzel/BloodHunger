@@ -82,7 +82,7 @@ public class RenderingSystem extends EntitySystem {
             RotationComponent rotationComponent = Mapper.rotationComponent.get(entity);
 
             PlayerComponent playerComponent = Mapper.playerComponent.get(entity);
-            playerComponent.timer+=deltaTime;
+            playerComponent.timer+=deltaTime%200;
 
             TextureRegion bodyRegion = playerComponent.getBodyAnimationType().animation.getKeyFrame(playerComponent.timer);
             TextureRegion feetRegion = playerComponent.feetAnimationType.animation.getKeyFrame(playerComponent.timer);

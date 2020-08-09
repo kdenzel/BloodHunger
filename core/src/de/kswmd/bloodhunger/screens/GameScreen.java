@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import de.kswmd.bloodhunger.BloodHungerGame;
+import de.kswmd.bloodhunger.components.BoundsComponent;
 import de.kswmd.bloodhunger.components.DimensionComponent;
 import de.kswmd.bloodhunger.components.PlayerComponent;
 import de.kswmd.bloodhunger.components.PositionComponent;
@@ -103,6 +104,9 @@ public class GameScreen extends BaseScreen {
             bulletPos.x = pc.x + dc.originX - bulletDim.originY + bulletOffset.x;
             bulletPos.y = pc.y + dc.originX - bulletDim.originY + bulletOffset.y;
             engine.addEntity(bullet);
+            //Update so we do not shoot through walls
+            movementSystem.update(0);
+            bulletSystem.update(0);
             return true;
         }
         return false;
@@ -112,15 +116,26 @@ public class GameScreen extends BaseScreen {
     public boolean keyUp(int keycode) {
         boolean keyPressed = false;
         Entity player;
+        float[] vertices;
+        BoundsComponent bc;
+        DimensionComponent dc;
         switch (keycode) {
             case Input.Keys.NUM_1:
                 player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
                 Mapper.playerComponent.get(player).weapon = PlayerComponent.Weapon.FLASHLIGHT;
+                dc = Mapper.dimensionComponent.get(player);
+                bc = Mapper.boundsComponent.get(player);
+                vertices = Mapper.playerComponent.get(player).weapon.getVertices(dc);
+                bc.setPolygon(vertices);
                 keyPressed = true;
                 break;
             case Input.Keys.NUM_2:
                 player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
                 Mapper.playerComponent.get(player).weapon = PlayerComponent.Weapon.HANDGUN;
+                bc = Mapper.boundsComponent.get(player);
+                dc = Mapper.dimensionComponent.get(player);
+                vertices = Mapper.playerComponent.get(player).weapon.getVertices(dc);
+                bc.setPolygon(vertices);
                 keyPressed = true;
                 break;
             case Input.Keys.F:
