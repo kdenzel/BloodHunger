@@ -21,7 +21,15 @@ public class MovementSystem extends IteratingSystem {
         pc.x += vc.velocityVec.x * deltaTime;
         pc.y += vc.velocityVec.y * deltaTime;
         if(Mapper.boundsComponent.has(entity)){
-            Mapper.boundsComponent.get(entity).boundaryPolygon.setPosition(pc.x, pc.y);
+            if(Mapper.dimensionComponent.has(entity)){
+                DimensionComponent dc = Mapper.dimensionComponent.get(entity);
+                BoundsComponent bc = Mapper.boundsComponent.get(entity);
+                float x = pc.x + dc.originX - bc.boundaryPolygon.getOriginX();
+                float y = pc.y + dc.originX - bc.boundaryPolygon.getOriginY();
+                bc.boundaryPolygon.setPosition(x,y);
+            } else {
+                Mapper.boundsComponent.get(entity).boundaryPolygon.setPosition(pc.x, pc.y);
+            }
         }
     }
 }

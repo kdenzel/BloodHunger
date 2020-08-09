@@ -26,6 +26,30 @@ public class BoundsComponent implements Component {
         setBoundaryPolygon(numSides);
     }
 
+    public BoundsComponent(DimensionComponent dimensionComponent,float scale) {
+        this.width = dimensionComponent.width * scale;
+        this.height = dimensionComponent.height * scale;
+        setBoundaryRectangle();
+    }
+
+    public BoundsComponent(DimensionComponent dimensionComponent, float scale, int numSides) {
+        this.width = dimensionComponent.width * scale;
+        this.height = dimensionComponent.height * scale;
+        setBoundaryPolygon(numSides);
+    }
+
+    public BoundsComponent(DimensionComponent dimensionComponent,float scaleX, float scaleY) {
+        this.width = dimensionComponent.width * scaleX;
+        this.height = dimensionComponent.height * scaleY;
+        setBoundaryRectangle();
+    }
+
+    public BoundsComponent(DimensionComponent dimensionComponent, float scaleX, float scaleY, int numSides) {
+        this.width = dimensionComponent.width * scaleX;
+        this.height = dimensionComponent.height * scaleY;
+        setBoundaryPolygon(numSides);
+    }
+
     public BoundsComponent(float width, float height) {
         this.width = width;
         this.height = height;
@@ -46,6 +70,7 @@ public class BoundsComponent implements Component {
             boundaryPolygon = new Polygon(vertices);
         else
             boundaryPolygon.setVertices(vertices);
+        rotate(0);
     }
 
     public void rotate(float degree){
@@ -68,6 +93,7 @@ public class BoundsComponent implements Component {
             boundaryPolygon = new Polygon(vertices);
         else
             boundaryPolygon.setVertices(vertices);
+        rotate(0);
     }
 
 }

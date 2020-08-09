@@ -3,6 +3,7 @@ package de.kswmd.bloodhunger.screens;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -72,7 +73,7 @@ public class GameScreen extends BaseScreen {
         engine.addSystem(debugRenderSystem);
 
 
-        engine.addEntity(EntityFactory.createPlayer(game.assetManager));
+        engine.addEntity(EntityFactory.createPlayer());
         engine.addEntity(EntityFactory.createWall(0, 0, 2000, UNIT_SIZE, null));
         int enemies = MathUtils.random(30) + 10;
         for (int i = 0; i < enemies; i++) {
@@ -89,17 +90,51 @@ public class GameScreen extends BaseScreen {
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-        PositionComponent pc = Mapper.positionComponent.get(player);
-        DimensionComponent dc = Mapper.dimensionComponent.get(player);
-        Entity bullet = EntityFactory.createBullet(0, 0, Mapper.rotationComponent.get(player).lookingAngle);
-        PositionComponent bulletPos = Mapper.positionComponent.get(bullet);
-        DimensionComponent bulletDim = Mapper.dimensionComponent.get(bullet);
-        bulletOffset.set(dc.getOriginX()+bulletDim.getOriginX(),0);
-        bulletOffset.setAngle(Mapper.rotationComponent.get(player).lookingAngle);
-        bulletPos.x = pc.x + dc.getOriginX() - bulletDim.getOriginX() + bulletOffset.x;
-        bulletPos.y = pc.y + dc.getOriginY() - bulletDim.getOriginY() + bulletOffset.y;
-        engine.addEntity(bullet);
+        PlayerComponent playerComponent = Mapper.playerComponent.get(player);
+        if (playerComponent.weapon.canShoot()) {
+            playerComponent.shoot();
+            PositionComponent pc = Mapper.positionComponent.get(player);
+            DimensionComponent dc = Mapper.dimensionComponent.get(player);
+            Entity bullet = EntityFactory.createBullet(0, 0, Mapper.rotationComponent.get(player).lookingAngle);
+            PositionComponent bulletPos = Mapper.positionComponent.get(bullet);
+            DimensionComponent bulletDim = Mapper.dimensionComponent.get(bullet);
+            bulletOffset.set(dc.originX + bulletDim.originY, 0);
+            bulletOffset.setAngle(Mapper.rotationComponent.get(player).lookingAngle);
+            bulletPos.x = pc.x + dc.originX - bulletDim.originY + bulletOffset.x;
+            bulletPos.y = pc.y + dc.originX - bulletDim.originY + bulletOffset.y;
+            engine.addEntity(bullet);
+            return true;
+        }
         return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        boolean keyPressed = false;
+        Entity player;
+        switch (keycode) {
+            case Input.Keys.NUM_1:
+                player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+                Mapper.playerComponent.get(player).weapon = PlayerComponent.Weapon.FLASHLIGHT;
+                keyPressed = true;
+                break;
+            case Input.Keys.NUM_2:
+                player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+                Mapper.playerComponent.get(player).weapon = PlayerComponent.Weapon.HANDGUN;
+                keyPressed = true;
+                break;
+            case Input.Keys.F:
+                player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+                Mapper.playerComponent.get(player).meeleAttack();
+                keyPressed = true;
+                break;
+            case Input.Keys.R:
+                player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+                Mapper.playerComponent.get(player).reload();
+                keyPressed = true;
+                break;
+        }
+        return keyPressed;
     }
 
     private void drawBackgroundGrid() {

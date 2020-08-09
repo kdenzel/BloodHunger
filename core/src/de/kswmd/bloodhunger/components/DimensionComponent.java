@@ -9,28 +9,26 @@ import com.badlogic.gdx.math.Polygon;
  */
 public class DimensionComponent implements Component {
 
-    public float width;
-    public float height;
+    public final float width;
+    public final float height;
     public float scaleX = 1f;
     public float scaleY = 1f;
+    public final float originX;
+    public final float originY;
 
     public DimensionComponent(float width, float height, float scaleX, float scaleY) {
         this.width = width;
         this.height = height;
         this.scaleX = scaleX;
         this.scaleY = scaleY;
+        this.originX = width / 2;
+        this.originY = height / 2;
     }
 
     public DimensionComponent(float width, float height) {
         this.width = width;
         this.height = height;
-    }
-
-    public float getOriginX() {
-        return (width / 2) * scaleX;
-    }
-
-    public float getOriginY() {
-        return (height / 2) * scaleY;
+        this.originX = width / 2;
+        this.originY = height / 2;
     }
 }

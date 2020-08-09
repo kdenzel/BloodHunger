@@ -6,12 +6,13 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.kswmd.bloodhunger.components.*;
 import de.kswmd.bloodhunger.screens.GameScreen;
+import de.kswmd.bloodhunger.utils.Mapper;
 
 public final class EntityFactory {
 
     private EntityFactory() {}
 
-    public static Entity createPlayer(AssetManager manager){
+    public static Entity createPlayer(){
         Entity player = new Entity();
         player.add(new PositionComponent());
         player.add(new VelocityComponent());
@@ -19,8 +20,8 @@ public final class EntityFactory {
         player.add(new RotationComponent());
         player.add(new FollowMouseComponent());
         player.add(new CenterCameraComponent());
-        player.add(new BoundsComponent(player.getComponent(DimensionComponent.class)));
-        player.add(new PlayerComponent(manager));
+        player.add(new BoundsComponent(Mapper.dimensionComponent.get(player),0.5f,10));
+        player.add(new PlayerComponent());
         return player;
     }
 
@@ -30,7 +31,7 @@ public final class EntityFactory {
         wall.add(new TextureRegionComponent(textureRegion));
         wall.add(new DimensionComponent(width,height));
         wall.add(new RotationComponent());
-        wall.add(new BoundsComponent(wall.getComponent(DimensionComponent.class)));
+        wall.add(new BoundsComponent(Mapper.dimensionComponent.get(wall)));
         return wall;
     }
 
@@ -41,7 +42,7 @@ public final class EntityFactory {
         enemy.add(new TextureRegionComponent(textureRegion));
         enemy.add(new DimensionComponent(width,height));
         enemy.add(new RotationComponent());
-        enemy.add(new BoundsComponent(enemy.getComponent(DimensionComponent.class)));
+        enemy.add(new BoundsComponent(Mapper.dimensionComponent.get(enemy)));
         enemy.add(new EnemyComponent());
         return enemy;
     }
@@ -51,7 +52,7 @@ public final class EntityFactory {
         bullet.add(new PositionComponent(x,y));
         bullet.add(new VelocityComponent(2000,angle));
         bullet.add(new DimensionComponent(GameScreen.UNIT_SIZE/2,GameScreen.UNIT_SIZE/2));
-        bullet.add(new BoundsComponent(bullet.getComponent(DimensionComponent.class),16));
+        bullet.add(new BoundsComponent(Mapper.dimensionComponent.get(bullet),16));
         bullet.add(new BulletComponent());
         return bullet;
     }

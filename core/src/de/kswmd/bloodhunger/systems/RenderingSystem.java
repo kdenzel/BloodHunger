@@ -19,11 +19,12 @@ public class RenderingSystem extends EntitySystem {
     private static TextureAtlas atlas;
 
     public enum FeetAnimationType{
-        IDLE(new Animation<TextureRegion>(0.2f, atlas.findRegions("survivor-idle"), Animation.PlayMode.LOOP)),
-        MOVE_FORWARD(new Animation<TextureRegion>(0.2f, atlas.findRegions("survivor-walk"), Animation.PlayMode.LOOP)),
-        MOVE_BACKWARD(new Animation<TextureRegion>(0.2f, atlas.findRegions("survivor-walk"), Animation.PlayMode.LOOP_REVERSED)),
-        MOVE_LEFT(new Animation<TextureRegion>(0.2f, atlas.findRegions("survivor-strafe_left"), Animation.PlayMode.LOOP)),
-        MOVE_RIGHT(new Animation<TextureRegion>(0.2f, atlas.findRegions("survivor-strafe_right"), Animation.PlayMode.LOOP)),
+        IDLE(new Animation<TextureRegion>(1f, atlas.findRegions("survivor-idle"), Animation.PlayMode.LOOP)),
+        MOVE_FORWARD(new Animation<TextureRegion>(0.05f, atlas.findRegions("survivor-walk"), Animation.PlayMode.LOOP)),
+        MOVE_BACKWARD(new Animation<TextureRegion>(0.05f, atlas.findRegions("survivor-walk"), Animation.PlayMode.LOOP_REVERSED)),
+        MOVE_LEFT(new Animation<TextureRegion>(0.05f, atlas.findRegions("survivor-strafe_left"), Animation.PlayMode.LOOP)),
+        MOVE_RIGHT(new Animation<TextureRegion>(0.05f, atlas.findRegions("survivor-strafe_right"), Animation.PlayMode.LOOP)),
+        RUN_FORWARD(new Animation<TextureRegion>(0.05f, atlas.findRegions("survivor-run"), Animation.PlayMode.LOOP))
         ;
 
         private final Animation<TextureRegion> animation;
@@ -34,10 +35,17 @@ public class RenderingSystem extends EntitySystem {
     }
 
     public enum BodyAnimationType{
-        IDLE_FLASHLIGHT(new Animation<TextureRegion>(0.2f, atlas.findRegions("survivor-idle_flashlight"), Animation.PlayMode.LOOP)),
-        MOVE_FLASHLIGHT(new Animation<TextureRegion>(0.2f, atlas.findRegions("survivor-move_flashlight"), Animation.PlayMode.LOOP));
+        IDLE_FLASHLIGHT(new Animation<TextureRegion>(0.1f, atlas.findRegions("survivor-idle_flashlight"), Animation.PlayMode.LOOP)),
+        MOVE_FLASHLIGHT(new Animation<TextureRegion>(0.1f, atlas.findRegions("survivor-move_flashlight"), Animation.PlayMode.LOOP)),
+        MELEE_FLASHLIGHT(new Animation<TextureRegion>(0.1f, atlas.findRegions("survivor-meleeattack_flashlight"), Animation.PlayMode.NORMAL)),
+        IDLE_HANDGUN(new Animation<TextureRegion>(0.1f, atlas.findRegions("survivor-idle_handgun"), Animation.PlayMode.LOOP)),
+        MOVE_HANDGUN(new Animation<TextureRegion>(0.1f, atlas.findRegions("survivor-move_handgun"), Animation.PlayMode.LOOP)),
+        SHOOT_HANDGUN(new Animation<TextureRegion>(0.1f, atlas.findRegions("survivor-shoot_handgun"), Animation.PlayMode.NORMAL)),
+        MELEE_HANDGUN(new Animation<TextureRegion>(0.1f, atlas.findRegions("survivor-meleeattack_handgun"), Animation.PlayMode.NORMAL)),
+        RELOAD_HANDGUN(new Animation<TextureRegion>(0.1f, atlas.findRegions("survivor-reload_handgun"), Animation.PlayMode.NORMAL));
 
-        private final Animation<TextureRegion> animation;
+
+        public final Animation<TextureRegion> animation;
 
         BodyAnimationType(Animation<TextureRegion> animation){
             this.animation = animation;
@@ -74,9 +82,9 @@ public class RenderingSystem extends EntitySystem {
             RotationComponent rotationComponent = Mapper.rotationComponent.get(entity);
 
             PlayerComponent playerComponent = Mapper.playerComponent.get(entity);
-            playerComponent.timer+=deltaTime % 5;
+            playerComponent.timer+=deltaTime;
 
-            TextureRegion bodyRegion = playerComponent.bodyAnimationType.animation.getKeyFrame(playerComponent.timer);
+            TextureRegion bodyRegion = playerComponent.getBodyAnimationType().animation.getKeyFrame(playerComponent.timer);
             TextureRegion feetRegion = playerComponent.feetAnimationType.animation.getKeyFrame(playerComponent.timer);
 
             float bodyWidthInDimensions = dimensionComponent.width/bodyRegion.getRegionWidth();

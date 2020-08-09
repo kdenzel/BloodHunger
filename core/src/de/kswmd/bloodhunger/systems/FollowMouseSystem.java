@@ -41,8 +41,8 @@ public class FollowMouseSystem extends EntitySystem {
 
             PositionComponent pc = Mapper.positionComponent.get(entity);
             DimensionComponent dc = Mapper.dimensionComponent.get(entity);
-            float playerPosX = pc.x + dc.getOriginX();
-            float playerPosY = pc.y + dc.getOriginY();
+            float playerPosX = pc.x + dc.originX;
+            float playerPosY = pc.y + dc.originY;
 
             float mouseScreenX = Gdx.input.getX();
             float mouseScreenY = Gdx.input.getY();
