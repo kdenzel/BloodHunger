@@ -106,7 +106,7 @@ public class PlayerComponent implements Component {
         if (bodyAnimationType.animation.isAnimationFinished(timer) && bodyAnimationType.animation.getPlayMode().equals(Animation.PlayMode.NORMAL)) {
             weapon.status = WeaponStatus.IDLE;
         }
-        RenderingSystem.BodyAnimationType bodyAnimationType = RenderingSystem.BodyAnimationType.IDLE_FLASHLIGHT;
+        RenderingSystem.BodyAnimationType bodyAnimationType = null;
         switch (weapon.status) {
             case IDLE:
                 switch (feetAnimationType) {
@@ -127,8 +127,10 @@ public class PlayerComponent implements Component {
             case RELOAD:
                 bodyAnimationType = getReload();
                 break;
+            default:
+                throw new IllegalStateException("No animation for weapon status " + weapon.status);
         }
-
+        this.bodyAnimationType = bodyAnimationType;
         return bodyAnimationType;
     }
 

@@ -17,7 +17,7 @@ public final class EntityFactory {
         Entity player = new Entity();
         player.add(new PositionComponent());
         player.add(new VelocityComponent());
-        player.add(new DimensionComponent(150, 150));
+        player.add(new DimensionComponent(256, 256));
         player.add(new RotationComponent());
         player.add(new FollowMouseComponent());
         player.add(new CenterCameraComponent());
