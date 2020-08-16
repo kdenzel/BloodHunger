@@ -18,8 +18,8 @@ public abstract class BaseScreen extends ScreenAdapter implements InputProcessor
 
     public BaseScreen(BloodHungerGame game) {
         this.game = game;
-        uiStage = new Stage(new FitViewport(Gdx.graphics.getWidth(),Gdx.graphics.getHeight()));
-        camera = new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+        uiStage = new Stage(new FitViewport(Gdx.graphics.getWidth()*BloodHungerGame.UNIT_SCALE,Gdx.graphics.getHeight()*BloodHungerGame.UNIT_SCALE));
+        camera = new OrthographicCamera(Gdx.graphics.getWidth()*BloodHungerGame.UNIT_SCALE,Gdx.graphics.getHeight()*BloodHungerGame.UNIT_SCALE);
         initialize();
     }
 

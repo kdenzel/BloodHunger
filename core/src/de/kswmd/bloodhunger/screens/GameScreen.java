@@ -16,11 +16,11 @@ import de.kswmd.bloodhunger.components.PlayerComponent;
 import de.kswmd.bloodhunger.components.PositionComponent;
 import de.kswmd.bloodhunger.factories.EntityFactory;
 import de.kswmd.bloodhunger.systems.*;
+import de.kswmd.bloodhunger.utils.LevelManager;
 import de.kswmd.bloodhunger.utils.Mapper;
 
 public class GameScreen extends BaseScreen {
 
-    public static final int UNIT_SIZE = 32;
     private Vector2 bulletOffset = new Vector2();
 
     private FollowMouseSystem followMouseSystem;
@@ -73,9 +73,12 @@ public class GameScreen extends BaseScreen {
         engine.addSystem(renderingSystem);
         engine.addSystem(debugRenderSystem);
 
+        //set level
+        renderingSystem.setLevel(LevelManager.Level.EXAMPLE);
+
 
         engine.addEntity(EntityFactory.createPlayer());
-        engine.addEntity(EntityFactory.createWall(0, 0, 2000, UNIT_SIZE, null));
+        engine.addEntity(EntityFactory.createWall(0, 0, 2000*BloodHungerGame.UNIT_SCALE, 64*BloodHungerGame.UNIT_SCALE, null));
         int enemies = MathUtils.random(30) + 10;
         for (int i = 0; i < enemies; i++) {
             //engine.addEntity(EntityFactory.createEnemey(100, 100, UNIT_SIZE, UNIT_SIZE, null));
@@ -157,11 +160,11 @@ public class GameScreen extends BaseScreen {
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.setColor(Color.WHITE);
         int gridSize = 100;
-        for (int y = 0; y <= UNIT_SIZE * gridSize; y += UNIT_SIZE) {
-            for (int x = 0; x <= UNIT_SIZE * gridSize; x += UNIT_SIZE) {
-                shapeRenderer.line(x, 0, x, UNIT_SIZE * gridSize);
+        for (int y = 0; y <= BloodHungerGame.UNIT_SCALE * gridSize; y += 64*BloodHungerGame.UNIT_SCALE) {
+            for (int x = 0; x <= BloodHungerGame.UNIT_SCALE * gridSize; x += 64*BloodHungerGame.UNIT_SCALE) {
+                shapeRenderer.line(x, 0, x, BloodHungerGame.UNIT_SCALE * gridSize);
             }
-            shapeRenderer.line(0, y, UNIT_SIZE * gridSize, y);
+            shapeRenderer.line(0, y, BloodHungerGame.UNIT_SCALE * gridSize, y);
         }
         shapeRenderer.end();
     }

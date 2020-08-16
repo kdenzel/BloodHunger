@@ -28,8 +28,8 @@ public class BoundsCollisionSystem extends EntitySystem {
     public void update(float deltaTime) {
         //Check if player collides with entities like enemies or static objects (Objects without velocity)
         for (Entity playerEntity : playerEntities) {
+            BoundsComponent entityBounds = Mapper.boundsComponent.get(playerEntity);
             for (Entity otherBoundsEntity : boundEntitiesWithoutPlayerAndBullets) {
-                BoundsComponent entityBounds = Mapper.boundsComponent.get(playerEntity);
                 BoundsComponent otherBounds = Mapper.boundsComponent.get(otherBoundsEntity);
                 Polygon poly1 = entityBounds.boundaryPolygon;
                 Polygon poly2 = otherBounds.boundaryPolygon;
@@ -48,6 +48,8 @@ public class BoundsCollisionSystem extends EntitySystem {
                 } //Otherwise the player overlaps with an enemy, take damage
                 else if(polygonOverlap && Mapper.enemyComponent.has(otherBoundsEntity)) {
                     Gdx.app.debug("DAMAGE", "OUCH " + System.currentTimeMillis());
+                } else {
+                    Gdx.app.debug("COLLISION DETECTED", "WITH SOME MOVING OBJECT");
                 }
 
             }

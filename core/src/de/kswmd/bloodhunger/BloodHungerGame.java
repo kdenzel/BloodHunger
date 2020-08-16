@@ -11,6 +11,9 @@ import de.kswmd.bloodhunger.screens.LoadingScreen;
 
 public class BloodHungerGame extends Game {
 
+	public static final int UNIT = 64;
+	public static final float UNIT_SCALE = 1f/UNIT;
+
 	public final AssetManager assetManager = new AssetManager();
 
 	@Override

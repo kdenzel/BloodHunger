@@ -25,7 +25,7 @@ public class MovementSystem extends IteratingSystem {
                 DimensionComponent dc = Mapper.dimensionComponent.get(entity);
                 BoundsComponent bc = Mapper.boundsComponent.get(entity);
                 float x = pc.x + dc.originX - bc.boundaryPolygon.getOriginX();
-                float y = pc.y + dc.originX - bc.boundaryPolygon.getOriginY();
+                float y = pc.y + dc.originY - bc.boundaryPolygon.getOriginY();
                 bc.boundaryPolygon.setPosition(x,y);
             } else {
                 Mapper.boundsComponent.get(entity).boundaryPolygon.setPosition(pc.x, pc.y);

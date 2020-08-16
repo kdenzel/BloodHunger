@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.factories.EntityFactory;
 import de.kswmd.bloodhunger.screens.GameScreen;
 
@@ -21,7 +22,7 @@ public class RoomComponent implements Component {
         for(int y = 0; y < tileSizeY; y++){
             for(int x = 0; x < tileSizeX; x++){
                 PositionComponent pc = cmpc.get(roomEntity);
-                Entity tile = EntityFactory.createTile(pc.x + x * GameScreen.UNIT_SIZE, pc.y + y * GameScreen.UNIT_SIZE);
+                Entity tile = EntityFactory.createTile(pc.x + x * BloodHungerGame.UNIT, pc.y + y *BloodHungerGame.UNIT);
                 tiles[y][x] = tile;
             }
         }

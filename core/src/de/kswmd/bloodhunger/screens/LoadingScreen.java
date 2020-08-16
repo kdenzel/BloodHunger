@@ -2,12 +2,15 @@ package de.kswmd.bloodhunger.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import de.kswmd.bloodhunger.BloodHungerGame;
+import de.kswmd.bloodhunger.Assets;
+import de.kswmd.bloodhunger.utils.LevelManager;
 
 public class LoadingScreen extends BaseScreen{
 
@@ -22,7 +25,9 @@ public class LoadingScreen extends BaseScreen{
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
         shapeRenderer.setColor(Color.WHITE);
-        game.assetManager.load("bloodHunger.atlas", TextureAtlas.class);
+        game.assetManager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
+        game.assetManager.load(Assets.BLOODHUNGER_TEXTURE_ATLAS, TextureAtlas.class);
+        game.assetManager.load(LevelManager.getInstance().level.getMap(), TiledMap.class);
     }
 
     @Override

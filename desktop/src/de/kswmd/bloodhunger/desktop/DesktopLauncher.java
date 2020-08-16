@@ -20,7 +20,7 @@ public class DesktopLauncher {
             settings.duplicatePadding = false;
             settings.filterMag = Texture.TextureFilter.Linear;
             settings.filterMin = Texture.TextureFilter.Linear;
-            TexturePacker.process(settings, "../../desktop/assets-raw", "./", "bloodHunger");
+            TexturePacker.process(settings, "../../desktop/assets-raw", "./atlas", "bloodHunger");
         }
 
         new LwjglApplication(new BloodHungerGame(), config);

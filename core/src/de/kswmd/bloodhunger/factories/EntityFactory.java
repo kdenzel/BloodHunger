@@ -4,9 +4,19 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.MapProperties;
+import com.badlogic.gdx.maps.objects.PolygonMapObject;
+import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Rectangle;
+import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.*;
 import de.kswmd.bloodhunger.screens.GameScreen;
 import de.kswmd.bloodhunger.utils.Mapper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class EntityFactory {
 
@@ -17,7 +27,7 @@ public final class EntityFactory {
         Entity player = new Entity();
         player.add(new PositionComponent());
         player.add(new VelocityComponent());
-        player.add(new DimensionComponent(256, 256));
+        player.add(new DimensionComponent(256 * BloodHungerGame.UNIT_SCALE, 256 * BloodHungerGame.UNIT_SCALE));
         player.add(new RotationComponent());
         player.add(new FollowMouseComponent());
         player.add(new CenterCameraComponent());
@@ -53,8 +63,8 @@ public final class EntityFactory {
     public static Entity createBullet(float x, float y, float angle) {
         Entity bullet = new Entity();
         bullet.add(new PositionComponent(x, y));
-        bullet.add(new VelocityComponent(2000, angle));
-        bullet.add(new DimensionComponent(GameScreen.UNIT_SIZE / 2, GameScreen.UNIT_SIZE / 2));
+        bullet.add(new VelocityComponent(2000*BloodHungerGame.UNIT_SCALE, angle));
+        bullet.add(new DimensionComponent(32 * BloodHungerGame.UNIT_SCALE, 32 * BloodHungerGame.UNIT_SCALE));
         bullet.add(new BoundsComponent(Mapper.dimensionComponent.get(bullet), 16));
         bullet.add(new BulletComponent());
         return bullet;
@@ -72,6 +82,42 @@ public final class EntityFactory {
         tile.add(new PositionComponent(x, y));
         tile.add(new TileComponent());
         return tile;
+    }
+
+    public static List<Entity> createMapObjects(MapLayer mapLayer) {
+        List<Entity> entities = new ArrayList<>(16);
+        MapObjects objects = mapLayer.getObjects();
+        objects.forEach(mapObject -> {
+            MapProperties properties = mapObject.getProperties();
+            String typeKey = "type";
+            if (properties.containsKey(typeKey)) {
+                if (properties.get(typeKey, String.class).equals("stone")) {
+                    float x = properties.get("x", Float.class)*BloodHungerGame.UNIT_SCALE;
+                    float y = properties.get("y", Float.class)*BloodHungerGame.UNIT_SCALE;
+
+                    Polygon poly = ((PolygonMapObject) mapObject).getPolygon();
+                    Rectangle rect = poly.getBoundingRectangle();
+                    float[] v = new float[poly.getVertices().length];
+                    for(int i = 0; i < poly.getVertices().length; i++){
+                        v[i] = poly.getVertices()[i] * BloodHungerGame.UNIT_SCALE;
+                    }
+                    Entity stone = createStone(x, y, rect.width*BloodHungerGame.UNIT_SCALE, rect.height*BloodHungerGame.UNIT_SCALE, v);
+                    entities.add(stone);
+                }
+            }
+        });
+        return entities;
+    }
+
+    public static Entity createStone(float x, float y, float width, float height, float[] vertices) {
+        Entity stone = new Entity();
+        stone.add(new PositionComponent(x, y));
+        stone.add(new DimensionComponent(width, height));
+        BoundsComponent bc = new BoundsComponent(Mapper.dimensionComponent.get(stone));
+        bc.setPolygon(vertices);
+        bc.boundaryPolygon.setPosition(x,y);
+        stone.add(bc);
+        return stone;
     }
 
 }

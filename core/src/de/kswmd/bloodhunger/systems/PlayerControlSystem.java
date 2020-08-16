@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.PlayerComponent;
 import de.kswmd.bloodhunger.components.VelocityComponent;
 import de.kswmd.bloodhunger.utils.Mapper;
@@ -29,7 +30,7 @@ public class PlayerControlSystem extends EntitySystem {
             PlayerComponent pc = Mapper.playerComponent.get(e);
             pc.feetAnimationType = RenderingSystem.FeetAnimationType.IDLE;
             vc.velocityVec.setLength(0);
-            int speed = 100;
+            float speed = 100* BloodHungerGame.UNIT_SCALE;
             if (Gdx.input.isKeyPressed(Input.Keys.W)) {
                 if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
                     speed *= 2;
