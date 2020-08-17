@@ -8,7 +8,7 @@ import de.kswmd.bloodhunger.BloodHungerGame;
 
 public class DesktopLauncher {
     public static void main(String[] arg) {
-        boolean generate = false;
+        boolean generate = true;
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
         config.forceExit = false;
         config.width = 1920;

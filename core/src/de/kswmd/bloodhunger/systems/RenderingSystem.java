@@ -6,7 +6,6 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -16,7 +15,10 @@ import com.badlogic.gdx.maps.MapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import de.kswmd.bloodhunger.Assets;
 import de.kswmd.bloodhunger.BloodHungerGame;
-import de.kswmd.bloodhunger.components.*;
+import de.kswmd.bloodhunger.components.DimensionComponent;
+import de.kswmd.bloodhunger.components.PlayerComponent;
+import de.kswmd.bloodhunger.components.PositionComponent;
+import de.kswmd.bloodhunger.components.RotationComponent;
 import de.kswmd.bloodhunger.factories.EntityFactory;
 import de.kswmd.bloodhunger.utils.LevelManager;
 import de.kswmd.bloodhunger.utils.Mapper;
@@ -43,9 +45,9 @@ public class RenderingSystem extends EntitySystem {
     }
 
     public enum BodyAnimationType{
-        IDLE_FLASHLIGHT(new Animation<TextureRegion>(0.1f, atlas.findRegions("Top_Down_Survivor/flashlight/idle/survivor-idle_flashlight"), Animation.PlayMode.LOOP)),
-        MOVE_FLASHLIGHT(new Animation<TextureRegion>(0.1f, atlas.findRegions("Top_Down_Survivor/flashlight/move/survivor-move_flashlight"), Animation.PlayMode.LOOP)),
-        MELEE_FLASHLIGHT(new Animation<TextureRegion>(0.1f, atlas.findRegions("Top_Down_Survivor/flashlight/meleeattack/survivor-meleeattack_flashlight"), Animation.PlayMode.NORMAL)),
+        IDLE_FLASHLIGHT(new Animation<TextureRegion>(0.1f, atlas.findRegions("Top_Down_Survivor_custom/flashlight/idle/survivor-idle_flashlight"), Animation.PlayMode.LOOP)),
+        MOVE_FLASHLIGHT(new Animation<TextureRegion>(0.1f, atlas.findRegions("Top_Down_Survivor_custom/flashlight/move/survivor-move_flashlight"), Animation.PlayMode.LOOP)),
+        MELEE_FLASHLIGHT(new Animation<TextureRegion>(0.1f, atlas.findRegions("Top_Down_Survivor_custom/flashlight/meleeattack/survivor-meleeattack_flashlight"), Animation.PlayMode.NORMAL)),
         IDLE_HANDGUN(new Animation<TextureRegion>(0.1f, atlas.findRegions("Top_Down_Survivor_custom/handgun/idle/survivor-idle_handgun"), Animation.PlayMode.LOOP)),
         MOVE_HANDGUN(new Animation<TextureRegion>(0.1f, atlas.findRegions("Top_Down_Survivor_custom/handgun/move/survivor-move_handgun"), Animation.PlayMode.LOOP)),
         SHOOT_HANDGUN(new Animation<TextureRegion>(1/48f, atlas.findRegions("Top_Down_Survivor_custom/handgun/shoot/survivor-shoot_handgun"), Animation.PlayMode.NORMAL)),
