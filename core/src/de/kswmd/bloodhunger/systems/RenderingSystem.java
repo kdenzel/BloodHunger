@@ -31,11 +31,11 @@ public class RenderingSystem extends EntitySystem {
 
     public enum FeetAnimationType{
         IDLE(new Animation<TextureRegion>(1f, atlas.findRegions("Top_Down_Survivor_custom/feet/idle/survivor-idle"), Animation.PlayMode.LOOP)),
-        MOVE_FORWARD(new Animation<TextureRegion>(0.05f, atlas.findRegions("Top_Down_Survivor_custom/feet/walk/survivor-walk"), Animation.PlayMode.LOOP)),
-        MOVE_BACKWARD(new Animation<TextureRegion>(0.05f, atlas.findRegions("Top_Down_Survivor_custom/feet/walk/survivor-walk"), Animation.PlayMode.LOOP_REVERSED)),
-        MOVE_LEFT(new Animation<TextureRegion>(0.05f, atlas.findRegions("Top_Down_Survivor_custom/feet/strafe_left/survivor-strafe_left"), Animation.PlayMode.LOOP)),
-        MOVE_RIGHT(new Animation<TextureRegion>(0.05f, atlas.findRegions("Top_Down_Survivor_custom/feet/strafe_right/survivor-strafe_right"), Animation.PlayMode.LOOP)),
-        RUN_FORWARD(new Animation<TextureRegion>(0.025f, atlas.findRegions("Top_Down_Survivor_custom/feet/walk/survivor-walk"), Animation.PlayMode.LOOP));
+        MOVE_FORWARD(new Animation<TextureRegion>(1/24f, atlas.findRegions("Top_Down_Survivor_custom/feet/walk/survivor-walk"), Animation.PlayMode.LOOP)),
+        MOVE_BACKWARD(new Animation<TextureRegion>(1/24f, atlas.findRegions("Top_Down_Survivor_custom/feet/walk/survivor-walk"), Animation.PlayMode.LOOP_REVERSED)),
+        MOVE_LEFT(new Animation<TextureRegion>(1/24f, atlas.findRegions("Top_Down_Survivor_custom/feet/strafe_left/survivor-strafe_left"), Animation.PlayMode.LOOP)),
+        MOVE_RIGHT(new Animation<TextureRegion>(1/24f, atlas.findRegions("Top_Down_Survivor_custom/feet/strafe_right/survivor-strafe_right"), Animation.PlayMode.LOOP)),
+        RUN_FORWARD(new Animation<TextureRegion>(1/48f, atlas.findRegions("Top_Down_Survivor_custom/feet/walk/survivor-walk"), Animation.PlayMode.LOOP));
 
         private final Animation<TextureRegion> animation;
 
@@ -45,11 +45,11 @@ public class RenderingSystem extends EntitySystem {
     }
 
     public enum BodyAnimationType{
-        IDLE_FLASHLIGHT(new Animation<TextureRegion>(0.1f, atlas.findRegions("Top_Down_Survivor_custom/flashlight/idle/survivor-idle_flashlight"), Animation.PlayMode.LOOP)),
-        MOVE_FLASHLIGHT(new Animation<TextureRegion>(0.1f, atlas.findRegions("Top_Down_Survivor_custom/flashlight/move/survivor-move_flashlight"), Animation.PlayMode.LOOP)),
-        MELEE_FLASHLIGHT(new Animation<TextureRegion>(0.1f, atlas.findRegions("Top_Down_Survivor_custom/flashlight/meleeattack/survivor-meleeattack_flashlight"), Animation.PlayMode.NORMAL)),
-        IDLE_HANDGUN(new Animation<TextureRegion>(0.1f, atlas.findRegions("Top_Down_Survivor_custom/handgun/idle/survivor-idle_handgun"), Animation.PlayMode.LOOP)),
-        MOVE_HANDGUN(new Animation<TextureRegion>(0.1f, atlas.findRegions("Top_Down_Survivor_custom/handgun/move/survivor-move_handgun"), Animation.PlayMode.LOOP)),
+        IDLE_FLASHLIGHT(new Animation<TextureRegion>(1/24f, atlas.findRegions("Top_Down_Survivor_custom/flashlight/idle/survivor-idle_flashlight"), Animation.PlayMode.LOOP)),
+        MOVE_FLASHLIGHT(new Animation<TextureRegion>(1/24f, atlas.findRegions("Top_Down_Survivor_custom/flashlight/move/survivor-move_flashlight"), Animation.PlayMode.LOOP)),
+        MELEE_FLASHLIGHT(new Animation<TextureRegion>(1/48f, atlas.findRegions("Top_Down_Survivor_custom/flashlight/meleeattack/survivor-meleeattack_flashlight"), Animation.PlayMode.NORMAL)),
+        IDLE_HANDGUN(new Animation<TextureRegion>(1/24f, atlas.findRegions("Top_Down_Survivor_custom/handgun/idle/survivor-idle_handgun"), Animation.PlayMode.LOOP)),
+        MOVE_HANDGUN(new Animation<TextureRegion>(1/24f, atlas.findRegions("Top_Down_Survivor_custom/handgun/move/survivor-move_handgun"), Animation.PlayMode.LOOP)),
         SHOOT_HANDGUN(new Animation<TextureRegion>(1/48f, atlas.findRegions("Top_Down_Survivor_custom/handgun/shoot/survivor-shoot_handgun"), Animation.PlayMode.NORMAL)),
         MELEE_HANDGUN(new Animation<TextureRegion>(1/48f, atlas.findRegions("Top_Down_Survivor_custom/handgun/meleeattack/survivor-meleeattack_handgun"), Animation.PlayMode.NORMAL)),
         RELOAD_HANDGUN(new Animation<TextureRegion>(1/24f, atlas.findRegions("Top_Down_Survivor_custom/handgun/reload/survivor-reload_handgun"), Animation.PlayMode.NORMAL));

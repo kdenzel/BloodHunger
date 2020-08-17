@@ -57,7 +57,11 @@ public class DebugRenderSystem extends EntitySystem {
             if(Mapper.boundsComponent.has(entity)){
                 debugRenderer.setColor(Color.CYAN);
                 BoundsComponent bc = Mapper.boundsComponent.get(entity);
-                debugRenderer.polygon(bc.boundaryPolygon.getTransformedVertices());
+                //Draw every polygon on each layer
+                for(int z = 0; z < bc.size(); z++){
+                    debugRenderer.polygon(bc.getPolygon(z).getTransformedVertices());
+                }
+
                 /*Rectangle r = bc.boundaryPolygon.getBoundingRectangle();
                 debugRenderer.rect(r.x,r.y,
                         r.width,r.height);*/

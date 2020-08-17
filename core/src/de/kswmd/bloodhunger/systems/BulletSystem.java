@@ -36,17 +36,19 @@ public class BulletSystem extends EntitySystem {
             BoundsComponent bulletBoundsComponent = Mapper.boundsComponent.get(bullet);
             for (Entity otherBoundsEntity : boundsEntities) {
                 BoundsComponent otherBoundsComponent = Mapper.boundsComponent.get(otherBoundsEntity);
-                if (!bulletBoundsComponent.boundaryPolygon.getBoundingRectangle().overlaps(otherBoundsComponent.boundaryPolygon.getBoundingRectangle())) {
-                    continue;
-                }
-                boolean overlaps = Intersector.overlapConvexPolygons(bulletBoundsComponent.boundaryPolygon, otherBoundsComponent.boundaryPolygon);
-                if (overlaps) {
-                    this.getEngine().removeEntity(bullet);
-                    if (Mapper.enemyComponent.has(otherBoundsEntity)) {
-                        EnemyComponent enemyComponent = Mapper.enemyComponent.get(otherBoundsEntity);
-                        enemyComponent.health -= MathUtils.random(20, 40);
-                        if (enemyComponent.health < 0) {
-                            this.getEngine().removeEntity(otherBoundsEntity);
+                for (int z = 0; z < otherBoundsComponent.size(); z++) {
+                    if (!bulletBoundsComponent.getPolygon(0).getBoundingRectangle().overlaps(otherBoundsComponent.getPolygon(z).getBoundingRectangle())) {
+                        continue;
+                    }
+                    boolean overlaps = Intersector.overlapConvexPolygons(bulletBoundsComponent.getPolygon(0), otherBoundsComponent.getPolygon(z));
+                    if (overlaps) {
+                        this.getEngine().removeEntity(bullet);
+                        if (Mapper.enemyComponent.has(otherBoundsEntity)) {
+                            EnemyComponent enemyComponent = Mapper.enemyComponent.get(otherBoundsEntity);
+                            enemyComponent.health -= MathUtils.random(20, 40);
+                            if (enemyComponent.health < 0) {
+                                this.getEngine().removeEntity(otherBoundsEntity);
+                            }
                         }
                     }
                 }

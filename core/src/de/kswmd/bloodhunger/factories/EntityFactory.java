@@ -33,8 +33,18 @@ public final class EntityFactory {
         player.add(new CenterCameraComponent());
         player.add(new PlayerComponent());
         DimensionComponent dc = Mapper.dimensionComponent.get(player);
+        //Creates new boundscomponent with feet vertices for z-layer 0
+        BoundsComponent bc = new BoundsComponent(dc.width, dc.height,
+                new float[]{
+                        0.28125f * dc.width, 0.6484375f * dc.height,
+                        0.69921875f * dc.width, 0.65234375f * dc.height,
+                        0.703125f * dc.width, 0.28515625f * dc.height,
+                        0.28125f * dc.width, 0.29296875f * dc.height
+                });
+        //Creates body polygon for z layer 1
         float[] vertices = Mapper.playerComponent.get(player).weapon.getVertices(dc);
-        player.add(new BoundsComponent(dc.width, dc.height, vertices));
+        bc.setPolygon(vertices, 1);
+        player.add(bc);
         return player;
     }
 
@@ -53,9 +63,18 @@ public final class EntityFactory {
         enemy.add(new PositionComponent(x, y));
         enemy.add(new VelocityComponent());
         enemy.add(new TextureRegionComponent(textureRegion));
-        enemy.add(new DimensionComponent(width, height));
+        DimensionComponent dc = new DimensionComponent(width, height);
+        enemy.add(dc);
         enemy.add(new RotationComponent());
-        enemy.add(new BoundsComponent(Mapper.dimensionComponent.get(enemy)));
+        BoundsComponent bc = new BoundsComponent(dc.width, dc.height,
+                new float[]{
+                        0.28125f * dc.width, 0.6484375f * dc.height,
+                        0.69921875f * dc.width, 0.65234375f * dc.height,
+                        0.703125f * dc.width, 0.28515625f * dc.height,
+                        0.28125f * dc.width, 0.29296875f * dc.height
+                });
+        bc.setBoundaryPolygon(4,1);
+        enemy.add(bc);
         enemy.add(new EnemyComponent());
         return enemy;
     }
@@ -63,7 +82,7 @@ public final class EntityFactory {
     public static Entity createBullet(float x, float y, float angle) {
         Entity bullet = new Entity();
         bullet.add(new PositionComponent(x, y));
-        bullet.add(new VelocityComponent(2000*BloodHungerGame.UNIT_SCALE, angle));
+        bullet.add(new VelocityComponent(2000 * BloodHungerGame.UNIT_SCALE, angle));
         bullet.add(new DimensionComponent(32 * BloodHungerGame.UNIT_SCALE, 32 * BloodHungerGame.UNIT_SCALE));
         bullet.add(new BoundsComponent(Mapper.dimensionComponent.get(bullet), 16));
         bullet.add(new BulletComponent());
@@ -92,16 +111,16 @@ public final class EntityFactory {
             String typeKey = "type";
             if (properties.containsKey(typeKey)) {
                 if (properties.get(typeKey, String.class).equals("stone")) {
-                    float x = properties.get("x", Float.class)*BloodHungerGame.UNIT_SCALE;
-                    float y = properties.get("y", Float.class)*BloodHungerGame.UNIT_SCALE;
+                    float x = properties.get("x", Float.class) * BloodHungerGame.UNIT_SCALE;
+                    float y = properties.get("y", Float.class) * BloodHungerGame.UNIT_SCALE;
 
                     Polygon poly = ((PolygonMapObject) mapObject).getPolygon();
                     Rectangle rect = poly.getBoundingRectangle();
                     float[] v = new float[poly.getVertices().length];
-                    for(int i = 0; i < poly.getVertices().length; i++){
+                    for (int i = 0; i < poly.getVertices().length; i++) {
                         v[i] = poly.getVertices()[i] * BloodHungerGame.UNIT_SCALE;
                     }
-                    Entity stone = createStone(x, y, rect.width*BloodHungerGame.UNIT_SCALE, rect.height*BloodHungerGame.UNIT_SCALE, v);
+                    Entity stone = createStone(x, y, rect.width * BloodHungerGame.UNIT_SCALE, rect.height * BloodHungerGame.UNIT_SCALE, v);
                     entities.add(stone);
                 }
             }
@@ -114,8 +133,8 @@ public final class EntityFactory {
         stone.add(new PositionComponent(x, y));
         stone.add(new DimensionComponent(width, height));
         BoundsComponent bc = new BoundsComponent(Mapper.dimensionComponent.get(stone));
-        bc.setPolygon(vertices);
-        bc.boundaryPolygon.setPosition(x,y);
+        bc.setPolygon(vertices, 0);
+        bc.getPolygon(0).setPosition(x, y);
         stone.add(bc);
         return stone;
     }

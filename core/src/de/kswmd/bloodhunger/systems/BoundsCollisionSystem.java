@@ -31,8 +31,8 @@ public class BoundsCollisionSystem extends EntitySystem {
             BoundsComponent entityBounds = Mapper.boundsComponent.get(playerEntity);
             for (Entity otherBoundsEntity : boundEntitiesWithoutPlayerAndBullets) {
                 BoundsComponent otherBounds = Mapper.boundsComponent.get(otherBoundsEntity);
-                Polygon poly1 = entityBounds.boundaryPolygon;
-                Polygon poly2 = otherBounds.boundaryPolygon;
+                Polygon poly1 = entityBounds.getPolygon(0);
+                Polygon poly2 = otherBounds.getPolygon(0);
                 if (!poly1.getBoundingRectangle().overlaps(poly2.getBoundingRectangle())) {
                     continue;
                 }
@@ -64,8 +64,8 @@ public class BoundsCollisionSystem extends EntitySystem {
                 }
                 BoundsComponent entityBounds = Mapper.boundsComponent.get(entity);
                 BoundsComponent otherBounds = Mapper.boundsComponent.get(entityToCollideWith);
-                Polygon poly1 = entityBounds.boundaryPolygon;
-                Polygon poly2 = otherBounds.boundaryPolygon;
+                Polygon poly1 = entityBounds.getPolygon(0);
+                Polygon poly2 = otherBounds.getPolygon(0);
                 if (!poly1.getBoundingRectangle().overlaps(poly2.getBoundingRectangle())) {
                     continue;
                 }
