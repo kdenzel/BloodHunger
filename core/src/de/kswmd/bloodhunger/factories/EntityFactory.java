@@ -41,7 +41,7 @@ public final class EntityFactory {
                         0.703125f * dc.width, 0.28515625f * dc.height,
                         0.28125f * dc.width, 0.29296875f * dc.height
                 });
-        //Creates body polygon for z layer 1
+        //Creates default body polygon for z layer 1
         float[] vertices = Mapper.playerComponent.get(player).weapon.getVertices(dc);
         bc.setPolygon(vertices, 1);
         player.add(bc);

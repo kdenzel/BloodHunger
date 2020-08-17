@@ -37,11 +37,13 @@ public class PlayerComponent implements Component {
 
         private boolean shoot;
         //Defines the bound component depending on the selected weapon
-        private float[] verticesInPercent;
+        private final float[] verticesInPercent;
+        private final float[] tmpV;
 
         Weapon(boolean shoot, float[] verticesInPercent) {
             this.shoot = shoot;
             this.verticesInPercent = verticesInPercent;
+            tmpV = new float[verticesInPercent.length];
         }
 
         public boolean canShoot() {
@@ -54,7 +56,6 @@ public class PlayerComponent implements Component {
          * @return
          */
         public float[] getVertices(DimensionComponent dimensionComponent) {
-            float[] tmpV = new float[verticesInPercent.length];
             for (int i = 0; i < verticesInPercent.length; i++) {
                 if (i % 2 == 0) {
                     tmpV[i] = verticesInPercent[i] * dimensionComponent.width;

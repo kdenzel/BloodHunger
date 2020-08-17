@@ -5,6 +5,8 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import de.kswmd.bloodhunger.BloodHungerGame;
+import de.kswmd.bloodhunger.components.BoundsComponent;
+import de.kswmd.bloodhunger.components.DimensionComponent;
 import de.kswmd.bloodhunger.components.PlayerComponent;
 import de.kswmd.bloodhunger.components.VelocityComponent;
 import de.kswmd.bloodhunger.utils.Mapper;
@@ -28,6 +30,9 @@ public class PlayerControlSystem extends EntitySystem {
         for (Entity e : entities) {
             VelocityComponent vc = Mapper.velocityComponent.get(e);
             PlayerComponent pc = Mapper.playerComponent.get(e);
+            BoundsComponent boundsComponent = Mapper.boundsComponent.get(e);
+            DimensionComponent dimensionComponent = Mapper.dimensionComponent.get(e);
+
             pc.feetAnimationType = RenderingSystem.FeetAnimationType.IDLE;
             vc.velocityVec.setLength(0);
             float speed = 100* BloodHungerGame.UNIT_SCALE;
@@ -51,6 +56,11 @@ public class PlayerControlSystem extends EntitySystem {
                 vc.velocityVec.set(speed, 0);
                 pc.feetAnimationType = RenderingSystem.FeetAnimationType.MOVE_RIGHT;
                 Mapper.rotationComponent.get(e).movementAngle += -90;
+            }
+            //Set polygon depending on frame
+            RenderingSystem.BodyAnimationType bodyAnimationType = pc.getBodyAnimationType();
+            if (bodyAnimationType.hasPolygons()) {
+                boundsComponent.setPolygon(bodyAnimationType.getVertices(pc.timer, dimensionComponent), 1);
             }
         }
     }

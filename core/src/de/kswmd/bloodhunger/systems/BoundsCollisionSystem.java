@@ -29,6 +29,7 @@ public class BoundsCollisionSystem extends EntitySystem {
         //Check if player collides with entities like enemies or static objects (Objects without velocity)
         for (Entity playerEntity : playerEntities) {
             BoundsComponent entityBounds = Mapper.boundsComponent.get(playerEntity);
+
             for (Entity otherBoundsEntity : boundEntitiesWithoutPlayerAndBullets) {
                 BoundsComponent otherBounds = Mapper.boundsComponent.get(otherBoundsEntity);
                 Polygon poly1 = entityBounds.getPolygon(0);
