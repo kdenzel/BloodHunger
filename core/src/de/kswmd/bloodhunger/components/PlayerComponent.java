@@ -7,64 +7,21 @@ import de.kswmd.bloodhunger.systems.RenderingSystem;
 public class PlayerComponent implements Component {
 
     public enum Weapon {
-        FLASHLIGHT(false, new float[]{
-                0.15f, 0.5f,
-                0.15f, 0.229f,
-                0.33f, 0.15f,
-                0.5f, 0.3f,
-                1, 0.5f,
-                1, 0.57f,
-                0.5f, 0.57f,
-                0.66f, 0.615f,
-                0.61f, 0.75f,
-                0.462f, 0.7758f,
-                0.462f, 0.8655f,
-                0.18f, 0.888f,
-
-        }),
-        HANDGUN(true, new float[]{
-                0.15f, 0.653f,
-                0.178f, 0.227f,
-                0.33f, 0.15f,
-                0.664f, 0.1574f,
-                0.81f, 0.2034f,
-                0.81f, 0.57f,
-                0.61f, 0.75f,
-                0.462f, 0.7758f
-        });
+        FLASHLIGHT(false),
+        HANDGUN(true);
 
         private WeaponStatus status = WeaponStatus.IDLE;
 
         private boolean shoot;
-        //Defines the bound component depending on the selected weapon
-        private final float[] verticesInPercent;
-        private final float[] tmpV;
 
-        Weapon(boolean shoot, float[] verticesInPercent) {
+        Weapon(boolean shoot) {
             this.shoot = shoot;
-            this.verticesInPercent = verticesInPercent;
-            tmpV = new float[verticesInPercent.length];
         }
 
         public boolean canShoot() {
             return shoot;
         }
 
-        /**
-         * Returns the vertices relative to the dimensions of the player
-         * @param dimensionComponent
-         * @return
-         */
-        public float[] getVertices(DimensionComponent dimensionComponent) {
-            for (int i = 0; i < verticesInPercent.length; i++) {
-                if (i % 2 == 0) {
-                    tmpV[i] = verticesInPercent[i] * dimensionComponent.width;
-                } else {
-                    tmpV[i] = verticesInPercent[i] * dimensionComponent.height;
-                }
-            }
-            return tmpV;
-        }
     }
 
     private enum WeaponStatus {
@@ -107,7 +64,7 @@ public class PlayerComponent implements Component {
         if (bodyAnimationType.animation.isAnimationFinished(timer) && bodyAnimationType.animation.getPlayMode().equals(Animation.PlayMode.NORMAL)) {
             weapon.status = WeaponStatus.IDLE;
         }
-        RenderingSystem.BodyAnimationType bodyAnimationType = null;
+        RenderingSystem.BodyAnimationType bodyAnimationType;
         switch (weapon.status) {
             case IDLE:
                 switch (feetAnimationType) {

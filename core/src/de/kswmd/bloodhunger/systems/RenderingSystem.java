@@ -39,7 +39,7 @@ public class RenderingSystem extends EntitySystem {
 
         FeetAnimationType(float frameDuration, String resource, Animation.PlayMode playMode) {
             TextureAtlas atlas = assetManager.get(Assets.BLOODHUNGER_TEXTURE_ATLAS);
-            this.animation = new Animation<TextureRegion>(frameDuration, atlas.findRegions(resource), playMode);
+            this.animation = new Animation<>(frameDuration, atlas.findRegions(resource), playMode);
         }
     }
 
@@ -55,27 +55,25 @@ public class RenderingSystem extends EntitySystem {
 
 
         public final Animation<TextureRegion> animation;
-        private final Array<float[]> polygonVertices = new Array();
+        private final Array<float[]> polygonVertices = new Array<>();
         private final Array<float[]> polygonVerticesTransformed = new Array<>();
 
         BodyAnimationType(float frameDuration, String resource, Animation.PlayMode playMode) {
             TextureAtlas atlas = assetManager.get(Assets.BLOODHUNGER_TEXTURE_ATLAS);
-            this.animation = new Animation<TextureRegion>(frameDuration, atlas.findRegions(resource), playMode);
+            this.animation = new Animation<>(frameDuration, atlas.findRegions(resource), playMode);
             FileHandle handle = Gdx.files.internal("animation/" + resource + ".poly");
             if (handle.exists()) {
                 String fileContent = handle.readString();
                 String[] lines = fileContent.split("\\r?\\n");
-                for (int i = 2; i < lines.length; i++) {
-                    String[] array = lines[i].replaceAll("[{}]", "").split(",");
+                for (String line : lines) {
+                    String[] array = line.replaceAll("[{}]", "").split(",");
                     float[] vertices = new float[array.length];
                     for (int j = 0; j < array.length; j++) {
-                        vertices[j] = Float.valueOf(array[j]);
+                        vertices[j] = Float.parseFloat(array[j]);
                     }
                     polygonVertices.add(vertices);
                 }
-                polygonVertices.forEach(v -> {
-                    polygonVerticesTransformed.add(new float[v.length]);
-                });
+                polygonVertices.forEach(v -> polygonVerticesTransformed.add(new float[v.length]));
             }
         }
 
@@ -87,8 +85,8 @@ public class RenderingSystem extends EntitySystem {
             if (polygonVertices.isEmpty()) {
                 return null;
             }
-            float aha = ((float)animation.getKeyFrameIndex(time)/animation.getKeyFrames().length);
-            int polygonFrame = (int)(polygonVertices.size * aha);
+            float scale = ((float) animation.getKeyFrameIndex(time) / animation.getKeyFrames().length);
+            int polygonFrame = (int) (polygonVertices.size * scale);
 
 
             float[] v = polygonVertices.get(polygonFrame);
@@ -104,7 +102,7 @@ public class RenderingSystem extends EntitySystem {
         }
 
         public float[] getVertices(float time, DimensionComponent dimensionComponent) {
-            return getVertices(time, dimensionComponent.width,dimensionComponent.height);
+            return getVertices(time, dimensionComponent.width, dimensionComponent.height);
         }
     }
 
@@ -123,8 +121,8 @@ public class RenderingSystem extends EntitySystem {
     public void setLevel(LevelManager.Level level) {
         LevelManager.getInstance().setLevel(level);
         LevelManager.getInstance().setTiledMap(assetManager.get(level.getMap()));
-        mapRenderer = new OrthogonalTiledMapRenderer(LevelManager.getInstance().getTiledMap(), BloodHungerGame.UNIT_SCALE, this.batch);
-        List<Entity> entities = EntityFactory.createMapObjects(LevelManager.getInstance().getTiledMap().getLayers().get("object_layer"));
+        mapRenderer = new OrthogonalTiledMapRenderer(LevelManager.getInstance().getTiledMap(), BloodHungerGame.UNIT_SCALE, batch);
+        List<Entity> entities = EntityFactory.createMapObjects(LevelManager.getInstance().getTiledMap().getLayers().get("objects"));
         entities.forEach(entity -> getEngine().addEntity(entity));
     }
 
@@ -140,8 +138,14 @@ public class RenderingSystem extends EntitySystem {
         batch.setProjectionMatrix(camera.combined);
         renderPlayers(deltaTime);
         batch.end();
+
     }
 
+    /**
+     * FOR TEXTURE BLEEDING ADD PADDING BETWEEN THE TILES WITH DUPLICATE PADDING (COPY PIXELS TO BORDER)
+     *
+     * @param deltaTime
+     */
     private void renderLevel(float deltaTime) {
         mapRenderer.setView(camera);
         mapRenderer.render();
@@ -155,7 +159,6 @@ public class RenderingSystem extends EntitySystem {
             BoundsComponent boundsComponent = Mapper.boundsComponent.get(entity);
 
             PlayerComponent playerComponent = Mapper.playerComponent.get(entity);
-            playerComponent.timer += deltaTime % 10;
 
             BodyAnimationType bodyAnimationType = playerComponent.getBodyAnimationType();
             TextureRegion bodyRegion = bodyAnimationType.animation.getKeyFrame(playerComponent.timer);
@@ -164,9 +167,9 @@ public class RenderingSystem extends EntitySystem {
             float bodyWidthInDimensions = dimensionComponent.width / bodyRegion.getRegionWidth();
             float bodyHeightInDimensions = dimensionComponent.height / bodyRegion.getRegionHeight();
 
-            batch.draw(feetRegion, positionComponent.x + (bodyRegion.getRegionWidth() / 2 - feetRegion.getRegionWidth() / 2) * bodyWidthInDimensions,
-                    positionComponent.y + (bodyRegion.getRegionHeight() / 2 - feetRegion.getRegionHeight() / 2) * bodyHeightInDimensions,
-                    (feetRegion.getRegionWidth() / 2) * bodyWidthInDimensions, (feetRegion.getRegionHeight() / 2) * bodyHeightInDimensions,
+            batch.draw(feetRegion, positionComponent.x + (bodyRegion.getRegionWidth() / 2f - feetRegion.getRegionWidth() / 2f) * bodyWidthInDimensions,
+                    positionComponent.y + (bodyRegion.getRegionHeight() / 2f - feetRegion.getRegionHeight() / 2f) * bodyHeightInDimensions,
+                    (feetRegion.getRegionWidth() / 2f) * bodyWidthInDimensions, (feetRegion.getRegionHeight() / 2f) * bodyHeightInDimensions,
                     feetRegion.getRegionWidth() * bodyWidthInDimensions, feetRegion.getRegionHeight() * bodyHeightInDimensions, dimensionComponent.scaleX, dimensionComponent.scaleY,
                     rotationComponent.lookingAngle);
 

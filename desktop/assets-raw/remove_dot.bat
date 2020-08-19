@@ -19,4 +19,3 @@ if not "%oldPath%" == "%newPath%" (
 )
 goto :eof
 :End
-PAUSE

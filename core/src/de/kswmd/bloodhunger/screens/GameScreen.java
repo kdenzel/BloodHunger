@@ -72,7 +72,7 @@ public class GameScreen extends BaseScreen {
         engine.addSystem(centerCameraSystem);
         engine.addSystem(renderingSystem);
         engine.addSystem(debugRenderSystem);
-
+        debugRenderSystem.setProcessing(game.debug);
         //set level
         renderingSystem.setLevel(LevelManager.Level.EXAMPLE);
 
@@ -81,8 +81,8 @@ public class GameScreen extends BaseScreen {
         engine.addEntity(EntityFactory.createWall(0, 0, 2000*BloodHungerGame.UNIT_SCALE, 64*BloodHungerGame.UNIT_SCALE, null));
         int enemies = MathUtils.random(30) + 10;
         for (int i = 0; i < enemies; i++) {
-            /*engine.addEntity(EntityFactory.createEnemey(100*BloodHungerGame.UNIT_SCALE, 100*BloodHungerGame.UNIT_SCALE,
-                    64*BloodHungerGame.UNIT_SCALE, 64*BloodHungerGame.UNIT_SCALE, null));*/
+            engine.addEntity(EntityFactory.createEnemey(100*BloodHungerGame.UNIT_SCALE, 100*BloodHungerGame.UNIT_SCALE,
+                    64*BloodHungerGame.UNIT_SCALE, 64*BloodHungerGame.UNIT_SCALE, null));
         }
     }
 
@@ -127,19 +127,11 @@ public class GameScreen extends BaseScreen {
             case Input.Keys.NUM_1:
                 player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
                 Mapper.playerComponent.get(player).weapon = PlayerComponent.Weapon.FLASHLIGHT;
-                dc = Mapper.dimensionComponent.get(player);
-                bc = Mapper.boundsComponent.get(player);
-                vertices = Mapper.playerComponent.get(player).weapon.getVertices(dc);
-                bc.setPolygon(vertices,1);
                 keyPressed = true;
                 break;
             case Input.Keys.NUM_2:
                 player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
                 Mapper.playerComponent.get(player).weapon = PlayerComponent.Weapon.HANDGUN;
-                bc = Mapper.boundsComponent.get(player);
-                dc = Mapper.dimensionComponent.get(player);
-                vertices = Mapper.playerComponent.get(player).weapon.getVertices(dc);
-                bc.setPolygon(vertices,1);
                 keyPressed = true;
                 break;
             case Input.Keys.F:

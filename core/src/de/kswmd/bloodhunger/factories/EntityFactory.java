@@ -25,9 +25,9 @@ public final class EntityFactory {
 
     public static Entity createPlayer() {
         Entity player = new Entity();
-        player.add(new PositionComponent());
+        player.add(new PositionComponent(2,2));
         player.add(new VelocityComponent());
-        player.add(new DimensionComponent(256 * BloodHungerGame.UNIT_SCALE, 256 * BloodHungerGame.UNIT_SCALE));
+        player.add(new DimensionComponent(128 * BloodHungerGame.UNIT_SCALE, 128 * BloodHungerGame.UNIT_SCALE));
         player.add(new RotationComponent());
         player.add(new FollowMouseComponent());
         player.add(new CenterCameraComponent());
@@ -41,9 +41,6 @@ public final class EntityFactory {
                         0.703125f * dc.width, 0.28515625f * dc.height,
                         0.28125f * dc.width, 0.29296875f * dc.height
                 });
-        //Creates default body polygon for z layer 1
-        float[] vertices = Mapper.playerComponent.get(player).weapon.getVertices(dc);
-        bc.setPolygon(vertices, 1);
         player.add(bc);
         return player;
     }
@@ -54,7 +51,9 @@ public final class EntityFactory {
         wall.add(new TextureRegionComponent(textureRegion));
         wall.add(new DimensionComponent(width, height));
         wall.add(new RotationComponent());
-        wall.add(new BoundsComponent(Mapper.dimensionComponent.get(wall)));
+        BoundsComponent bc = new BoundsComponent(Mapper.dimensionComponent.get(wall));
+        bc.getPolygon(0).setPosition(x,y);
+        wall.add(bc);
         return wall;
     }
 
@@ -68,10 +67,10 @@ public final class EntityFactory {
         enemy.add(new RotationComponent());
         BoundsComponent bc = new BoundsComponent(dc.width, dc.height,
                 new float[]{
-                        0.28125f * dc.width, 0.6484375f * dc.height,
-                        0.69921875f * dc.width, 0.65234375f * dc.height,
-                        0.703125f * dc.width, 0.28515625f * dc.height,
-                        0.28125f * dc.width, 0.29296875f * dc.height
+                        0.0f * dc.width, 0.0f * dc.height,
+                        0.5f * dc.width, 0.0f * dc.height,
+                        0.5f * dc.width, 0.5f * dc.height,
+                        0.0f * dc.width, 0.5f * dc.height
                 });
         bc.setBoundaryPolygon(4,1);
         enemy.add(bc);

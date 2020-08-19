@@ -57,11 +57,13 @@ public class PlayerControlSystem extends EntitySystem {
                 pc.feetAnimationType = RenderingSystem.FeetAnimationType.MOVE_RIGHT;
                 Mapper.rotationComponent.get(e).movementAngle += -90;
             }
-            //Set polygon depending on frame
+            pc.timer += deltaTime % 10;
+            //Set polygon depending on frame for bodyanimation
             RenderingSystem.BodyAnimationType bodyAnimationType = pc.getBodyAnimationType();
             if (bodyAnimationType.hasPolygons()) {
                 boundsComponent.setPolygon(bodyAnimationType.getVertices(pc.timer, dimensionComponent), 1);
             }
+
         }
     }
 }

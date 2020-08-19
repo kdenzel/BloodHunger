@@ -14,4 +14,11 @@ public class PositionComponent implements Component {
         this.x = x;
         this.y = y;
     }
+
+    public void moveBy(float x, float y) {
+        if (x != 0 || y != 0) {
+            this.x += x;
+            this.y += y;
+        }
+    }
 }

@@ -12,6 +12,7 @@ public class BoundsCollisionSystem extends EntitySystem {
 
     private ImmutableArray<Entity> boundEntitiesWithoutPlayerAndBullets;
     private ImmutableArray<Entity> playerEntities;
+    private Intersector.MinimumTranslationVector mtv = new Intersector.MinimumTranslationVector();
 
     @Override
     public void addedToEngine(Engine engine) {
@@ -28,28 +29,29 @@ public class BoundsCollisionSystem extends EntitySystem {
     public void update(float deltaTime) {
         //Check if player collides with entities like enemies or static objects (Objects without velocity)
         for (Entity playerEntity : playerEntities) {
-            BoundsComponent entityBounds = Mapper.boundsComponent.get(playerEntity);
+            BoundsComponent playerBounds = Mapper.boundsComponent.get(playerEntity);
 
             for (Entity otherBoundsEntity : boundEntitiesWithoutPlayerAndBullets) {
                 BoundsComponent otherBounds = Mapper.boundsComponent.get(otherBoundsEntity);
-                Polygon poly1 = entityBounds.getPolygon(0);
+                Polygon poly1 = playerBounds.getPolygon(0);
                 Polygon poly2 = otherBounds.getPolygon(0);
                 if (!poly1.getBoundingRectangle().overlaps(poly2.getBoundingRectangle())) {
                     continue;
                 }
-                Intersector.MinimumTranslationVector mtv = new Intersector.MinimumTranslationVector();
+                //BE AWARE THE POLYGONS MUST BE COUNTER CLOCKWISE OTHERWISE GLITCHES APPEAR!!!!!!!1111!!!!!!!!!!!!!!!!
                 boolean polygonOverlap = Intersector.overlapConvexPolygons(poly1, poly2, mtv);
                 if (polygonOverlap && !Mapper.velocityComponent.has(otherBoundsEntity)) {
                     //If velocity is attached to the entity, it is a dynamic object that can be moved
                     if (Mapper.positionComponent.has(playerEntity) && Mapper.velocityComponent.has(playerEntity)) {
                         PositionComponent pc = Mapper.positionComponent.get(playerEntity);
-                        pc.x += mtv.normal.x * mtv.depth;
-                        pc.y += mtv.normal.y * mtv.depth;
+                        float x = mtv.depth * mtv.normal.x;
+                        float y = mtv.depth * mtv.normal.y;
+                        pc.moveBy(x, y);
                     }
                 } //Otherwise the player overlaps with an enemy, take damage
-                else if(polygonOverlap && Mapper.enemyComponent.has(otherBoundsEntity)) {
+                else if (polygonOverlap && Mapper.enemyComponent.has(otherBoundsEntity)) {
                     Gdx.app.debug("DAMAGE", "OUCH " + System.currentTimeMillis());
-                } else {
+                } else if (polygonOverlap) {
                     Gdx.app.debug("COLLISION DETECTED", "WITH SOME MOVING OBJECT");
                 }
 
@@ -70,15 +72,13 @@ public class BoundsCollisionSystem extends EntitySystem {
                 if (!poly1.getBoundingRectangle().overlaps(poly2.getBoundingRectangle())) {
                     continue;
                 }
-                Intersector.MinimumTranslationVector mtv = new Intersector.MinimumTranslationVector();
                 boolean polygonOverlap = Intersector.overlapConvexPolygons(poly1, poly2, mtv);
 
                 if (polygonOverlap) {
                     //If velocity is attached to the entity, it is a dynamic object that can be moved
                     if (Mapper.positionComponent.has(entity) && Mapper.velocityComponent.has(entity)) {
                         PositionComponent pc = Mapper.positionComponent.get(entity);
-                        pc.x += mtv.normal.x * mtv.depth;
-                        pc.y += mtv.normal.y * mtv.depth;
+                        pc.moveBy(mtv.normal.x * mtv.depth, mtv.normal.y * mtv.depth);
                     }
                 }
             }

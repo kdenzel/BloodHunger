@@ -6,23 +6,33 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker;
 import de.kswmd.bloodhunger.BloodHungerGame;
 
+
 public class DesktopLauncher {
+
+    public static final boolean DEBUG = true;
+
     public static void main(String[] arg) {
         boolean generate = false;
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
         config.forceExit = false;
         config.width = 1920;
         config.height = 1080;
+        //config.vSyncEnabled = true;
         if (generate) {
             TexturePacker.Settings settings = new TexturePacker.Settings();
-            settings.maxWidth = 4096;
-            settings.maxHeight = 4096;
+            settings.maxWidth = 1024;
+            settings.maxHeight = 1024;
             settings.duplicatePadding = false;
             settings.filterMag = Texture.TextureFilter.Linear;
             settings.filterMin = Texture.TextureFilter.Linear;
+            settings.paddingX = 0;
+            settings.paddingY = 0;
+            //settings.debug = true;
+            //Scale everything down cause we render in synfig everything higher than needed
+            settings.scale = new float[]{0.5f};
             TexturePacker.process(settings, "../../desktop/assets-raw", "./atlas", "bloodHunger");
         }
 
-        new LwjglApplication(new BloodHungerGame(), config);
+        new LwjglApplication(new BloodHungerGame(DEBUG), config);
     }
 }

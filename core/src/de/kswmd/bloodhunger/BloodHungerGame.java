@@ -11,23 +11,30 @@ import de.kswmd.bloodhunger.screens.LoadingScreen;
 
 public class BloodHungerGame extends Game {
 
-	public static final int UNIT = 64;
-	public static final float UNIT_SCALE = 1f/UNIT;
+    public static final int UNIT = 64;
+    public static final float UNIT_SCALE = 1f / UNIT;
 
-	public final AssetManager assetManager = new AssetManager();
+    public final AssetManager assetManager = new AssetManager();
+    public final boolean debug;
 
-	@Override
-	public void create () {
-		Gdx.app.setLogLevel(Application.LOG_DEBUG);
-		assetManager.getLogger().setLevel(Logger.DEBUG);
-		InputMultiplexer im = new InputMultiplexer();
-		Gdx.input.setInputProcessor(im);
-		setScreen(new LoadingScreen(this));
-	}
+    public BloodHungerGame(boolean debug) {
+        this.debug = debug;
+    }
 
-	@Override
-	public void dispose() {
-		super.dispose();
-		assetManager.dispose();
-	}
+    @Override
+    public void create() {
+        if (debug) {
+            Gdx.app.setLogLevel(Application.LOG_DEBUG);
+            assetManager.getLogger().setLevel(Logger.DEBUG);
+        }
+        InputMultiplexer im = new InputMultiplexer();
+        Gdx.input.setInputProcessor(im);
+        setScreen(new LoadingScreen(this));
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        assetManager.dispose();
+    }
 }

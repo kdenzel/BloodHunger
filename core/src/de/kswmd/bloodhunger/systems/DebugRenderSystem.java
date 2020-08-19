@@ -48,17 +48,17 @@ public class DebugRenderSystem extends EntitySystem {
             debugRenderer.set(ShapeRenderer.ShapeType.Line);
             Entity entity = entities.get(i);
             PositionComponent pc = Mapper.positionComponent.get(entity);
-            if(Mapper.dimensionComponent.has(entity)){
+            if (Mapper.dimensionComponent.has(entity)) {
                 debugRenderer.setColor(Color.YELLOW);
                 DimensionComponent dc = Mapper.dimensionComponent.get(entity);
-                debugRenderer.rect(pc.x,pc.y,dc.width,dc.height);
-                debugRenderer.circle(pc.x+dc.originX,pc.y + dc.originY,2* BloodHungerGame.UNIT_SCALE);
+                debugRenderer.rect(pc.x, pc.y, dc.width, dc.height);
+                debugRenderer.circle(pc.x + dc.originX, pc.y + dc.originY, 2 * BloodHungerGame.UNIT_SCALE);
             }
-            if(Mapper.boundsComponent.has(entity)){
+            if (Mapper.boundsComponent.has(entity)) {
                 debugRenderer.setColor(Color.CYAN);
                 BoundsComponent bc = Mapper.boundsComponent.get(entity);
                 //Draw every polygon on each layer
-                for(int z = 0; z < bc.size(); z++){
+                for (int z = 0; z < bc.size(); z++) {
                     debugRenderer.polygon(bc.getPolygon(z).getTransformedVertices());
                 }
 
@@ -68,7 +68,7 @@ public class DebugRenderSystem extends EntitySystem {
             }
             debugRenderer.set(ShapeRenderer.ShapeType.Filled);
             debugRenderer.setColor(Color.BLACK);
-            debugRenderer.circle(pc.x,pc.y,2 * BloodHungerGame.UNIT_SCALE);
+            debugRenderer.circle(pc.x, pc.y, 2 * BloodHungerGame.UNIT_SCALE);
         }
         debugRenderer.end();
     }
