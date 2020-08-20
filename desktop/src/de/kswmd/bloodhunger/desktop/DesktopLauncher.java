@@ -9,15 +9,14 @@ import de.kswmd.bloodhunger.BloodHungerGame;
 
 public class DesktopLauncher {
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static void main(String[] arg) {
         boolean generate = false;
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
         config.forceExit = false;
-        config.width = 1920;
-        config.height = 1080;
-        config.fullscreen = false;
+        config.width = 1280;
+        config.height = 1024;
         //config.vSyncEnabled = true;
         if (generate) {
             TexturePacker.Settings settings = new TexturePacker.Settings();

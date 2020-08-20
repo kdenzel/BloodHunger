@@ -12,7 +12,7 @@ import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.Assets;
 import de.kswmd.bloodhunger.utils.LevelManager;
 
-public class LoadingScreen extends BaseScreen{
+public class LoadingScreen extends BaseScreen {
 
     private ShapeRenderer shapeRenderer;
 
@@ -40,11 +40,13 @@ public class LoadingScreen extends BaseScreen{
         float progress = manager.getProgress();
         int bulkHeight = 40;
 
-        shapeRenderer.rect(0,Gdx.graphics.getHeight()/2f-bulkHeight/2f,Gdx.graphics.getWidth()*progress,bulkHeight);
+        shapeRenderer.rect(0, Gdx.graphics.getHeight() / 2f - bulkHeight / 2f, Gdx.graphics.getWidth() * progress, bulkHeight);
         Gdx.app.debug("Progress", progress + "%");
         shapeRenderer.end();
-        if(manager.update()){
-            BloodHungerGame.SCREEN_GAME = new GameScreen(game);
+        if (manager.update()) {
+            if (BloodHungerGame.SCREEN_GAME == null) {
+                BloodHungerGame.SCREEN_GAME = new GameScreen(game);
+            }
             game.setScreen(BloodHungerGame.SCREEN_GAME);
         }
     }

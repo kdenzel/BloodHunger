@@ -54,7 +54,7 @@ public class PlayerComponent implements Component {
 
     public float timer = 0;
 
-    public Weapon weapon = Weapon.FLASHLIGHT;
+    private Weapon weapon = Weapon.FLASHLIGHT;
 
     public RenderingSystem.FeetAnimationType feetAnimationType = RenderingSystem.FeetAnimationType.IDLE;
     private RenderingSystem.BodyAnimationType bodyAnimationType = RenderingSystem.BodyAnimationType.IDLE_FLASHLIGHT;
@@ -180,4 +180,11 @@ public class PlayerComponent implements Component {
         return bodyAnimationType;
     }
 
+    public void switchWeapon(Weapon weapon){
+        this.weapon = weapon;
+    }
+
+    public Weapon getWeapon() {
+        return weapon;
+    }
 }

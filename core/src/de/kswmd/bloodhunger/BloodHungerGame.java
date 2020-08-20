@@ -2,6 +2,7 @@ package de.kswmd.bloodhunger;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.utils.Logger;
 import de.kswmd.bloodhunger.screens.LoadingScreen;
 
@@ -22,6 +23,7 @@ public class BloodHungerGame extends Game {
 
     @Override
     public void create() {
+        Box2D.init();
         if (debug) {
             Gdx.app.setLogLevel(Application.LOG_DEBUG);
             ASSET_MANAGER.getLogger().setLevel(Logger.DEBUG);

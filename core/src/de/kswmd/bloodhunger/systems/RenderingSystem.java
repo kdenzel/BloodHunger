@@ -117,9 +117,8 @@ public class RenderingSystem extends EntitySystem {
 
     //Lights
     private RayHandler rayHandler;
-    private ConeLight coneLight;
 
-    public RenderingSystem(Batch batch, OrthographicCamera camera) {
+    public RenderingSystem(Batch batch, OrthographicCamera camera, RayHandler rayHandler) {
         this.batch = batch;
         this.camera = camera;
         TextureAtlas particles = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_PARTICLES);
@@ -127,9 +126,8 @@ public class RenderingSystem extends EntitySystem {
         shootEffect.load(Gdx.files.internal("particles/shoot.p"), particles);
         shootEffect.scaleEffect(BloodHungerGame.UNIT_SCALE);
         this.shootEffectPool = new ParticleEffectPool(shootEffect, 1, 200);
-        rayHandler = new RayHandler(GameScreen.WORLD);
+        this.rayHandler = rayHandler;
         rayHandler.setAmbientLight(0f, 0f, 0f, 0.25f);
-        coneLight = new ConeLight(rayHandler,4,null,10,0,0,0,45);
     }
 
     public void setLevel(LevelManager.Level level) {
@@ -149,7 +147,6 @@ public class RenderingSystem extends EntitySystem {
     @Override
     public void removedFromEngine(Engine engine) {
         playerAnimationEntities = null;
-        rayHandler.dispose();
     }
 
     @Override
@@ -185,9 +182,6 @@ public class RenderingSystem extends EntitySystem {
             RotationComponent rotationComponent = Mapper.rotationComponent.get(entity);
 
             PlayerComponent playerComponent = Mapper.playerComponent.get(entity);
-            Vector2 initialBulletPos = playerComponent.weapon.getInitialBulletPosition(positionComponent,dimensionComponent,rotationComponent);
-            coneLight.setDirection(rotationComponent.lookingAngle);
-            coneLight.setPosition(initialBulletPos);
 
             BodyAnimationType bodyAnimationType = playerComponent.getBodyAnimationType();
             TextureRegion bodyRegion = bodyAnimationType.animation.getKeyFrame(playerComponent.timer);
@@ -227,17 +221,17 @@ public class RenderingSystem extends EntitySystem {
             DimensionComponent dimensionComponent = Mapper.dimensionComponent.get(entity);
             RotationComponent rotationComponent = Mapper.rotationComponent.get(entity);
             batch.draw(images.findRegion("cursor"), positionComponent.x, positionComponent.y,
-                    dimensionComponent.originX,dimensionComponent.originY,
-                    dimensionComponent.width,dimensionComponent.height,dimensionComponent.scaleX,dimensionComponent.scaleY,
+                    dimensionComponent.originX, dimensionComponent.originY,
+                    dimensionComponent.width, dimensionComponent.height, dimensionComponent.scaleX, dimensionComponent.scaleY,
                     rotationComponent.lookingAngle);
         }
     }
 
     public void onShoot(PlayerComponent playerComponent, PositionComponent positionComponent, DimensionComponent dimensionComponent, RotationComponent rotationComponent) {
-        if (playerComponent.weapon.getStatus().equals(PlayerComponent.WeaponStatus.SHOOT)) {
+        if (playerComponent.getWeapon().getStatus().equals(PlayerComponent.WeaponStatus.SHOOT)) {
             // Create effect:
             ParticleEffectPool.PooledEffect effect = shootEffectPool.obtain();
-            Vector2 bulletPosition = playerComponent.weapon.getInitialBulletPosition(positionComponent, dimensionComponent, rotationComponent);
+            Vector2 bulletPosition = playerComponent.getWeapon().getInitialBulletPosition(positionComponent, dimensionComponent, rotationComponent);
             float x = bulletPosition.x;
             float y = bulletPosition.y;
             effect.setPosition(x, y);

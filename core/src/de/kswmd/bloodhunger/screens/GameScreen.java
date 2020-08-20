@@ -1,7 +1,10 @@
 package de.kswmd.bloodhunger.screens;
 
+import box2dLight.ConeLight;
+import box2dLight.RayHandler;
 import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -10,6 +13,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Disposable;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.*;
 import de.kswmd.bloodhunger.factories.EntityFactory;
@@ -19,12 +23,12 @@ import de.kswmd.bloodhunger.utils.Mapper;
 
 public class GameScreen extends BaseScreen implements EntityListener {
 
-    private static final float TIME_STEP = 1/60f;
+    private static final float TIME_STEP = 1 / 60f;
     private static final int VELOCITY_ITERATIONS = 6;
     private static final int POSITION_ITERATIONS = 2;
 
     private static final Vector2 BULLET_OFFSET = new Vector2();
-    public static final World WORLD = new World(new Vector2(),true);
+    public static final World WORLD = new World(new Vector2(), true);
 
     private FollowMouseSystem followMouseSystem;
     private PlayerControlSystem playerControlSystem;
@@ -40,6 +44,7 @@ public class GameScreen extends BaseScreen implements EntityListener {
     private Engine engine;
     private ShapeRenderer shapeRenderer;
     private SpriteBatch spriteBatch;
+    private RayHandler rayHandler;
 
 
     private float accumulator = 0;
@@ -51,10 +56,10 @@ public class GameScreen extends BaseScreen implements EntityListener {
     @Override
     protected void initialize() {
         Gdx.input.setCursorCatched(!game.debug);
-
         spriteBatch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
+        rayHandler = new RayHandler(GameScreen.WORLD);
         engine = new Engine();
         engine.addEntityListener(this);
 
@@ -66,7 +71,7 @@ public class GameScreen extends BaseScreen implements EntityListener {
         centerCameraSystem = new CenterCameraSystem(camera);
         debugRenderSystem = new DebugRenderSystem(shapeRenderer, camera, WORLD);
         enemyFollowPlayerSystem = new EnemyFollowPlayerSystem();
-        renderingSystem = new RenderingSystem(spriteBatch, camera);
+        renderingSystem = new RenderingSystem(spriteBatch, camera, rayHandler);
         bulletSystem = new BulletSystem();
 
         engine.addSystem(followMouseSystem);
@@ -83,7 +88,7 @@ public class GameScreen extends BaseScreen implements EntityListener {
         //set level
         renderingSystem.setLevel(LevelManager.Level.EXAMPLE);
 
-        engine.addEntity(EntityFactory.createCrosshair(0,0,48*BloodHungerGame.UNIT_SCALE,48*BloodHungerGame.UNIT_SCALE));
+        engine.addEntity(EntityFactory.createCrosshair(0, 0, 48 * BloodHungerGame.UNIT_SCALE, 48 * BloodHungerGame.UNIT_SCALE));
         engine.addEntity(EntityFactory.createPlayer());
         keyUp(Input.Keys.NUM_1);
         //engine.addEntity(EntityFactory.createWall(0, 0, 2000*BloodHungerGame.UNIT_SCALE, 64*BloodHungerGame.UNIT_SCALE, null));
@@ -92,6 +97,20 @@ public class GameScreen extends BaseScreen implements EntityListener {
             engine.addEntity(EntityFactory.createEnemey(100*BloodHungerGame.UNIT_SCALE, 100*BloodHungerGame.UNIT_SCALE,
                     64*BloodHungerGame.UNIT_SCALE, 64*BloodHungerGame.UNIT_SCALE, null));
         }*/
+    }
+
+    private void drawBackgroundGrid() {
+        shapeRenderer.begin();
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.setColor(Color.WHITE);
+        int gridSize = 100;
+        for (int y = 0; y <= BloodHungerGame.UNIT_SCALE * gridSize; y += 64 * BloodHungerGame.UNIT_SCALE) {
+            for (int x = 0; x <= BloodHungerGame.UNIT_SCALE * gridSize; x += 64 * BloodHungerGame.UNIT_SCALE) {
+                shapeRenderer.line(x, 0, x, BloodHungerGame.UNIT_SCALE * gridSize);
+            }
+            shapeRenderer.line(0, y, BloodHungerGame.UNIT_SCALE * gridSize, y);
+        }
+        shapeRenderer.end();
     }
 
     @Override
@@ -116,7 +135,7 @@ public class GameScreen extends BaseScreen implements EntityListener {
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
         PlayerComponent playerComponent = Mapper.playerComponent.get(player);
-        if (playerComponent.weapon.canShoot()) {
+        if (playerComponent.getWeapon().canShoot()) {
             playerComponent.shoot();
             PositionComponent pc = Mapper.positionComponent.get(player);
             DimensionComponent dc = Mapper.dimensionComponent.get(player);
@@ -125,7 +144,7 @@ public class GameScreen extends BaseScreen implements EntityListener {
             PositionComponent bulletPos = Mapper.positionComponent.get(bullet);
             DimensionComponent bulletDim = Mapper.dimensionComponent.get(bullet);
             //Okay, get inital position
-            Vector2 bulletPosition = playerComponent.weapon.getInitialBulletPosition(pc, dc, rc);
+            Vector2 bulletPosition = playerComponent.getWeapon().getInitialBulletPosition(pc, dc, rc);
             BULLET_OFFSET
                     .setZero()
                     .set(bulletDim.originX, 0)
@@ -152,16 +171,29 @@ public class GameScreen extends BaseScreen implements EntityListener {
         DimensionComponent dc;
         PositionComponent pc;
         RotationComponent rc;
+        PlayerComponent playerComponent;
+        ImmutableArray<Entity> flashLights;
         float yOffset;
         switch (keycode) {
             case Input.Keys.NUM_1:
                 player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-                Mapper.playerComponent.get(player).weapon = PlayerComponent.Weapon.FLASHLIGHT;
+                playerComponent = Mapper.playerComponent.get(player);
+                flashLights = engine.getEntitiesFor(Family.all(FlashLightComponent.class).get());
+                if (playerComponent.getWeapon().equals(PlayerComponent.Weapon.FLASHLIGHT)) {
+                    if (flashLights.size() == 0) {
+                        turnFlashLightOn();
+                        keyPressed = true;
+                        break;
+                    } else {
+                        turnFlashLightOff();
+                    }
+                }
+                playerComponent.switchWeapon(PlayerComponent.Weapon.FLASHLIGHT);
                 keyPressed = true;
                 break;
             case Input.Keys.NUM_2:
                 player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-                Mapper.playerComponent.get(player).weapon = PlayerComponent.Weapon.HANDGUN;
+                Mapper.playerComponent.get(player).switchWeapon(PlayerComponent.Weapon.HANDGUN);
                 keyPressed = true;
                 break;
             case Input.Keys.F:
@@ -178,30 +210,38 @@ public class GameScreen extends BaseScreen implements EntityListener {
         return keyPressed;
     }
 
-    private void drawBackgroundGrid() {
-        shapeRenderer.begin();
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.setColor(Color.WHITE);
-        int gridSize = 100;
-        for (int y = 0; y <= BloodHungerGame.UNIT_SCALE * gridSize; y += 64 * BloodHungerGame.UNIT_SCALE) {
-            for (int x = 0; x <= BloodHungerGame.UNIT_SCALE * gridSize; x += 64 * BloodHungerGame.UNIT_SCALE) {
-                shapeRenderer.line(x, 0, x, BloodHungerGame.UNIT_SCALE * gridSize);
-            }
-            shapeRenderer.line(0, y, BloodHungerGame.UNIT_SCALE * gridSize, y);
-        }
-        shapeRenderer.end();
+    /**
+     * adds a new flashlight to the scene
+     */
+    private void turnFlashLightOn() {
+        Entity flashLightEntity = EntityFactory.createFlashLight(0, 0);
+        engine.addEntity(flashLightEntity);
+        LightComponent lc = Mapper.flashLightComponent.get(flashLightEntity);
+        lc.setLightReference(new ConeLight(rayHandler, 4, null, 10 * 64 * BloodHungerGame.UNIT_SCALE, 0, 0, 0, 45));
+    }
+
+    /**
+     * removes all cone flashlights on the field
+     */
+    private void turnFlashLightOff() {
+        ImmutableArray<Entity> flashLights = engine.getEntitiesFor(Family.all(FlashLightComponent.class).get());
+        flashLights.forEach(fl -> {
+            engine.removeEntity(fl);
+            Mapper.flashLightComponent.get(fl).getLightReference().remove();
+        });
     }
 
     @Override
     public void entityAdded(Entity entity) {
-
     }
 
     @Override
     public void entityRemoved(Entity entity) {
-        if(Mapper.boundsComponent.has(entity)){
-            Mapper.boundsComponent.get(entity).dispose();
-        }
+        entity.getComponents().forEach(component -> {
+            if (component instanceof Disposable) {
+                ((Disposable) component).dispose();
+            }
+        });
     }
 
     @Override
@@ -209,5 +249,9 @@ public class GameScreen extends BaseScreen implements EntityListener {
         engine.removeAllEntities();
         ImmutableArray<EntitySystem> systems = engine.getSystems();
         systems.forEach(entitySystem -> engine.removeSystem(entitySystem));
+        spriteBatch.dispose();
+        rayHandler.dispose();
+        shapeRenderer.dispose();
+
     }
 }

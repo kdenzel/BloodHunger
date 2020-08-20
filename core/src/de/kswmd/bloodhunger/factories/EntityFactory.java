@@ -146,4 +146,25 @@ public final class EntityFactory {
         return crossHair;
     }
 
+    public static Entity createStaticLight(float x, float y, LightComponent.Type type){
+        Entity light = new Entity();
+        light.add(new PositionComponent(x,y));
+        light.add(new RotationComponent());
+        light.add(new LightComponent(type));
+        return light;
+    }
+
+    public static Entity createDynamicLight(float x, float y, LightComponent.Type type){
+        Entity light = createStaticLight(x,y,type);
+        light.add(new VelocityComponent());
+        return light;
+    }
+
+    public static Entity createFlashLight(float x, float y){
+        Entity light = createDynamicLight(x,y, LightComponent.Type.CONE);
+        light.remove(LightComponent.class);
+        light.add(new FlashLightComponent(LightComponent.Type.CONE));
+        return light;
+    }
+
 }

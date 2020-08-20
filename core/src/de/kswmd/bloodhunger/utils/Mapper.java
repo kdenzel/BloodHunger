@@ -21,6 +21,8 @@ public final class Mapper {
     public static final ComponentMapper<TextureRegionComponent> textureRegionComponent = ComponentMapper.getFor(TextureRegionComponent.class);
     public static final ComponentMapper<TileComponent> tileComponent = ComponentMapper.getFor(TileComponent.class);
     public static final ComponentMapper<VelocityComponent> velocityComponent = ComponentMapper.getFor(VelocityComponent.class);
+    public static final ComponentMapper<LightComponent> lightComponent = ComponentMapper.getFor(LightComponent.class);
+    public static final ComponentMapper<FlashLightComponent> flashLightComponent = ComponentMapper.getFor(FlashLightComponent.class);
 
 
 }
