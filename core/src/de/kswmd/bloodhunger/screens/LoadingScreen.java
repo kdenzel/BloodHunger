@@ -25,20 +25,22 @@ public class LoadingScreen extends BaseScreen{
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
         shapeRenderer.setColor(Color.WHITE);
-        game.assetManager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
-        game.assetManager.load(Assets.BLOODHUNGER_TEXTURE_ATLAS, TextureAtlas.class);
-        game.assetManager.load(LevelManager.getInstance().level.getMap(), TiledMap.class);
+        BloodHungerGame.ASSET_MANAGER.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
+        BloodHungerGame.ASSET_MANAGER.load(LevelManager.getInstance().level.getMap(), TiledMap.class);
+        BloodHungerGame.ASSET_MANAGER.load(Assets.TEXTURE_ATLAS_ANIMATIONS, TextureAtlas.class);
+        BloodHungerGame.ASSET_MANAGER.load(Assets.TEXTURE_ATLAS_PARTICLES, TextureAtlas.class);
+        BloodHungerGame.ASSET_MANAGER.load(Assets.TEXTURE_ATLAS_IMAGES, TextureAtlas.class);
     }
 
     @Override
     protected void update(float delta) {
         shapeRenderer.begin();
         shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-        AssetManager manager = game.assetManager;
+        AssetManager manager = BloodHungerGame.ASSET_MANAGER;
         float progress = manager.getProgress();
         int bulkHeight = 40;
 
-        shapeRenderer.rect(0,Gdx.graphics.getHeight()/2-bulkHeight/2,Gdx.graphics.getWidth()*progress,bulkHeight);
+        shapeRenderer.rect(0,Gdx.graphics.getHeight()/2f-bulkHeight/2f,Gdx.graphics.getWidth()*progress,bulkHeight);
         Gdx.app.debug("Progress", progress + "%");
         shapeRenderer.end();
         if(manager.update()){

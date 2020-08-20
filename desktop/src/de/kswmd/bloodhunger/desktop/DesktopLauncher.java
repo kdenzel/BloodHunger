@@ -17,6 +17,7 @@ public class DesktopLauncher {
         config.forceExit = false;
         config.width = 1920;
         config.height = 1080;
+        config.fullscreen = false;
         //config.vSyncEnabled = true;
         if (generate) {
             TexturePacker.Settings settings = new TexturePacker.Settings();
@@ -30,7 +31,10 @@ public class DesktopLauncher {
             //settings.debug = true;
             //Scale everything down cause we render in synfig everything higher than needed
             settings.scale = new float[]{0.5f};
-            TexturePacker.process(settings, "../../desktop/assets-raw", "./atlas", "bloodHunger");
+            TexturePacker.process(settings, "../../desktop/assets-raw/animations", "./atlas", "animations");
+            settings.scale = new float[]{1};
+            TexturePacker.process(settings, "../../desktop/assets-raw/particles", "./atlas", "particles");
+            TexturePacker.process(settings, "../../desktop/assets-raw/images", "./atlas", "images");
         }
 
         new LwjglApplication(new BloodHungerGame(DEBUG), config);

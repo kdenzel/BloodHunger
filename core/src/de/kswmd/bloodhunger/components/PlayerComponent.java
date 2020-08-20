@@ -2,19 +2,24 @@ package de.kswmd.bloodhunger.components;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.math.Vector2;
+import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.systems.RenderingSystem;
 
 public class PlayerComponent implements Component {
 
     public enum Weapon {
-        FLASHLIGHT(false),
-        HANDGUN(true);
+        FLASHLIGHT(false, 0* BloodHungerGame.UNIT_SCALE),
+        HANDGUN(true,-25* BloodHungerGame.UNIT_SCALE);
 
+        private final Vector2 position = new Vector2();
+        private final Vector2 offset = new Vector2();
         private WeaponStatus status = WeaponStatus.IDLE;
-
         private boolean shoot;
+        private float yOffset;
 
-        Weapon(boolean shoot) {
+        Weapon(boolean shoot, float yOffset) {
+            this.yOffset = yOffset;
             this.shoot = shoot;
         }
 
@@ -22,9 +27,25 @@ public class PlayerComponent implements Component {
             return shoot;
         }
 
+        public WeaponStatus getStatus() {
+            return status;
+        }
+
+        public Vector2 getInitialBulletPosition(PositionComponent pc, DimensionComponent dc, RotationComponent rc) {
+            position.setZero().set(dc.originX + 1*BloodHungerGame.UNIT_SCALE, yOffset);
+            position.rotate(rc.lookingAngle);
+            position.add(pc.x + dc.originX,pc.y + dc.originY);
+            return position;
+        }
+
+        public Vector2 getOffset(DimensionComponent dc, RotationComponent rc) {
+            offset.setZero().set(0, yOffset);
+            offset.rotate(rc.lookingAngle);
+            return offset;
+        }
     }
 
-    private enum WeaponStatus {
+    public enum WeaponStatus {
         IDLE,
         SHOOT,
         RELOAD,

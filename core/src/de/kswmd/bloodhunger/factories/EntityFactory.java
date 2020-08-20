@@ -29,7 +29,6 @@ public final class EntityFactory {
         player.add(new VelocityComponent());
         player.add(new DimensionComponent(128 * BloodHungerGame.UNIT_SCALE, 128 * BloodHungerGame.UNIT_SCALE));
         player.add(new RotationComponent());
-        player.add(new FollowMouseComponent());
         player.add(new CenterCameraComponent());
         player.add(new PlayerComponent());
         DimensionComponent dc = Mapper.dimensionComponent.get(player);
@@ -136,6 +135,15 @@ public final class EntityFactory {
         bc.getPolygon(0).setPosition(x, y);
         stone.add(bc);
         return stone;
+    }
+
+    public static Entity createCrosshair(float x, float y, float width, float height) {
+        Entity crossHair = new Entity();
+        crossHair.add(new PositionComponent(x,y));
+        crossHair.add(new DimensionComponent(width,height));
+        crossHair.add(new FollowMouseComponent());
+        crossHair.add(new RotationComponent());
+        return crossHair;
     }
 
 }
