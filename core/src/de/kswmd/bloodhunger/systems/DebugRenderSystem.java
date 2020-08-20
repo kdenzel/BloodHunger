@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.BoundsComponent;
 import de.kswmd.bloodhunger.components.DimensionComponent;
@@ -19,15 +21,20 @@ import org.w3c.dom.css.Rect;
 
 public class DebugRenderSystem extends EntitySystem {
 
-    private ShapeRenderer debugRenderer;
-    private Camera camera;
+    private final ShapeRenderer debugRenderer;
+    private final Camera camera;
     private Family family;
     private ImmutableArray<Entity> entities;
+    private final World world;
+    private final Box2DDebugRenderer box2dDebugRenderer;
 
-    public DebugRenderSystem(ShapeRenderer debugRenderer, Camera camera) {
+
+    public DebugRenderSystem(ShapeRenderer debugRenderer, Camera camera, World world) {
         family = Family.all(PositionComponent.class).get();
         this.debugRenderer = debugRenderer;
         this.camera = camera;
+        this.world = world;
+        this.box2dDebugRenderer = new Box2DDebugRenderer();
     }
 
     @Override
@@ -71,5 +78,6 @@ public class DebugRenderSystem extends EntitySystem {
             debugRenderer.circle(pc.x, pc.y, 2 * BloodHungerGame.UNIT_SCALE);
         }
         debugRenderer.end();
+        box2dDebugRenderer.render(world, camera.combined);
     }
 }

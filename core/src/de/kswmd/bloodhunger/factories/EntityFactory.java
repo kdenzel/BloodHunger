@@ -132,7 +132,7 @@ public final class EntityFactory {
         stone.add(new DimensionComponent(width, height));
         BoundsComponent bc = new BoundsComponent(Mapper.dimensionComponent.get(stone));
         bc.setPolygon(vertices, 0);
-        bc.getPolygon(0).setPosition(x, y);
+        bc.setPosition(x,y,0);
         stone.add(bc);
         return stone;
     }

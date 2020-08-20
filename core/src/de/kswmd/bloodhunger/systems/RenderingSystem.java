@@ -1,5 +1,7 @@
 package de.kswmd.bloodhunger.systems;
 
+import box2dLight.ConeLight;
+import box2dLight.RayHandler;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
@@ -17,6 +19,7 @@ import de.kswmd.bloodhunger.Assets;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.*;
 import de.kswmd.bloodhunger.factories.EntityFactory;
+import de.kswmd.bloodhunger.screens.GameScreen;
 import de.kswmd.bloodhunger.utils.LevelManager;
 import de.kswmd.bloodhunger.utils.Mapper;
 
@@ -112,6 +115,10 @@ public class RenderingSystem extends EntitySystem {
     private Array<ParticleEffectPool.PooledEffect> effects = new Array<>();
     private TextureAtlas images = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_IMAGES);
 
+    //Lights
+    private RayHandler rayHandler;
+    private ConeLight coneLight;
+
     public RenderingSystem(Batch batch, OrthographicCamera camera) {
         this.batch = batch;
         this.camera = camera;
@@ -120,6 +127,9 @@ public class RenderingSystem extends EntitySystem {
         shootEffect.load(Gdx.files.internal("particles/shoot.p"), particles);
         shootEffect.scaleEffect(BloodHungerGame.UNIT_SCALE);
         this.shootEffectPool = new ParticleEffectPool(shootEffect, 1, 200);
+        rayHandler = new RayHandler(GameScreen.WORLD);
+        rayHandler.setAmbientLight(0f, 0f, 0f, 0.25f);
+        coneLight = new ConeLight(rayHandler,4,null,10,0,0,0,45);
     }
 
     public void setLevel(LevelManager.Level level) {
@@ -139,6 +149,7 @@ public class RenderingSystem extends EntitySystem {
     @Override
     public void removedFromEngine(Engine engine) {
         playerAnimationEntities = null;
+        rayHandler.dispose();
     }
 
     @Override
@@ -147,6 +158,10 @@ public class RenderingSystem extends EntitySystem {
         batch.begin();
         batch.setProjectionMatrix(camera.combined);
         renderPlayers(deltaTime);
+        batch.end();
+        rayHandler.setCombinedMatrix(camera);
+        rayHandler.updateAndRender();
+        batch.begin();
         renderEffects(deltaTime);
         renderCrosshair(deltaTime);
         batch.end();
@@ -170,6 +185,9 @@ public class RenderingSystem extends EntitySystem {
             RotationComponent rotationComponent = Mapper.rotationComponent.get(entity);
 
             PlayerComponent playerComponent = Mapper.playerComponent.get(entity);
+            Vector2 initialBulletPos = playerComponent.weapon.getInitialBulletPosition(positionComponent,dimensionComponent,rotationComponent);
+            coneLight.setDirection(rotationComponent.lookingAngle);
+            coneLight.setPosition(initialBulletPos);
 
             BodyAnimationType bodyAnimationType = playerComponent.getBodyAnimationType();
             TextureRegion bodyRegion = bodyAnimationType.animation.getKeyFrame(playerComponent.timer);

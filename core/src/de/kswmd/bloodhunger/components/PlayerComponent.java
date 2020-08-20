@@ -9,7 +9,7 @@ import de.kswmd.bloodhunger.systems.RenderingSystem;
 public class PlayerComponent implements Component {
 
     public enum Weapon {
-        FLASHLIGHT(false, 0* BloodHungerGame.UNIT_SCALE),
+        FLASHLIGHT(false, -25* BloodHungerGame.UNIT_SCALE),
         HANDGUN(true,-25* BloodHungerGame.UNIT_SCALE);
 
         private final Vector2 position = new Vector2();

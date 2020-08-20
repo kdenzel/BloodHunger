@@ -1,16 +1,15 @@
 package de.kswmd.bloodhunger.screens;
 
-import com.badlogic.ashley.core.Engine;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.*;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.*;
 import de.kswmd.bloodhunger.factories.EntityFactory;
@@ -18,9 +17,14 @@ import de.kswmd.bloodhunger.systems.*;
 import de.kswmd.bloodhunger.utils.LevelManager;
 import de.kswmd.bloodhunger.utils.Mapper;
 
-public class GameScreen extends BaseScreen {
+public class GameScreen extends BaseScreen implements EntityListener {
+
+    private static final float TIME_STEP = 1/60f;
+    private static final int VELOCITY_ITERATIONS = 6;
+    private static final int POSITION_ITERATIONS = 2;
 
     private static final Vector2 BULLET_OFFSET = new Vector2();
+    public static final World WORLD = new World(new Vector2(),true);
 
     private FollowMouseSystem followMouseSystem;
     private PlayerControlSystem playerControlSystem;
@@ -38,6 +42,8 @@ public class GameScreen extends BaseScreen {
     private SpriteBatch spriteBatch;
 
 
+    private float accumulator = 0;
+
     public GameScreen(BloodHungerGame game) {
         super(game);
     }
@@ -45,11 +51,12 @@ public class GameScreen extends BaseScreen {
     @Override
     protected void initialize() {
         Gdx.input.setCursorCatched(!game.debug);
+
         spriteBatch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
         engine = new Engine();
-
+        engine.addEntityListener(this);
 
         followMouseSystem = new FollowMouseSystem(camera);
         playerControlSystem = new PlayerControlSystem();
@@ -57,7 +64,7 @@ public class GameScreen extends BaseScreen {
         movementSystem = new MovementSystem();
         boundsCollisionSystem = new BoundsCollisionSystem();
         centerCameraSystem = new CenterCameraSystem(camera);
-        debugRenderSystem = new DebugRenderSystem(shapeRenderer, camera);
+        debugRenderSystem = new DebugRenderSystem(shapeRenderer, camera, WORLD);
         enemyFollowPlayerSystem = new EnemyFollowPlayerSystem();
         renderingSystem = new RenderingSystem(spriteBatch, camera);
         bulletSystem = new BulletSystem();
@@ -91,6 +98,18 @@ public class GameScreen extends BaseScreen {
     protected void update(float delta) {
         drawBackgroundGrid();
         engine.update(delta);
+        doPhysicsStep(delta);
+    }
+
+    private void doPhysicsStep(float deltaTime) {
+        // fixed time step
+        // max frame time to avoid spiral of death (on slow devices)
+        float frameTime = Math.min(deltaTime, 0.25f);
+        accumulator += frameTime;
+        while (accumulator >= TIME_STEP) {
+            GameScreen.WORLD.step(TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
+            accumulator -= TIME_STEP;
+        }
     }
 
     @Override
@@ -171,5 +190,24 @@ public class GameScreen extends BaseScreen {
             shapeRenderer.line(0, y, BloodHungerGame.UNIT_SCALE * gridSize, y);
         }
         shapeRenderer.end();
+    }
+
+    @Override
+    public void entityAdded(Entity entity) {
+
+    }
+
+    @Override
+    public void entityRemoved(Entity entity) {
+        if(Mapper.boundsComponent.has(entity)){
+            Mapper.boundsComponent.get(entity).dispose();
+        }
+    }
+
+    @Override
+    public void dispose() {
+        engine.removeAllEntities();
+        ImmutableArray<EntitySystem> systems = engine.getSystems();
+        systems.forEach(entitySystem -> engine.removeSystem(entitySystem));
     }
 }

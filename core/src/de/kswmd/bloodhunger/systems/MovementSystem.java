@@ -24,7 +24,7 @@ public class MovementSystem extends IteratingSystem {
             BoundsComponent bc = Mapper.boundsComponent.get(entity);
             //Move every polygon on all layers
             for (int z = 0; z < bc.size(); z++) {
-                bc.getPolygon(z).setPosition(pc.x, pc.y);
+                bc.setPosition(pc.x, pc.y,z);
             }
         }
     }

@@ -1,19 +1,27 @@
 package de.kswmd.bloodhunger.components;
 
 import com.badlogic.ashley.core.Component;
-import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Disposable;
+import de.kswmd.bloodhunger.factories.Box2DBodyFactory;
+import de.kswmd.bloodhunger.screens.GameScreen;
 
 /**
  * for collision detection
  */
-public class BoundsComponent implements Component {
+public class BoundsComponent implements Component, Disposable {
 
     private float width;
     private float height;
-    private final Array<Polygon> boundaryPolygonArray = new Array<>();
+    private final Array<Polygon> boundaryPolygonArray = new Array<>(1);
+    private final Array<Body> box2DBodyArray = new Array<>(1);
 
     public BoundsComponent(DimensionComponent dimensionComponent) {
         this.width = dimensionComponent.width;
@@ -74,17 +82,17 @@ public class BoundsComponent implements Component {
             polygon.setOrigin(width / 2, height / 2);
             polygon.setRotation(degree);
         });
+        box2DBodyArray.forEach(body ->
+                body.setTransform(0, 0, degree * MathUtils.degreesToRadians)
+        );
     }
 
     private void setBoundaryRectangle(int z) {
         float w = width;
         float h = height;
         float[] vertices = {0, 0, w, 0, w, h, 0, h};
-        if (boundaryPolygonArray.size >= z)
-            boundaryPolygonArray.insert(z, new Polygon(vertices));
-        else
-            boundaryPolygonArray.get(z).setVertices(vertices);
-        rotate(0);
+        setPolygon(vertices, z);
+
     }
 
     public void setBoundaryPolygon(int numSides, int z) {
@@ -98,18 +106,32 @@ public class BoundsComponent implements Component {
             // y-coordinate
             vertices[2 * i + 1] = h / 2 * MathUtils.sin(angle) + h / 2;
         }
-        if (boundaryPolygonArray.size >= z)
-            boundaryPolygonArray.insert(z, new Polygon(vertices));
-        else
-            boundaryPolygonArray.get(z).setVertices(vertices);
-        rotate(0);
+        setPolygon(vertices, z);
     }
 
     public void setPolygon(float[] vertices, int z) {
-        if (boundaryPolygonArray.size == z)
-            boundaryPolygonArray.insert(z, new Polygon(vertices));
-        else
-            boundaryPolygonArray.get(z).setVertices(vertices);
+        Polygon p;
+        if (boundaryPolygonArray.size <= z) {
+            p = new Polygon(vertices);
+            Rectangle r = p.getBoundingRectangle();
+            boundaryPolygonArray.insert(z, p);
+            box2DBodyArray.insert(z, Box2DBodyFactory.createKinematicRectangleBody(r.x, r.y, r.width, r.height));
+        } else {
+            p = boundaryPolygonArray.get(z);
+            p.setVertices(vertices);
+            Rectangle r = p.getBoundingRectangle();
+            Body b = box2DBodyArray.get(z);
+            Array<Fixture> fixtures = b.getFixtureList();
+            fixtures.forEach(fixture -> {
+                switch (fixture.getType()) {
+                    case Polygon:
+                        PolygonShape ps = (PolygonShape) fixture.getShape();
+                        ps.setAsBox(r.width / 2, r.height / 2);
+                        break;
+
+                }
+            });
+        }
         rotate(0);
     }
 
@@ -117,7 +139,11 @@ public class BoundsComponent implements Component {
         return boundaryPolygonArray.get(z);
     }
 
-    public Polygon removePolygon(int z){
+    public Body getBody(int z) {
+        return box2DBodyArray.get(z);
+    }
+
+    public Polygon removePolygon(int z) {
         return boundaryPolygonArray.removeIndex(z);
     }
 
@@ -125,4 +151,15 @@ public class BoundsComponent implements Component {
         return boundaryPolygonArray.size;
     }
 
+    public void setPosition(float x, float y, int z) {
+        boundaryPolygonArray.get(z).setPosition(x, y);
+        Body b = box2DBodyArray.get(z);
+        b.setTransform(x + width / 2, y + height / 2, b.getAngle());
+    }
+
+
+    @Override
+    public void dispose() {
+        box2DBodyArray.forEach(GameScreen.WORLD::destroyBody);
+    }
 }

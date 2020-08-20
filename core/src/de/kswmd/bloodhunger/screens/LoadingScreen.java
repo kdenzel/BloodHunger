@@ -44,7 +44,8 @@ public class LoadingScreen extends BaseScreen{
         Gdx.app.debug("Progress", progress + "%");
         shapeRenderer.end();
         if(manager.update()){
-            game.setScreen(new GameScreen(game));
+            BloodHungerGame.SCREEN_GAME = new GameScreen(game);
+            game.setScreen(BloodHungerGame.SCREEN_GAME);
         }
     }
 }
