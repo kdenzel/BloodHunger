@@ -83,7 +83,7 @@ public class BoundsComponent implements Component, Disposable {
             polygon.setRotation(degree);
         });
         box2DBodyArray.forEach(body ->
-                body.setTransform(0, 0, degree * MathUtils.degreesToRadians)
+                body.setTransform(width/2, height/2, degree * MathUtils.degreesToRadians)
         );
     }
 
@@ -151,7 +151,18 @@ public class BoundsComponent implements Component, Disposable {
         return boundaryPolygonArray.size;
     }
 
-    public void setPosition(float x, float y, int z) {
+    /**
+     * Move every polygon on all layers
+     * @param x - x-coordinate
+     * @param y - y-coordinate
+     */
+    public void setPosition(float x, float y){
+        for(int z = 0; z < boundaryPolygonArray.size; z++){
+            setPosition(x,y,z);
+        }
+    }
+
+    private void setPosition(float x, float y, int z) {
         boundaryPolygonArray.get(z).setPosition(x, y);
         Body b = box2DBodyArray.get(z);
         b.setTransform(x + width / 2, y + height / 2, b.getAngle());

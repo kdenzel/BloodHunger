@@ -41,6 +41,13 @@ public class BoundsCollisionSystem extends EntitySystem {
                 //BE AWARE THE POLYGONS MUST BE COUNTER CLOCKWISE OTHERWISE GLITCHES APPEAR!!!!!!!1111!!!!!!!!!!!!!!!!
                 boolean polygonOverlap = Intersector.overlapConvexPolygons(poly1, poly2, mtv);
                 if (polygonOverlap && !Mapper.velocityComponent.has(otherBoundsEntity)) {
+                    //If it is an item, collect it
+                    if (Mapper.itemComponent.has(otherBoundsEntity)) {
+                        ItemComponent itemComponent = Mapper.itemComponent.get(otherBoundsEntity);
+                        //If item was added to inventory remove the entity
+                        if (Mapper.playerComponent.get(playerEntity).inventory.addItem(itemComponent))
+                            getEngine().removeEntity(otherBoundsEntity);
+                    } else
                     //If velocity is attached to the entity, it is a dynamic object that can be moved
                     if (Mapper.positionComponent.has(playerEntity) && Mapper.velocityComponent.has(playerEntity)) {
                         PositionComponent pc = Mapper.positionComponent.get(playerEntity);

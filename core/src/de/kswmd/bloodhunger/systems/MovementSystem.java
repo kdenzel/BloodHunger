@@ -22,14 +22,11 @@ public class MovementSystem extends IteratingSystem {
         pc.y += vc.velocityVec.y * deltaTime;
         if (Mapper.boundsComponent.has(entity)) {
             BoundsComponent bc = Mapper.boundsComponent.get(entity);
-            //Move every polygon on all layers
-            for (int z = 0; z < bc.size(); z++) {
-                bc.setPosition(pc.x, pc.y,z);
-            }
+            bc.setPosition(pc.x, pc.y);
         }
-        if(Mapper.flashLightComponent.has(entity)){
+        if (Mapper.flashLightComponent.has(entity)) {
             LightComponent lc = Mapper.flashLightComponent.get(entity);
-            lc.getLightReference().setPosition(pc.x,pc.y);
+            lc.getLightReference().setPosition(pc.x, pc.y);
         }
     }
 }

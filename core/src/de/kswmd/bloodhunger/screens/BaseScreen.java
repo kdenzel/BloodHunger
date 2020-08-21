@@ -18,7 +18,7 @@ public abstract class BaseScreen extends ScreenAdapter implements InputProcessor
 
     public BaseScreen(BloodHungerGame game) {
         this.game = game;
-        uiStage = new Stage(new FitViewport(Gdx.graphics.getWidth()*BloodHungerGame.UNIT_SCALE,Gdx.graphics.getHeight()*BloodHungerGame.UNIT_SCALE));
+        uiStage = new Stage(new FitViewport(Gdx.graphics.getWidth(),Gdx.graphics.getHeight()));
         camera = new OrthographicCamera(Gdx.graphics.getWidth()*BloodHungerGame.UNIT_SCALE,Gdx.graphics.getHeight()*BloodHungerGame.UNIT_SCALE);
         initialize();
     }
@@ -26,8 +26,9 @@ public abstract class BaseScreen extends ScreenAdapter implements InputProcessor
     @Override
     public void show() {
         InputMultiplexer im = (InputMultiplexer) Gdx.input.getInputProcessor();
-        im.addProcessor(this);
+        //Order is important, if uiStage comes after, drag and drop does not work anymore.
         im.addProcessor(uiStage);
+        im.addProcessor(this);
     }
 
     @Override
@@ -50,6 +51,11 @@ public abstract class BaseScreen extends ScreenAdapter implements InputProcessor
         InputMultiplexer im = (InputMultiplexer)Gdx.input.getInputProcessor();
         im.removeProcessor(this);
         im.removeProcessor(uiStage);
+    }
+
+    @Override
+    public void dispose() {
+        uiStage.dispose();
     }
 
     @Override

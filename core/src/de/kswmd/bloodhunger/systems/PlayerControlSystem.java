@@ -65,7 +65,7 @@ public class PlayerControlSystem extends EntitySystem {
             if (bodyAnimationType.hasPolygons()) {
                 boundsComponent.setPolygon(bodyAnimationType.getVertices(pc.timer, dimensionComponent), 1);
             }
-            Vector2 weaponFront = pc.getWeapon().getInitialBulletPosition(positionComponent,dimensionComponent,rotationComponent);
+            Vector2 weaponFront = pc.getTool().getTransformedToolPositionWithOffset(positionComponent,dimensionComponent,rotationComponent);
             flashLights.forEach(f -> {
                 PositionComponent fpos = Mapper.positionComponent.get(f);
                 RotationComponent frot = Mapper.rotationComponent.get(f);

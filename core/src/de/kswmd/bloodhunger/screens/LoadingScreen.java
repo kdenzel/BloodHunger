@@ -30,6 +30,7 @@ public class LoadingScreen extends BaseScreen {
         BloodHungerGame.ASSET_MANAGER.load(Assets.TEXTURE_ATLAS_ANIMATIONS, TextureAtlas.class);
         BloodHungerGame.ASSET_MANAGER.load(Assets.TEXTURE_ATLAS_PARTICLES, TextureAtlas.class);
         BloodHungerGame.ASSET_MANAGER.load(Assets.TEXTURE_ATLAS_IMAGES, TextureAtlas.class);
+        BloodHungerGame.ASSET_MANAGER.load(Assets.TEXTURE_ATLAS_UI,TextureAtlas.class);
     }
 
     @Override

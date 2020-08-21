@@ -1,6 +1,5 @@
 package de.kswmd.bloodhunger.systems;
 
-import box2dLight.ConeLight;
 import box2dLight.RayHandler;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
@@ -19,7 +18,8 @@ import de.kswmd.bloodhunger.Assets;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.*;
 import de.kswmd.bloodhunger.factories.EntityFactory;
-import de.kswmd.bloodhunger.screens.GameScreen;
+import de.kswmd.bloodhunger.ui.inventory.Inventory;
+import de.kswmd.bloodhunger.ui.inventory.InventorySlot;
 import de.kswmd.bloodhunger.utils.LevelManager;
 import de.kswmd.bloodhunger.utils.Mapper;
 
@@ -110,6 +110,7 @@ public class RenderingSystem extends EntitySystem {
     private final OrthographicCamera camera;
     private ImmutableArray<Entity> playerAnimationEntities;
     private ImmutableArray<Entity> crosshairEntities;
+    private ImmutableArray<Entity> itemEntities;
     private MapRenderer mapRenderer;
     private ParticleEffectPool shootEffectPool;
     private Array<ParticleEffectPool.PooledEffect> effects = new Array<>();
@@ -130,11 +131,11 @@ public class RenderingSystem extends EntitySystem {
         rayHandler.setAmbientLight(0f, 0f, 0f, 0.25f);
     }
 
-    public void setLevel(LevelManager.Level level) {
+    public void setLevel(LevelManager.Level level, Inventory inventory) {
         LevelManager.getInstance().setLevel(level);
         LevelManager.getInstance().setTiledMap(BloodHungerGame.ASSET_MANAGER.get(level.getMap()));
         mapRenderer = new OrthogonalTiledMapRenderer(LevelManager.getInstance().getTiledMap(), BloodHungerGame.UNIT_SCALE, batch);
-        List<Entity> entities = EntityFactory.createMapObjects(LevelManager.getInstance().getTiledMap().getLayers().get("objects"));
+        List<Entity> entities = EntityFactory.createMapObjects(inventory,LevelManager.getInstance().getTiledMap().getLayers().get("objects"));
         entities.forEach(entity -> getEngine().addEntity(entity));
     }
 
@@ -142,11 +143,14 @@ public class RenderingSystem extends EntitySystem {
     public void addedToEngine(Engine engine) {
         playerAnimationEntities = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
         crosshairEntities = engine.getEntitiesFor(Family.all(FollowMouseComponent.class).exclude(PlayerComponent.class).get());
+        itemEntities = engine.getEntitiesFor(Family.all(ItemComponent.class).get());
     }
 
     @Override
     public void removedFromEngine(Engine engine) {
         playerAnimationEntities = null;
+        crosshairEntities = null;
+        itemEntities = null;
     }
 
     @Override
@@ -154,6 +158,7 @@ public class RenderingSystem extends EntitySystem {
         renderLevel(deltaTime);
         batch.begin();
         batch.setProjectionMatrix(camera.combined);
+        renderItems(deltaTime);
         renderPlayers(deltaTime);
         batch.end();
         rayHandler.setCombinedMatrix(camera);
@@ -173,6 +178,19 @@ public class RenderingSystem extends EntitySystem {
     private void renderLevel(float deltaTime) {
         mapRenderer.setView(camera);
         mapRenderer.render();
+    }
+
+    private void renderItems(float deltaTime){
+        TextureAtlas images = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_IMAGES);
+        itemEntities.forEach(item -> {
+            ItemComponent itemComponent = Mapper.itemComponent.get(item);
+            PositionComponent positionComponent = Mapper.positionComponent.get(item);
+            DimensionComponent dimensionComponent = Mapper.dimensionComponent.get(item);
+
+            TextureRegion region = images.findRegion(itemComponent.itemType.resourceImage);
+            batch.draw(region,positionComponent.x,positionComponent.y,dimensionComponent.originX,dimensionComponent.originY,
+                    dimensionComponent.width,dimensionComponent.height,1,1,0);
+        });
     }
 
     private void renderPlayers(float deltaTime) {
@@ -228,10 +246,10 @@ public class RenderingSystem extends EntitySystem {
     }
 
     public void onShoot(PlayerComponent playerComponent, PositionComponent positionComponent, DimensionComponent dimensionComponent, RotationComponent rotationComponent) {
-        if (playerComponent.getWeapon().getStatus().equals(PlayerComponent.WeaponStatus.SHOOT)) {
+        if (playerComponent.getTool().getStatus().equals(PlayerComponent.ToolStatus.SHOOT)) {
             // Create effect:
             ParticleEffectPool.PooledEffect effect = shootEffectPool.obtain();
-            Vector2 bulletPosition = playerComponent.getWeapon().getInitialBulletPosition(positionComponent, dimensionComponent, rotationComponent);
+            Vector2 bulletPosition = playerComponent.getTool().getTransformedToolPositionWithOffset(positionComponent, dimensionComponent, rotationComponent);
             float x = bulletPosition.x;
             float y = bulletPosition.y;
             effect.setPosition(x, y);

@@ -1,24 +1,30 @@
 package de.kswmd.bloodhunger.components;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.systems.RenderingSystem;
+import de.kswmd.bloodhunger.ui.inventory.Inventory;
+import de.kswmd.bloodhunger.ui.inventory.InventorySlot;
+import de.kswmd.bloodhunger.utils.Mapper;
 
 public class PlayerComponent implements Component {
 
-    public enum Weapon {
-        FLASHLIGHT(false, -25* BloodHungerGame.UNIT_SCALE),
-        HANDGUN(true,-25* BloodHungerGame.UNIT_SCALE);
+    public enum Tool {
+        NONE(false, 0),
+        FLASHLIGHT(false, -25 * BloodHungerGame.UNIT_SCALE),
+        HANDGUN(true, -25 * BloodHungerGame.UNIT_SCALE);
 
         private final Vector2 position = new Vector2();
         private final Vector2 offset = new Vector2();
-        private WeaponStatus status = WeaponStatus.IDLE;
+        private ToolStatus status = ToolStatus.IDLE;
         private boolean shoot;
         private float yOffset;
 
-        Weapon(boolean shoot, float yOffset) {
+        Tool(boolean shoot, float yOffset) {
             this.yOffset = yOffset;
             this.shoot = shoot;
         }
@@ -27,25 +33,41 @@ public class PlayerComponent implements Component {
             return shoot;
         }
 
-        public WeaponStatus getStatus() {
+        public ToolStatus getStatus() {
             return status;
         }
 
-        public Vector2 getInitialBulletPosition(PositionComponent pc, DimensionComponent dc, RotationComponent rc) {
-            position.setZero().set(dc.originX + 1*BloodHungerGame.UNIT_SCALE, yOffset);
+        /*
+         * Returns the transformed position with offset of the weapon, for example the flashlight is not centered and instead a little on the right/left,
+         * the Position of the light cone will be a little offset. The same for guns and bullets.
+         *
+         * @param pc Position
+         * @param dc Dimension
+         * @param rc Rotation
+         * @return
+         */
+        public Vector2 getTransformedToolPositionWithOffset(PositionComponent pc, DimensionComponent dc, RotationComponent rc) {
+            position.setZero().set(dc.originX + 1 * BloodHungerGame.UNIT_SCALE, yOffset);
             position.rotate(rc.lookingAngle);
-            position.add(pc.x + dc.originX,pc.y + dc.originY);
+            position.add(pc.x + dc.originX, pc.y + dc.originY);
             return position;
         }
 
-        public Vector2 getOffset(DimensionComponent dc, RotationComponent rc) {
+        /**
+         * returns the transformed offset without position
+         *
+         * @param dc
+         * @param rc
+         * @return
+         */
+        public Vector2 getTransformedToolOffset(DimensionComponent dc, RotationComponent rc) {
             offset.setZero().set(0, yOffset);
             offset.rotate(rc.lookingAngle);
             return offset;
         }
     }
 
-    public enum WeaponStatus {
+    public enum ToolStatus {
         IDLE,
         SHOOT,
         RELOAD,
@@ -54,39 +76,42 @@ public class PlayerComponent implements Component {
 
     public float timer = 0;
 
-    private Weapon weapon = Weapon.FLASHLIGHT;
+    private Tool tool = Tool.FLASHLIGHT;
 
     public RenderingSystem.FeetAnimationType feetAnimationType = RenderingSystem.FeetAnimationType.IDLE;
     private RenderingSystem.BodyAnimationType bodyAnimationType = RenderingSystem.BodyAnimationType.IDLE_FLASHLIGHT;
 
-    public PlayerComponent() {
+    public final Inventory inventory;
+
+    public PlayerComponent(Inventory  inventory) {
+        this.inventory = inventory;
     }
 
     public void shoot() {
-        if (weapon.canShoot()) {
+        if (tool.canShoot()) {
             timer = 0;
-            weapon.status = WeaponStatus.SHOOT;
+            tool.status = ToolStatus.SHOOT;
         }
     }
 
     public void reload() {
-        if (weapon.canShoot()) {
+        if (tool.canShoot()) {
             timer = 0;
-            weapon.status = WeaponStatus.RELOAD;
+            tool.status = ToolStatus.RELOAD;
         }
     }
 
     public void meeleAttack() {
         timer = 0;
-        weapon.status = WeaponStatus.MELEE_ATTACK;
+        tool.status = ToolStatus.MELEE_ATTACK;
     }
 
     public RenderingSystem.BodyAnimationType getBodyAnimationType() {
         if (bodyAnimationType.animation.isAnimationFinished(timer) && bodyAnimationType.animation.getPlayMode().equals(Animation.PlayMode.NORMAL)) {
-            weapon.status = WeaponStatus.IDLE;
+            tool.status = ToolStatus.IDLE;
         }
         RenderingSystem.BodyAnimationType bodyAnimationType;
-        switch (weapon.status) {
+        switch (tool.status) {
             case IDLE:
                 switch (feetAnimationType) {
                     case IDLE:
@@ -107,25 +132,25 @@ public class PlayerComponent implements Component {
                 bodyAnimationType = getReload();
                 break;
             default:
-                throw new IllegalStateException("No animation for weapon status " + weapon.status);
+                throw new IllegalStateException("No animation for weapon status " + tool.status);
         }
         this.bodyAnimationType = bodyAnimationType;
         return bodyAnimationType;
     }
 
     private RenderingSystem.BodyAnimationType getReload() {
-        switch (weapon) {
+        switch (tool) {
             case HANDGUN:
                 bodyAnimationType = RenderingSystem.BodyAnimationType.RELOAD_HANDGUN;
                 break;
             default:
-                throw new IllegalStateException("No shooting bodyanimationtype found for " + weapon);
+                throw new IllegalStateException("No shooting bodyanimationtype found for " + tool);
         }
         return bodyAnimationType;
     }
 
     private RenderingSystem.BodyAnimationType getMeleeAttack() {
-        switch (weapon) {
+        switch (tool) {
             case FLASHLIGHT:
                 bodyAnimationType = RenderingSystem.BodyAnimationType.MELEE_FLASHLIGHT;
                 break;
@@ -133,26 +158,26 @@ public class PlayerComponent implements Component {
                 bodyAnimationType = RenderingSystem.BodyAnimationType.MELEE_HANDGUN;
                 break;
             default:
-                throw new IllegalStateException("No shooting bodyanimationtype found for " + weapon);
+                throw new IllegalStateException("No shooting bodyanimationtype found for " + tool);
         }
         return bodyAnimationType;
     }
 
     private RenderingSystem.BodyAnimationType getShoot() {
         RenderingSystem.BodyAnimationType bodyAnimationType;
-        switch (weapon) {
+        switch (tool) {
             case HANDGUN:
                 bodyAnimationType = RenderingSystem.BodyAnimationType.SHOOT_HANDGUN;
                 break;
             default:
-                throw new IllegalStateException("No shooting bodyanimationtype found for " + weapon);
+                throw new IllegalStateException("No shooting bodyanimationtype found for " + tool);
         }
         return bodyAnimationType;
     }
 
     private RenderingSystem.BodyAnimationType getIdle() {
         RenderingSystem.BodyAnimationType bodyAnimationType;
-        switch (weapon) {
+        switch (tool) {
             case FLASHLIGHT:
                 bodyAnimationType = RenderingSystem.BodyAnimationType.IDLE_FLASHLIGHT;
                 break;
@@ -160,14 +185,14 @@ public class PlayerComponent implements Component {
                 bodyAnimationType = RenderingSystem.BodyAnimationType.IDLE_HANDGUN;
                 break;
             default:
-                throw new IllegalStateException("No idle bodyanimationtype found for " + weapon);
+                throw new IllegalStateException("No idle bodyanimationtype found for " + tool);
         }
         return bodyAnimationType;
     }
 
     private RenderingSystem.BodyAnimationType getMove() {
         RenderingSystem.BodyAnimationType bodyAnimationType;
-        switch (weapon) {
+        switch (tool) {
             case FLASHLIGHT:
                 bodyAnimationType = RenderingSystem.BodyAnimationType.MOVE_FLASHLIGHT;
                 break;
@@ -175,16 +200,16 @@ public class PlayerComponent implements Component {
                 bodyAnimationType = RenderingSystem.BodyAnimationType.MOVE_HANDGUN;
                 break;
             default:
-                throw new IllegalStateException("No moving bodyanimationtype found for " + weapon);
+                throw new IllegalStateException("No moving bodyanimationtype found for " + tool);
         }
         return bodyAnimationType;
     }
 
-    public void switchWeapon(Weapon weapon){
-        this.weapon = weapon;
+    public void switchTool(Tool tool) {
+        this.tool = tool;
     }
 
-    public Weapon getWeapon() {
-        return weapon;
+    public Tool getTool() {
+        return tool;
     }
 }

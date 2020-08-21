@@ -4,20 +4,29 @@ import box2dLight.ConeLight;
 import box2dLight.RayHandler;
 import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
+import de.kswmd.bloodhunger.Assets;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.*;
 import de.kswmd.bloodhunger.factories.EntityFactory;
 import de.kswmd.bloodhunger.systems.*;
+import de.kswmd.bloodhunger.ui.inventory.Inventory;
+import de.kswmd.bloodhunger.ui.inventory.InventorySlot;
 import de.kswmd.bloodhunger.utils.LevelManager;
 import de.kswmd.bloodhunger.utils.Mapper;
 
@@ -46,6 +55,8 @@ public class GameScreen extends BaseScreen implements EntityListener {
     private SpriteBatch spriteBatch;
     private RayHandler rayHandler;
 
+    private Inventory inventory;
+    private Window inventoryWindow;
 
     private float accumulator = 0;
 
@@ -55,6 +66,7 @@ public class GameScreen extends BaseScreen implements EntityListener {
 
     @Override
     protected void initialize() {
+        createHUD();
         Gdx.input.setCursorCatched(!game.debug);
         spriteBatch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
@@ -86,10 +98,12 @@ public class GameScreen extends BaseScreen implements EntityListener {
         engine.addSystem(debugRenderSystem);
         debugRenderSystem.setProcessing(game.debug);
         //set level
-        renderingSystem.setLevel(LevelManager.Level.EXAMPLE);
+        renderingSystem.setLevel(LevelManager.Level.EXAMPLE, inventory);
 
         engine.addEntity(EntityFactory.createCrosshair(0, 0, 48 * BloodHungerGame.UNIT_SCALE, 48 * BloodHungerGame.UNIT_SCALE));
-        engine.addEntity(EntityFactory.createPlayer());
+        engine.addEntity(EntityFactory.createPlayer(2, 2, inventory));
+        for (int i = 0; i < 9; i++)
+            engine.addEntity(EntityFactory.createItem(5 + i, 5, 32 * BloodHungerGame.UNIT_SCALE, 32 * BloodHungerGame.UNIT_SCALE, ItemComponent.ItemType.FLASHLIGHT));
         keyUp(Input.Keys.NUM_1);
         //engine.addEntity(EntityFactory.createWall(0, 0, 2000*BloodHungerGame.UNIT_SCALE, 64*BloodHungerGame.UNIT_SCALE, null));
         int enemies = MathUtils.random(30) + 10;
@@ -97,6 +111,103 @@ public class GameScreen extends BaseScreen implements EntityListener {
             engine.addEntity(EntityFactory.createEnemey(100*BloodHungerGame.UNIT_SCALE, 100*BloodHungerGame.UNIT_SCALE,
                     64*BloodHungerGame.UNIT_SCALE, 64*BloodHungerGame.UNIT_SCALE, null));
         }*/
+    }
+
+    private void createHUD() {
+        this.inventory = Inventory.create();
+        TextureAtlas uiTextureAtlas = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_UI);
+        Skin skin = new Skin(Gdx.files.internal("ui/uiskin.json"), uiTextureAtlas);
+        Table table = new Table(skin);
+        table.setFillParent(true);
+        table.add().colspan(3).expand().row();
+        Table inventoryTable = new Table(skin);
+        inventoryTable.setBackground("inventory_list_box");
+        table.add().pad(20);
+        inventoryWindow = new Window("Inventory", skin);
+        inventoryWindow.setVisible(false);
+        inventoryWindow.setMovable(false);
+        int inventorySlotSize = 75;
+        DragAndDrop dnd = new DragAndDrop();
+        for (int i = 0; i < 33; i++) {
+            InventorySlot inventorySlot = new InventorySlot(skin, "inventory_box");
+            inventorySlot.addListener(new InputListener() {
+                @Override
+                public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                    ((InventorySlot) event.getListenerActor()).hoverIn();
+                }
+
+                @Override
+                public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                    ((InventorySlot) event.getListenerActor()).hoverOut();
+                }
+            });
+            this.inventory.addInventorySlot(inventorySlot);
+            if (i < 8) {
+                inventoryTable.add(inventorySlot).size(inventorySlotSize).expand().fill().align(Align.center).pad(1);
+                inventoryTable.pack();
+            } else {
+                if ((i - 8) % 5 == 0) {
+                    inventoryWindow.row();
+                }
+                inventoryWindow.add(inventorySlot).size(inventorySlotSize).expand().fill().align(Align.center).pad(1);
+                inventoryWindow.pack();
+            }
+            inventorySlot.getChild(0).setSize(inventorySlot.getWidth(), inventorySlot.getHeight());
+            dnd.addSource(new DragAndDrop.Source(inventorySlot) {
+
+
+                @Override
+                public DragAndDrop.Payload dragStart(InputEvent event, float x, float y, int pointer) {
+                    DragAndDrop.Payload payload = null;
+                    InventorySlot slot = (InventorySlot) getActor();
+                    if (slot.hasItem()) {
+                        payload = new DragAndDrop.Payload();
+                        payload.setObject(slot.getItemComponents());
+                        payload.setDragActor(slot.getItemImage());
+                        slot.setEmpty();
+                    }
+                    Gdx.app.debug("Drag", "Start");
+                    return payload;
+                }
+
+                @Override
+                public void drag(InputEvent event, float x, float y, int pointer) {
+                    super.drag(event, x, y, pointer);
+                }
+
+                @Override
+                public void dragStop(InputEvent event, float x, float y, int pointer, DragAndDrop.Payload payload, DragAndDrop.Target target) {
+                    super.dragStop(event, x, y, pointer, payload, target);
+                    InventorySlot sourceSlot = (InventorySlot) getActor();
+                    if (target == null) {
+                        sourceSlot.setItem((ItemComponent) payload.getObject());
+                    } else {
+                        InventorySlot targetSlot = (InventorySlot) target.getActor();
+                        targetSlot.setItem((ItemComponent) payload.getObject());
+                    }
+                    Gdx.app.debug("Drag", "Stop");
+                }
+            });
+            dnd.addTarget(new DragAndDrop.Target(inventorySlot) {
+                @Override
+                public boolean drag(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
+                    return true;
+                }
+
+                @Override
+                public void drop(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
+                    Gdx.app.debug("Drop", "DROP IT");
+                }
+            });
+        }
+        table.add(inventoryTable).fill();
+        table.add().pad(20);
+        table.pack();
+        uiStage.addActor(inventoryWindow);
+        uiStage.addActor(table);
+        inventoryWindow.setPosition(Gdx.graphics.getWidth() / 2 - inventoryWindow.getWidth() / 2, Gdx.graphics.getHeight() / 2 - inventoryWindow.getHeight() / 2);
+        //uiStage.setDebugAll(game.debug);
+
     }
 
     private void drawBackgroundGrid() {
@@ -133,9 +244,12 @@ public class GameScreen extends BaseScreen implements EntityListener {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        if (inventoryWindow.isVisible()) {
+            return true;
+        }
         Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
         PlayerComponent playerComponent = Mapper.playerComponent.get(player);
-        if (playerComponent.getWeapon().canShoot()) {
+        if (playerComponent.getTool().canShoot()) {
             playerComponent.shoot();
             PositionComponent pc = Mapper.positionComponent.get(player);
             DimensionComponent dc = Mapper.dimensionComponent.get(player);
@@ -144,7 +258,7 @@ public class GameScreen extends BaseScreen implements EntityListener {
             PositionComponent bulletPos = Mapper.positionComponent.get(bullet);
             DimensionComponent bulletDim = Mapper.dimensionComponent.get(bullet);
             //Okay, get inital position
-            Vector2 bulletPosition = playerComponent.getWeapon().getInitialBulletPosition(pc, dc, rc);
+            Vector2 bulletPosition = playerComponent.getTool().getTransformedToolPositionWithOffset(pc, dc, rc);
             BULLET_OFFSET
                     .setZero()
                     .set(bulletDim.originX, 0)
@@ -158,6 +272,14 @@ public class GameScreen extends BaseScreen implements EntityListener {
             movementSystem.update(0);
             bulletSystem.update(0);
             return true;
+        } else if (playerComponent.getTool().equals(PlayerComponent.Tool.FLASHLIGHT)) {
+            ImmutableArray<Entity> flashLights = engine.getEntitiesFor(Family.all(FlashLightComponent.class).get());
+            if (flashLights.size() == 0) {
+                turnFlashLightOn();
+            } else {
+                turnFlashLightOff();
+            }
+            return true;
         }
         return false;
     }
@@ -166,34 +288,55 @@ public class GameScreen extends BaseScreen implements EntityListener {
     public boolean keyUp(int keycode) {
         boolean keyPressed = false;
         Entity player;
-        Vector2 offset;
-        BoundsComponent bc;
-        DimensionComponent dc;
-        PositionComponent pc;
-        RotationComponent rc;
         PlayerComponent playerComponent;
-        ImmutableArray<Entity> flashLights;
         float yOffset;
         switch (keycode) {
             case Input.Keys.NUM_1:
                 player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-                playerComponent = Mapper.playerComponent.get(player);
-                flashLights = engine.getEntitiesFor(Family.all(FlashLightComponent.class).get());
-                if (playerComponent.getWeapon().equals(PlayerComponent.Weapon.FLASHLIGHT)) {
-                    if (flashLights.size() == 0) {
-                        turnFlashLightOn();
-                        keyPressed = true;
-                        break;
-                    } else {
-                        turnFlashLightOff();
-                    }
-                }
-                playerComponent.switchWeapon(PlayerComponent.Weapon.FLASHLIGHT);
+                inventory.setSelected(0);
+                //Mapper.playerComponent.get(player).switchTool(PlayerComponent.Tool.FLASHLIGHT);
                 keyPressed = true;
                 break;
             case Input.Keys.NUM_2:
                 player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-                Mapper.playerComponent.get(player).switchWeapon(PlayerComponent.Weapon.HANDGUN);
+                inventory.setSelected(1);
+                //Mapper.playerComponent.get(player).switchTool(PlayerComponent.Tool.FLASHLIGHT);
+                keyPressed = true;
+                break;
+            case Input.Keys.NUM_3:
+                player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+                inventory.setSelected(2);
+                //Mapper.playerComponent.get(player).switchTool(PlayerComponent.Tool.HANDGUN);
+                keyPressed = true;
+                break;
+            case Input.Keys.NUM_4:
+                player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+                inventory.setSelected(3);
+                //Mapper.playerComponent.get(player).switchTool(PlayerComponent.Tool.HANDGUN);
+                keyPressed = true;
+                break;
+            case Input.Keys.NUM_5:
+                player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+                inventory.setSelected(4);
+                //Mapper.playerComponent.get(player).switchTool(PlayerComponent.Tool.HANDGUN);
+                keyPressed = true;
+                break;
+            case Input.Keys.NUM_6:
+                player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+                inventory.setSelected(5);
+                //Mapper.playerComponent.get(player).switchTool(PlayerComponent.Tool.HANDGUN);
+                keyPressed = true;
+                break;
+            case Input.Keys.NUM_7:
+                player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+                inventory.setSelected(6);
+                //Mapper.playerComponent.get(player).switchTool(PlayerComponent.Tool.HANDGUN);
+                keyPressed = true;
+                break;
+            case Input.Keys.NUM_8:
+                player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+                inventory.setSelected(7);
+                //Mapper.playerComponent.get(player).switchTool(PlayerComponent.Tool.HANDGUN);
                 keyPressed = true;
                 break;
             case Input.Keys.F:
@@ -204,6 +347,12 @@ public class GameScreen extends BaseScreen implements EntityListener {
             case Input.Keys.R:
                 player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
                 Mapper.playerComponent.get(player).reload();
+                keyPressed = true;
+                break;
+            case Input.Keys.I:
+                Gdx.input.setCursorCatched(inventoryWindow.isVisible() && !game.debug);
+                followMouseSystem.setProcessing(inventoryWindow.isVisible());
+                inventoryWindow.setVisible(!inventoryWindow.isVisible());
                 keyPressed = true;
                 break;
         }
@@ -246,12 +395,12 @@ public class GameScreen extends BaseScreen implements EntityListener {
 
     @Override
     public void dispose() {
+        super.dispose();
         engine.removeAllEntities();
         ImmutableArray<EntitySystem> systems = engine.getSystems();
         systems.forEach(entitySystem -> engine.removeSystem(entitySystem));
         spriteBatch.dispose();
         rayHandler.dispose();
         shapeRenderer.dispose();
-
     }
 }

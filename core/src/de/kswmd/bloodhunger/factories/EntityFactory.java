@@ -10,9 +10,12 @@ import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Array;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.*;
 import de.kswmd.bloodhunger.screens.GameScreen;
+import de.kswmd.bloodhunger.ui.inventory.Inventory;
+import de.kswmd.bloodhunger.ui.inventory.InventorySlot;
 import de.kswmd.bloodhunger.utils.Mapper;
 
 import java.util.ArrayList;
@@ -23,14 +26,14 @@ public final class EntityFactory {
     private EntityFactory() {
     }
 
-    public static Entity createPlayer() {
+    public static Entity createPlayer(float x, float y, Inventory inventory) {
         Entity player = new Entity();
-        player.add(new PositionComponent(2,2));
+        player.add(new PositionComponent(x,y));
         player.add(new VelocityComponent());
         player.add(new DimensionComponent(128 * BloodHungerGame.UNIT_SCALE, 128 * BloodHungerGame.UNIT_SCALE));
         player.add(new RotationComponent());
         player.add(new CenterCameraComponent());
-        player.add(new PlayerComponent());
+        player.add(new PlayerComponent(inventory));
         DimensionComponent dc = Mapper.dimensionComponent.get(player);
         //Creates new boundscomponent with feet vertices for z-layer 0
         BoundsComponent bc = new BoundsComponent(dc.width, dc.height,
@@ -101,7 +104,7 @@ public final class EntityFactory {
         return tile;
     }
 
-    public static List<Entity> createMapObjects(MapLayer mapLayer) {
+    public static List<Entity> createMapObjects(Inventory inventory, MapLayer mapLayer) {
         List<Entity> entities = new ArrayList<>(16);
         MapObjects objects = mapLayer.getObjects();
         objects.forEach(mapObject -> {
@@ -132,7 +135,7 @@ public final class EntityFactory {
         stone.add(new DimensionComponent(width, height));
         BoundsComponent bc = new BoundsComponent(Mapper.dimensionComponent.get(stone));
         bc.setPolygon(vertices, 0);
-        bc.setPosition(x,y,0);
+        bc.setPosition(x,y);
         stone.add(bc);
         return stone;
     }
@@ -165,6 +168,17 @@ public final class EntityFactory {
         light.remove(LightComponent.class);
         light.add(new FlashLightComponent(LightComponent.Type.CONE));
         return light;
+    }
+
+    public static Entity createItem(float x, float y,float width, float height,ItemComponent.ItemType itemType){
+        Entity item = new Entity();
+        item.add(new PositionComponent(x,y));
+        item.add(new DimensionComponent(width,height));
+        BoundsComponent bc = new BoundsComponent(width,height);
+        bc.setPosition(x,y);
+        item.add(bc);
+        item.add(new ItemComponent(itemType));
+        return item;
     }
 
 }

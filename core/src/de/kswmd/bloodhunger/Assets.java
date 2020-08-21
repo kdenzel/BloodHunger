@@ -6,6 +6,8 @@ public final class Assets {
     public static final String TEXTURE_ATLAS_ANIMATIONS = "atlas/animations.atlas";
     public static final String TEXTURE_ATLAS_PARTICLES = "atlas/particles.atlas";
     public static final String TEXTURE_ATLAS_IMAGES = "atlas/images.atlas";
+    //UI
+    public static final String TEXTURE_ATLAS_UI = "ui/uiskin.atlas";
     //Particles
     public static final String PARTICLE_SHOOT = "particles/shoot.p";
     //Maps

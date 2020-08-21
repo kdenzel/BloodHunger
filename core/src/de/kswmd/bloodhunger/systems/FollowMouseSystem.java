@@ -39,7 +39,7 @@ public class FollowMouseSystem extends EntitySystem {
         float mouseScreenY = Gdx.input.getY();
         screenVector.set(mouseScreenX, mouseScreenY, 0);
         camera.unproject(screenVector);
-        Vector2 weaponOffset = null;
+        Vector2 toolOffset = null;
         for (int i = 0; i < players.size(); i++) {
             Entity entity = players.get(i);
 
@@ -55,14 +55,18 @@ public class FollowMouseSystem extends EntitySystem {
             RotationComponent rc = Mapper.rotationComponent.get(entity);
             rc.movementAngle = angle;
             rc.lookingAngle = angle;
-            weaponOffset = playerComponent.getWeapon().getOffset(dc, rc);
+            toolOffset = playerComponent.getTool().getTransformedToolOffset(dc, rc);
         }
-        if (weaponOffset != null) {
+
+        /*
+         * sets all entities which follow the mouse for example the crosshair with the weapon offset, so aiming is accurate
+         */
+        if (toolOffset != null) {
             for (int i = 0; i < followMouseEntities.size(); i++) {
                 Entity entity = followMouseEntities.get(i);
                 PositionComponent pc = Mapper.positionComponent.get(entity);
                 DimensionComponent dc = Mapper.dimensionComponent.get(entity);
-                pc.set(screenVector.x - dc.originX + weaponOffset.x, screenVector.y - dc.originY + weaponOffset.y);
+                pc.set(screenVector.x - dc.originX + toolOffset.x, screenVector.y - dc.originY + toolOffset.y);
             }
         }
     }

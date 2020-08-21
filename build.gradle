@@ -25,6 +25,7 @@ allprojects {
         box2DLightsVersion = '1.4'
         ashleyVersion = '1.7.3'
         aiVersion = '1.8.0'
+        visuiVersion = '1.4.6'
     }
 
     repositories {
@@ -68,7 +69,7 @@ project(":core") {
         api "com.badlogicgames.ashley:ashley:$ashleyVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
-
+        api "com.kotcrab.vis:vis-ui:$visuiVersion"
 
     }
 }
