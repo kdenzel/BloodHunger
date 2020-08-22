@@ -56,13 +56,13 @@ public class InventorySlot extends WidgetGroup {
         this.itemImage = new Image(images.findRegion(item.itemType.resourceImage));
         this.itemImage.setSize(getWidth(), getHeight());
         addActor(itemImage);
-        inventory.notifyOnItemAdded(this,item);
+        inventory.notifyOnItemAdded(this, item);
     }
 
     public void removeItem() {
         removeActor(itemImage);
         itemImage = null;
-        inventory.notifyOnItemRemoved(this,item);
+        inventory.notifyOnItemRemoved(this, item);
         this.item = null;
     }
 
@@ -106,6 +106,7 @@ public class InventorySlot extends WidgetGroup {
             background.setDrawable(skin, "inventory_box_hover");
         }
     }
+
     public void hoverOut() {
         if (isSelected()) {
             select();
@@ -116,5 +117,16 @@ public class InventorySlot extends WidgetGroup {
 
     public void setInventory(Inventory inventory) {
         this.inventory = inventory;
+    }
+
+    public Inventory getInventory(){
+        return this.inventory;
+    }
+
+    @Override
+    public String toString() {
+        return "InventorySlot{" +
+                "inventoryIndex=" + inventory.getSlotIndex(this) +
+                '}';
     }
 }

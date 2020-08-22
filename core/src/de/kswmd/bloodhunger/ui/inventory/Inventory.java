@@ -93,4 +93,8 @@ public final class Inventory {
     public InventorySlot getSelectedSlot() {
         return inventorySlots.get(selectedSlotIndex);
     }
+
+    public int getSlotIndex(InventorySlot inventorySlot) {
+        return inventorySlots.indexOf(inventorySlot,true);
+    }
 }

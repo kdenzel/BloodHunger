@@ -16,7 +16,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
@@ -32,6 +35,8 @@ import de.kswmd.bloodhunger.utils.LevelManager;
 import de.kswmd.bloodhunger.utils.Mapper;
 
 public class GameScreen extends BaseScreen implements EntityListener, InventoryListener {
+
+    private static final String TAG = GameScreen.class.getSimpleName();
 
     private static final float TIME_STEP = 1 / 60f;
     private static final int VELOCITY_ITERATIONS = 6;
@@ -123,7 +128,7 @@ public class GameScreen extends BaseScreen implements EntityListener, InventoryL
         Skin skin = new Skin(Gdx.files.internal("ui/uiskin.json"), uiTextureAtlas);
         Table table = new Table(skin);
         table.setFillParent(true);
-        fpsCounterLabel = new Label("aha",skin);
+        fpsCounterLabel = new Label("aha", skin);
         table.add().colspan(3).expand().row();
         Table inventoryTable = new Table(skin);
         inventoryTable.setBackground("inventory_list_box");
@@ -138,14 +143,21 @@ public class GameScreen extends BaseScreen implements EntityListener, InventoryL
         for (int i = 0; i < 33; i++) {
             InventorySlot inventorySlot = new InventorySlot(skin, "inventory_box");
             inventorySlot.addListener(new InputListener() {
+
                 @Override
                 public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                    ((InventorySlot) event.getListenerActor()).hoverIn();
+                    InventorySlot slot = ((InventorySlot) event.getListenerActor());
+                    slot.hoverIn();
+                    Gdx.app.debug(TAG, "Mouse enter on slot " + slot);
                 }
 
                 @Override
                 public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                    ((InventorySlot) event.getListenerActor()).hoverOut();
+                    if (toActor == null || toActor.getParent() != event.getListenerActor()) {
+                        InventorySlot slot = ((InventorySlot) event.getListenerActor());
+                        slot.hoverOut();
+                        Gdx.app.debug(TAG, "Mouse exit on slot " + slot);
+                    }
                 }
             });
             this.inventory.addInventorySlot(inventorySlot);
@@ -153,7 +165,7 @@ public class GameScreen extends BaseScreen implements EntityListener, InventoryL
                 inventoryTable.add(inventorySlot).size(inventorySlotSizeWidth, inventorySlotSizeHeight).expand().fill().align(Align.center).pad(1);
                 inventoryTable.pack();
             } else {
-                if ((i - 8) % 5 == 0 && (i-8)>0) {
+                if ((i - 8) % 5 == 0 && (i - 8) > 0) {
                     inventoryWindow.row();
                 }
                 inventoryWindow.add(inventorySlot).size(inventorySlotSizeWidth, inventorySlotSizeHeight).expand().fill().align(Align.center).pad(1);
@@ -172,14 +184,16 @@ public class GameScreen extends BaseScreen implements EntityListener, InventoryL
                         payload.setObject(slot.getItemComponent());
                         payload.setDragActor(slot.getItemImage());
                         slot.removeItem();
+                        dnd.setDragActorPosition(x, y - slot.getHeight());
+                        Gdx.app.debug(TAG, "Drag start at slot " + slot);
                     }
-                    Gdx.app.debug("Drag", "Start");
                     return payload;
                 }
 
                 @Override
                 public void drag(InputEvent event, float x, float y, int pointer) {
                     super.drag(event, x, y, pointer);
+                    //Gdx.app.debug("Slot at pos ", ""+event);
                 }
 
                 @Override
@@ -188,25 +202,35 @@ public class GameScreen extends BaseScreen implements EntityListener, InventoryL
                     InventorySlot sourceSlot = (InventorySlot) getActor();
                     if (target == null) {
                         sourceSlot.setItem((ItemComponent) payload.getObject());
+                        Gdx.app.debug(TAG, "No target detected, snap back");
                     } else {
                         InventorySlot targetSlot = (InventorySlot) target.getActor();
-                        if(targetSlot.hasItem()){
+                        if (targetSlot.hasItem()) {
                             sourceSlot.setItem(targetSlot.getItemComponent());
+                            Gdx.app.debug(TAG, "Switch item with slot " + targetSlot);
+                        } else {
+                            Gdx.app.debug(TAG, "Set item on slot " + targetSlot);
                         }
                         targetSlot.setItem((ItemComponent) payload.getObject());
+
                     }
-                    Gdx.app.debug("Drag", "Stop");
                 }
             });
             dnd.addTarget(new DragAndDrop.Target(inventorySlot) {
                 @Override
                 public boolean drag(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
-                    return true;
+                    //we must hover and unhover here manually because the actor overlays the mouse cursor so no mouse entered and exit are registered
+                    boolean doHoverAction = payload != null;
+                    if (doHoverAction) {
+                        InventorySlot target = ((InventorySlot) getActor());
+                        target.getInventory().unhover();
+                        target.hoverIn();
+                    }
+                    return doHoverAction;
                 }
 
                 @Override
                 public void drop(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
-                    Gdx.app.debug("Drop", "DROP IT");
                 }
             });
         }
@@ -216,9 +240,9 @@ public class GameScreen extends BaseScreen implements EntityListener, InventoryL
         table.pack();
         uiStage.addActor(inventoryWindow);
         uiStage.addActor(table);
-        inventoryWindow.setPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2,Align.center);
+        inventoryWindow.setPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, Align.center);
         inventory.addListener(this);
-        uiStage.setDebugAll(game.debug);
+        //uiStage.setDebugAll(game.debug);
     }
 
     @Override
@@ -232,7 +256,7 @@ public class GameScreen extends BaseScreen implements EntityListener, InventoryL
 
     @Override
     public void onItemRemoved(InventorySlot slot, ItemComponent itemComponent) {
-        if(slot.isSelected()){
+        if (slot.isSelected()) {
             Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
             PlayerComponent playerComponent = Mapper.playerComponent.get(player);
             playerComponent.switchTool(PlayerComponent.Tool.NONE);
@@ -276,7 +300,7 @@ public class GameScreen extends BaseScreen implements EntityListener, InventoryL
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if (inventoryWindow.isVisible()) {
-            return true;
+            return false;
         }
         Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
         PlayerComponent playerComponent = Mapper.playerComponent.get(player);
@@ -384,6 +408,7 @@ public class GameScreen extends BaseScreen implements EntityListener, InventoryL
                 followMouseSystem.setProcessing(inventoryWindow.isVisible());
                 playerControlSystem.setProcessing(inventoryWindow.isVisible());
                 inventoryWindow.setVisible(!inventoryWindow.isVisible());
+                Gdx.app.debug(TAG,"Inventory Window visible="+inventoryWindow.isVisible());
                 keyPressed = true;
                 break;
         }
