@@ -3,6 +3,7 @@ package de.kswmd.bloodhunger.factories;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.screens.GameScreen;
 
 public final class Box2DBodyFactory {
@@ -17,7 +18,7 @@ public final class Box2DBodyFactory {
         bodyDef.type = BodyDef.BodyType.KinematicBody;
         bodyDef.position.set(width/2,height/2);
 // Create our body in the world using our body definition
-        Body body = GameScreen.WORLD.createBody(bodyDef);
+        Body body = BloodHungerGame.WORLD.createBody(bodyDef);
 
 // Create a rectangle polygon shape
         PolygonShape polygonShape = new PolygonShape();

@@ -2,6 +2,7 @@ package de.kswmd.bloodhunger.factories;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;
@@ -16,6 +17,7 @@ import de.kswmd.bloodhunger.components.*;
 import de.kswmd.bloodhunger.screens.GameScreen;
 import de.kswmd.bloodhunger.ui.inventory.Inventory;
 import de.kswmd.bloodhunger.ui.inventory.InventorySlot;
+import de.kswmd.bloodhunger.utils.LevelManager;
 import de.kswmd.bloodhunger.utils.Mapper;
 
 import java.util.ArrayList;
@@ -104,7 +106,7 @@ public final class EntityFactory {
         return tile;
     }
 
-    public static List<Entity> createMapObjects(Inventory inventory, MapLayer mapLayer) {
+    public static List<Entity> createMapObjects(BloodHungerGame game, MapLayer mapLayer) {
         List<Entity> entities = new ArrayList<>(16);
         MapObjects objects = mapLayer.getObjects();
         objects.forEach(mapObject -> {
@@ -178,6 +180,17 @@ public final class EntityFactory {
         bc.setPosition(x,y);
         item.add(bc);
         item.add(new ItemComponent(itemType));
+        return item;
+    }
+
+    public static Entity createLevelExit(float x, float y, float width, float height, Screen nextScreen, LevelManager.Level level){
+        Entity item = new Entity();
+        item.add(new PositionComponent(x,y));
+        item.add(new DimensionComponent(width,height));
+        BoundsComponent bc = new BoundsComponent(width,height);
+        bc.setPosition(x,y);
+        item.add(bc);
+        item.add(new LevelExitComponent(nextScreen,level));
         return item;
     }
 

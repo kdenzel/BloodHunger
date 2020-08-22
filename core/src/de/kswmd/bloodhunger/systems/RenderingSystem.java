@@ -30,7 +30,7 @@ public class RenderingSystem extends EntitySystem {
     private ImmutableArray<Entity> playerAnimationEntities;
     private ImmutableArray<Entity> crosshairEntities;
     private ImmutableArray<Entity> itemEntities;
-    private MapRenderer mapRenderer;
+    private OrthogonalTiledMapRenderer mapRenderer;
     private ParticleEffectPool shootEffectPool;
     private Array<ParticleEffectPool.PooledEffect> effects = new Array<>();
     private TextureAtlas images = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_IMAGES);
@@ -47,15 +47,17 @@ public class RenderingSystem extends EntitySystem {
         shootEffect.scaleEffect(BloodHungerGame.UNIT_SCALE);
         this.shootEffectPool = new ParticleEffectPool(shootEffect, 1, 200);
         this.rayHandler = rayHandler;
-        rayHandler.setAmbientLight(0f, 0f, 0f, 0.5f);
     }
 
-    public void setLevel(LevelManager.Level level, Inventory inventory) {
-        LevelManager.getInstance().setLevel(level);
-        LevelManager.getInstance().setTiledMap(BloodHungerGame.ASSET_MANAGER.get(level.getMap()));
+    public void updateLevel() {
+        if (mapRenderer != null) {
+            mapRenderer.dispose();
+        }
         mapRenderer = new OrthogonalTiledMapRenderer(LevelManager.getInstance().getTiledMap(), BloodHungerGame.UNIT_SCALE, batch);
-        List<Entity> entities = EntityFactory.createMapObjects(inventory,LevelManager.getInstance().getTiledMap().getLayers().get("objects"));
-        entities.forEach(entity -> getEngine().addEntity(entity));
+    }
+
+    public void setAmbientLight(float r, float g, float b, float a) {
+        rayHandler.setAmbientLight(r, g, b, a);
     }
 
     @Override
@@ -99,7 +101,7 @@ public class RenderingSystem extends EntitySystem {
         mapRenderer.render();
     }
 
-    private void renderItems(float deltaTime){
+    private void renderItems(float deltaTime) {
         TextureAtlas images = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_IMAGES);
         itemEntities.forEach(item -> {
             ItemComponent itemComponent = Mapper.itemComponent.get(item);
@@ -107,8 +109,8 @@ public class RenderingSystem extends EntitySystem {
             DimensionComponent dimensionComponent = Mapper.dimensionComponent.get(item);
 
             TextureRegion region = images.findRegion(itemComponent.itemType.resourceImage);
-            batch.draw(region,positionComponent.x,positionComponent.y,dimensionComponent.originX,dimensionComponent.originY,
-                    dimensionComponent.width,dimensionComponent.height,1,1,0);
+            batch.draw(region, positionComponent.x, positionComponent.y, dimensionComponent.originX, dimensionComponent.originY,
+                    dimensionComponent.width, dimensionComponent.height, 1, 1, 0);
         });
     }
 

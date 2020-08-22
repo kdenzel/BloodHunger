@@ -10,13 +10,14 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.Assets;
+import de.kswmd.bloodhunger.components.LevelExitComponent;
 import de.kswmd.bloodhunger.utils.LevelManager;
 
-public class LoadingScreen extends BaseScreen {
+public class InitialLoadingScreen extends BaseScreen {
 
     private ShapeRenderer shapeRenderer;
 
-    public LoadingScreen(BloodHungerGame game) {
+    public InitialLoadingScreen(BloodHungerGame game) {
         super(game);
     }
 
@@ -26,11 +27,10 @@ public class LoadingScreen extends BaseScreen {
         shapeRenderer.setAutoShapeType(true);
         shapeRenderer.setColor(Color.WHITE);
         BloodHungerGame.ASSET_MANAGER.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
-        BloodHungerGame.ASSET_MANAGER.load(LevelManager.getInstance().level.getMap(), TiledMap.class);
         BloodHungerGame.ASSET_MANAGER.load(Assets.TEXTURE_ATLAS_ANIMATIONS, TextureAtlas.class);
         BloodHungerGame.ASSET_MANAGER.load(Assets.TEXTURE_ATLAS_PARTICLES, TextureAtlas.class);
         BloodHungerGame.ASSET_MANAGER.load(Assets.TEXTURE_ATLAS_IMAGES, TextureAtlas.class);
-        BloodHungerGame.ASSET_MANAGER.load(Assets.TEXTURE_ATLAS_UI,TextureAtlas.class);
+        BloodHungerGame.ASSET_MANAGER.load(Assets.TEXTURE_ATLAS_UI, TextureAtlas.class);
     }
 
     @Override
@@ -45,10 +45,9 @@ public class LoadingScreen extends BaseScreen {
         Gdx.app.debug("Progress", progress + "%");
         shapeRenderer.end();
         if (manager.update()) {
-            if (BloodHungerGame.SCREEN_GAME == null) {
-                BloodHungerGame.SCREEN_GAME = new GameScreen(game);
-            }
-            game.setScreen(BloodHungerGame.SCREEN_GAME);
+            game.initAfterLoading();
+            game.setLevel(new LevelExitComponent(BloodHungerGame.SCREEN_GAME, LevelManager.Level.EXAMPLE));
+            this.dispose();
         }
     }
 }

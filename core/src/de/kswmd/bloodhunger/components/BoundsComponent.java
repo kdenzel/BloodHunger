@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
+import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.factories.Box2DBodyFactory;
 import de.kswmd.bloodhunger.screens.GameScreen;
 
@@ -171,6 +172,6 @@ public class BoundsComponent implements Component, Disposable {
 
     @Override
     public void dispose() {
-        box2DBodyArray.forEach(GameScreen.WORLD::destroyBody);
+        box2DBodyArray.forEach(BloodHungerGame.WORLD::destroyBody);
     }
 }

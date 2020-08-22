@@ -2,17 +2,24 @@ package de.kswmd.bloodhunger.systems;
 
 import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Polygon;
+import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.*;
 import de.kswmd.bloodhunger.utils.Mapper;
 
 public class BoundsCollisionSystem extends EntitySystem {
 
+    private final BloodHungerGame game;
     private ImmutableArray<Entity> boundEntitiesWithoutPlayerAndBullets;
     private ImmutableArray<Entity> playerEntities;
     private Intersector.MinimumTranslationVector mtv = new Intersector.MinimumTranslationVector();
+
+    public BoundsCollisionSystem(BloodHungerGame game){
+        this.game = game;
+    }
 
     @Override
     public void addedToEngine(Engine engine) {
@@ -47,9 +54,14 @@ public class BoundsCollisionSystem extends EntitySystem {
                         //If item was added to inventory remove the entity
                         if (Mapper.playerComponent.get(playerEntity).inventory.addItem(itemComponent))
                             getEngine().removeEntity(otherBoundsEntity);
-                    } else
+                    }
+                    //If next level was reached, set next screen
+                    else if(Mapper.levelExitComponent.has(otherBoundsEntity)){
+                        game.setLevel(Mapper.levelExitComponent.get(otherBoundsEntity));
+                        break;
+                    }
                     //If velocity is attached to the entity, it is a dynamic object that can be moved
-                    if (Mapper.positionComponent.has(playerEntity) && Mapper.velocityComponent.has(playerEntity)) {
+                    else if (Mapper.positionComponent.has(playerEntity) && Mapper.velocityComponent.has(playerEntity)) {
                         PositionComponent pc = Mapper.positionComponent.get(playerEntity);
                         float x = mtv.depth * mtv.normal.x;
                         float y = mtv.depth * mtv.normal.y;
