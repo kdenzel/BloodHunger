@@ -10,10 +10,9 @@ import de.kswmd.bloodhunger.Assets;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.ItemComponent;
 
-import java.util.Optional;
-
 public class InventorySlot extends WidgetGroup {
 
+    private Inventory inventory;
     private ItemComponent item;
     private Image itemImage;
     private Skin skin;
@@ -51,16 +50,20 @@ public class InventorySlot extends WidgetGroup {
     }
 
     public void setItem(ItemComponent item) {
+        removeItem();
         this.item = item;
         TextureAtlas images = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_IMAGES);
         this.itemImage = new Image(images.findRegion(item.itemType.resourceImage));
         this.itemImage.setSize(getWidth(), getHeight());
         addActor(itemImage);
+        inventory.notifyOnItemAdded(this,item);
     }
 
-    public void removeItem(ItemComponent item) {
-        this.item = null;
+    public void removeItem() {
         removeActor(itemImage);
+        itemImage = null;
+        inventory.notifyOnItemRemoved(this,item);
+        this.item = null;
     }
 
     public boolean hasItem() {
@@ -83,7 +86,7 @@ public class InventorySlot extends WidgetGroup {
         selected = false;
     }
 
-    public ItemComponent getItemComponents() {
+    public ItemComponent getItemComponent() {
         return item;
     }
 
@@ -111,9 +114,7 @@ public class InventorySlot extends WidgetGroup {
         }
     }
 
-    public void setEmpty() {
-        item = null;
-        removeActor(itemImage);
-        itemImage = null;
+    public void setInventory(Inventory inventory) {
+        this.inventory = inventory;
     }
 }

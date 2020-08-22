@@ -19,7 +19,6 @@ import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.*;
 import de.kswmd.bloodhunger.factories.EntityFactory;
 import de.kswmd.bloodhunger.ui.inventory.Inventory;
-import de.kswmd.bloodhunger.ui.inventory.InventorySlot;
 import de.kswmd.bloodhunger.utils.LevelManager;
 import de.kswmd.bloodhunger.utils.Mapper;
 
@@ -32,18 +31,26 @@ public class RenderingSystem extends EntitySystem {
         MOVE_FORWARD(1 / 24f, "Top_Down_Survivor_custom/feet/walk/survivor-walk", Animation.PlayMode.LOOP),
         MOVE_BACKWARD(1 / 24f, "Top_Down_Survivor_custom/feet/walk/survivor-walk", Animation.PlayMode.LOOP_REVERSED),
         MOVE_LEFT(1 / 24f, "Top_Down_Survivor_custom/feet/strafe_left/survivor-strafe_left", Animation.PlayMode.LOOP),
-        MOVE_RIGHT(1 / 24f, "Top_Down_Survivor_custom/feet/strafe_right/survivor-strafe_right", Animation.PlayMode.LOOP),
-        RUN_FORWARD(1 / 48f, "Top_Down_Survivor_custom/feet/walk/survivor-walk", Animation.PlayMode.LOOP);
+        MOVE_RIGHT(1 / 24f, "Top_Down_Survivor_custom/feet/strafe_right/survivor-strafe_right", Animation.PlayMode.LOOP);
 
-        private final Animation<TextureRegion> animation;
+        public final Animation<TextureRegion> animation;
+        private final float initialFrameDuration;
 
-        FeetAnimationType(float frameDuration, String resource, Animation.PlayMode playMode) {
+        FeetAnimationType(float initialFrameDuration, String resource, Animation.PlayMode playMode) {
             TextureAtlas atlas = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_ANIMATIONS);
-            this.animation = new Animation<>(frameDuration, atlas.findRegions(resource), playMode);
+            this.initialFrameDuration = initialFrameDuration;
+            this.animation = new Animation<>(initialFrameDuration, atlas.findRegions(resource), playMode);
+        }
+
+        public float getInitialFrameDuration(){
+            return initialFrameDuration;
         }
     }
 
     public enum BodyAnimationType {
+        IDLE_NONE(1/24f,"Top_Down_Survivor_custom/none/idle/survivor-idle_none",Animation.PlayMode.LOOP),
+        MOVE_NONE(1/24f,"Top_Down_Survivor_custom/none/move/survivor-move_none",Animation.PlayMode.LOOP),
+        MELEE_NONE(1/48f,"Top_Down_Survivor_custom/none/meleeattack/survivor-meleeattack_none",Animation.PlayMode.NORMAL),
         IDLE_FLASHLIGHT(1 / 24f, "Top_Down_Survivor_custom/flashlight/idle/survivor-idle_flashlight", Animation.PlayMode.LOOP),
         MOVE_FLASHLIGHT(1 / 24f, "Top_Down_Survivor_custom/flashlight/move/survivor-move_flashlight", Animation.PlayMode.LOOP),
         MELEE_FLASHLIGHT(1 / 48f, "Top_Down_Survivor_custom/flashlight/meleeattack/survivor-meleeattack_flashlight", Animation.PlayMode.NORMAL),
@@ -57,10 +64,12 @@ public class RenderingSystem extends EntitySystem {
         public final Animation<TextureRegion> animation;
         private final Array<float[]> polygonVertices = new Array<>();
         private final Array<float[]> polygonVerticesTransformed = new Array<>();
+        private final float initialFrameDuration;
 
-        BodyAnimationType(float frameDuration, String resource, Animation.PlayMode playMode) {
+        BodyAnimationType(float initialFrameDuration, String resource, Animation.PlayMode playMode) {
+            this.initialFrameDuration = initialFrameDuration;
             TextureAtlas atlas = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_ANIMATIONS);
-            this.animation = new Animation<>(frameDuration, atlas.findRegions(resource), playMode);
+            this.animation = new Animation<>(initialFrameDuration, atlas.findRegions(resource), playMode);
             FileHandle handle = Gdx.files.internal("animation/" + resource + ".poly");
             if (handle.exists()) {
                 String fileContent = handle.readString();
@@ -73,8 +82,12 @@ public class RenderingSystem extends EntitySystem {
                     }
                     polygonVertices.add(vertices);
                 }
-                polygonVertices.forEach(v -> polygonVerticesTransformed.add(new float[v.length]));
+
+            } else {
+                //Create per default a square from 0,0 to width height
+                polygonVertices.add(new float[]{0,0,1,0,1,1,0,1});
             }
+            polygonVertices.forEach(v -> polygonVerticesTransformed.add(new float[v.length]));
         }
 
         public boolean hasPolygons() {
@@ -104,6 +117,10 @@ public class RenderingSystem extends EntitySystem {
         public float[] getVertices(float time, DimensionComponent dimensionComponent) {
             return getVertices(time, dimensionComponent.width, dimensionComponent.height);
         }
+
+        public float getInitialFrameDuration() {
+            return initialFrameDuration;
+        }
     }
 
     private final Batch batch;
@@ -128,7 +145,7 @@ public class RenderingSystem extends EntitySystem {
         shootEffect.scaleEffect(BloodHungerGame.UNIT_SCALE);
         this.shootEffectPool = new ParticleEffectPool(shootEffect, 1, 200);
         this.rayHandler = rayHandler;
-        rayHandler.setAmbientLight(0f, 0f, 0f, 0.25f);
+        rayHandler.setAmbientLight(0f, 0f, 0f, 0.5f);
     }
 
     public void setLevel(LevelManager.Level level, Inventory inventory) {
@@ -238,7 +255,7 @@ public class RenderingSystem extends EntitySystem {
             PositionComponent positionComponent = Mapper.positionComponent.get(entity);
             DimensionComponent dimensionComponent = Mapper.dimensionComponent.get(entity);
             RotationComponent rotationComponent = Mapper.rotationComponent.get(entity);
-            batch.draw(images.findRegion("cursor"), positionComponent.x, positionComponent.y,
+            batch.draw(images.findRegion("crosshair"), positionComponent.x, positionComponent.y,
                     dimensionComponent.originX, dimensionComponent.originY,
                     dimensionComponent.width, dimensionComponent.height, dimensionComponent.scaleX, dimensionComponent.scaleY,
                     rotationComponent.lookingAngle);

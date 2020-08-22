@@ -38,12 +38,15 @@ public class PlayerControlSystem extends EntitySystem {
             pc.feetAnimationType = RenderingSystem.FeetAnimationType.IDLE;
             vc.velocityVec.setLength(0);
             float speed = 100* BloodHungerGame.UNIT_SCALE;
+            boolean run = false;
             if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+                pc.feetAnimationType = RenderingSystem.FeetAnimationType.MOVE_FORWARD;
                 if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
                     speed *= 2;
-                    pc.feetAnimationType = RenderingSystem.FeetAnimationType.RUN_FORWARD;
+                    pc.feetAnimationType.animation.setFrameDuration(pc.feetAnimationType.getInitialFrameDuration()/2);
+                    run = true;
                 } else {
-                    pc.feetAnimationType = RenderingSystem.FeetAnimationType.MOVE_FORWARD;
+                    pc.feetAnimationType.animation.setFrameDuration(pc.feetAnimationType.getInitialFrameDuration());
                 }
                 vc.velocityVec.set(0, speed);
             } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
@@ -62,6 +65,11 @@ public class PlayerControlSystem extends EntitySystem {
             pc.timer += deltaTime % 10;
             //Set polygon depending on frame for bodyanimation
             RenderingSystem.BodyAnimationType bodyAnimationType = pc.getBodyAnimationType();
+            if(run){
+                bodyAnimationType.animation.setFrameDuration(bodyAnimationType.getInitialFrameDuration()/2);
+            } else {
+                bodyAnimationType.animation.setFrameDuration(bodyAnimationType.getInitialFrameDuration());
+            }
             if (bodyAnimationType.hasPolygons()) {
                 boundsComponent.setPolygon(bodyAnimationType.getVertices(pc.timer, dimensionComponent), 1);
             }

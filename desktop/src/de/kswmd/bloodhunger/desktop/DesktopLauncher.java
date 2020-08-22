@@ -9,16 +9,19 @@ import de.kswmd.bloodhunger.BloodHungerGame;
 
 public class DesktopLauncher {
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     public static void main(String[] arg) {
-        boolean generate = false;
+        boolean generate = true;
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
         config.forceExit = false;
         config.width = 800;
         config.height = 600;
         config.fullscreen = false;
-        //config.vSyncEnabled = true;
+        //Enables max fps
+        /*config.foregroundFPS = -1;
+        config.backgroundFPS = -1;
+        config.vSyncEnabled = false;*/
         TexturePacker.Settings settings = new TexturePacker.Settings();
         settings.duplicatePadding = false;
         settings.filterMag = Texture.TextureFilter.Linear;

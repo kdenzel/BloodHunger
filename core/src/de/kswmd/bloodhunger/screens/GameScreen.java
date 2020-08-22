@@ -26,11 +26,12 @@ import de.kswmd.bloodhunger.components.*;
 import de.kswmd.bloodhunger.factories.EntityFactory;
 import de.kswmd.bloodhunger.systems.*;
 import de.kswmd.bloodhunger.ui.inventory.Inventory;
+import de.kswmd.bloodhunger.ui.inventory.InventoryListener;
 import de.kswmd.bloodhunger.ui.inventory.InventorySlot;
 import de.kswmd.bloodhunger.utils.LevelManager;
 import de.kswmd.bloodhunger.utils.Mapper;
 
-public class GameScreen extends BaseScreen implements EntityListener {
+public class GameScreen extends BaseScreen implements EntityListener, InventoryListener {
 
     private static final float TIME_STEP = 1 / 60f;
     private static final int VELOCITY_ITERATIONS = 6;
@@ -57,6 +58,7 @@ public class GameScreen extends BaseScreen implements EntityListener {
 
     private Inventory inventory;
     private Window inventoryWindow;
+    private Label fpsCounterLabel;
 
     private float accumulator = 0;
 
@@ -104,6 +106,8 @@ public class GameScreen extends BaseScreen implements EntityListener {
         engine.addEntity(EntityFactory.createPlayer(2, 2, inventory));
         for (int i = 0; i < 9; i++)
             engine.addEntity(EntityFactory.createItem(5 + i, 5, 32 * BloodHungerGame.UNIT_SCALE, 32 * BloodHungerGame.UNIT_SCALE, ItemComponent.ItemType.FLASHLIGHT));
+        for (int i = 0; i < 9; i++)
+            engine.addEntity(EntityFactory.createItem(5 + i, 4, 32 * BloodHungerGame.UNIT_SCALE, 32 * BloodHungerGame.UNIT_SCALE, ItemComponent.ItemType.HANDGUN));
         keyUp(Input.Keys.NUM_1);
         //engine.addEntity(EntityFactory.createWall(0, 0, 2000*BloodHungerGame.UNIT_SCALE, 64*BloodHungerGame.UNIT_SCALE, null));
         int enemies = MathUtils.random(30) + 10;
@@ -119,6 +123,7 @@ public class GameScreen extends BaseScreen implements EntityListener {
         Skin skin = new Skin(Gdx.files.internal("ui/uiskin.json"), uiTextureAtlas);
         Table table = new Table(skin);
         table.setFillParent(true);
+        fpsCounterLabel = new Label("aha",skin);
         table.add().colspan(3).expand().row();
         Table inventoryTable = new Table(skin);
         inventoryTable.setBackground("inventory_list_box");
@@ -126,7 +131,9 @@ public class GameScreen extends BaseScreen implements EntityListener {
         inventoryWindow = new Window("Inventory", skin);
         inventoryWindow.setVisible(false);
         inventoryWindow.setMovable(false);
-        int inventorySlotSize = 75;
+        inventoryWindow.setKeepWithinStage(true);
+        float inventorySlotSizeWidth = ((float) Gdx.graphics.getWidth() * 0.1f);
+        float inventorySlotSizeHeight = ((float) Gdx.graphics.getHeight() * 0.1f);
         DragAndDrop dnd = new DragAndDrop();
         for (int i = 0; i < 33; i++) {
             InventorySlot inventorySlot = new InventorySlot(skin, "inventory_box");
@@ -143,13 +150,13 @@ public class GameScreen extends BaseScreen implements EntityListener {
             });
             this.inventory.addInventorySlot(inventorySlot);
             if (i < 8) {
-                inventoryTable.add(inventorySlot).size(inventorySlotSize).expand().fill().align(Align.center).pad(1);
+                inventoryTable.add(inventorySlot).size(inventorySlotSizeWidth, inventorySlotSizeHeight).expand().fill().align(Align.center).pad(1);
                 inventoryTable.pack();
             } else {
-                if ((i - 8) % 5 == 0) {
+                if ((i - 8) % 5 == 0 && (i-8)>0) {
                     inventoryWindow.row();
                 }
-                inventoryWindow.add(inventorySlot).size(inventorySlotSize).expand().fill().align(Align.center).pad(1);
+                inventoryWindow.add(inventorySlot).size(inventorySlotSizeWidth, inventorySlotSizeHeight).expand().fill().align(Align.center).pad(1);
                 inventoryWindow.pack();
             }
             inventorySlot.getChild(0).setSize(inventorySlot.getWidth(), inventorySlot.getHeight());
@@ -162,9 +169,9 @@ public class GameScreen extends BaseScreen implements EntityListener {
                     InventorySlot slot = (InventorySlot) getActor();
                     if (slot.hasItem()) {
                         payload = new DragAndDrop.Payload();
-                        payload.setObject(slot.getItemComponents());
+                        payload.setObject(slot.getItemComponent());
                         payload.setDragActor(slot.getItemImage());
-                        slot.setEmpty();
+                        slot.removeItem();
                     }
                     Gdx.app.debug("Drag", "Start");
                     return payload;
@@ -183,6 +190,9 @@ public class GameScreen extends BaseScreen implements EntityListener {
                         sourceSlot.setItem((ItemComponent) payload.getObject());
                     } else {
                         InventorySlot targetSlot = (InventorySlot) target.getActor();
+                        if(targetSlot.hasItem()){
+                            sourceSlot.setItem(targetSlot.getItemComponent());
+                        }
                         targetSlot.setItem((ItemComponent) payload.getObject());
                     }
                     Gdx.app.debug("Drag", "Stop");
@@ -200,14 +210,34 @@ public class GameScreen extends BaseScreen implements EntityListener {
                 }
             });
         }
+        inventoryWindow.pack();
         table.add(inventoryTable).fill();
-        table.add().pad(20);
+        table.add(fpsCounterLabel).size(20);
         table.pack();
         uiStage.addActor(inventoryWindow);
         uiStage.addActor(table);
-        inventoryWindow.setPosition(Gdx.graphics.getWidth() / 2 - inventoryWindow.getWidth() / 2, Gdx.graphics.getHeight() / 2 - inventoryWindow.getHeight() / 2);
-        //uiStage.setDebugAll(game.debug);
+        inventoryWindow.setPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2,Align.center);
+        inventory.addListener(this);
+        uiStage.setDebugAll(game.debug);
+    }
 
+    @Override
+    public void onItemAdded(InventorySlot slot, ItemComponent itemComponent) {
+        if (slot.isSelected()) {
+            Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+            PlayerComponent playerComponent = Mapper.playerComponent.get(player);
+            playerComponent.switchTool(itemComponent.itemType.tool);
+        }
+    }
+
+    @Override
+    public void onItemRemoved(InventorySlot slot, ItemComponent itemComponent) {
+        if(slot.isSelected()){
+            Entity player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
+            PlayerComponent playerComponent = Mapper.playerComponent.get(player);
+            playerComponent.switchTool(PlayerComponent.Tool.NONE);
+            turnFlashLightOff();
+        }
     }
 
     private void drawBackgroundGrid() {
@@ -226,6 +256,7 @@ public class GameScreen extends BaseScreen implements EntityListener {
 
     @Override
     protected void update(float delta) {
+        fpsCounterLabel.setText(Gdx.graphics.getFramesPerSecond());
         drawBackgroundGrid();
         engine.update(delta);
         doPhysicsStep(delta);
@@ -288,55 +319,54 @@ public class GameScreen extends BaseScreen implements EntityListener {
     public boolean keyUp(int keycode) {
         boolean keyPressed = false;
         Entity player;
-        PlayerComponent playerComponent;
-        float yOffset;
+        PlayerComponent playerComponent = null;
         switch (keycode) {
             case Input.Keys.NUM_1:
                 player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
                 inventory.setSelected(0);
-                //Mapper.playerComponent.get(player).switchTool(PlayerComponent.Tool.FLASHLIGHT);
+                playerComponent = Mapper.playerComponent.get(player);
                 keyPressed = true;
                 break;
             case Input.Keys.NUM_2:
                 player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
                 inventory.setSelected(1);
-                //Mapper.playerComponent.get(player).switchTool(PlayerComponent.Tool.FLASHLIGHT);
+                playerComponent = Mapper.playerComponent.get(player);
                 keyPressed = true;
                 break;
             case Input.Keys.NUM_3:
                 player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
                 inventory.setSelected(2);
-                //Mapper.playerComponent.get(player).switchTool(PlayerComponent.Tool.HANDGUN);
+                playerComponent = Mapper.playerComponent.get(player);
                 keyPressed = true;
                 break;
             case Input.Keys.NUM_4:
                 player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
                 inventory.setSelected(3);
-                //Mapper.playerComponent.get(player).switchTool(PlayerComponent.Tool.HANDGUN);
+                playerComponent = Mapper.playerComponent.get(player);
                 keyPressed = true;
                 break;
             case Input.Keys.NUM_5:
                 player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
                 inventory.setSelected(4);
-                //Mapper.playerComponent.get(player).switchTool(PlayerComponent.Tool.HANDGUN);
+                playerComponent = Mapper.playerComponent.get(player);
                 keyPressed = true;
                 break;
             case Input.Keys.NUM_6:
                 player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
                 inventory.setSelected(5);
-                //Mapper.playerComponent.get(player).switchTool(PlayerComponent.Tool.HANDGUN);
+                playerComponent = Mapper.playerComponent.get(player);
                 keyPressed = true;
                 break;
             case Input.Keys.NUM_7:
                 player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
                 inventory.setSelected(6);
-                //Mapper.playerComponent.get(player).switchTool(PlayerComponent.Tool.HANDGUN);
+                playerComponent = Mapper.playerComponent.get(player);
                 keyPressed = true;
                 break;
             case Input.Keys.NUM_8:
                 player = engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
                 inventory.setSelected(7);
-                //Mapper.playerComponent.get(player).switchTool(PlayerComponent.Tool.HANDGUN);
+                playerComponent = Mapper.playerComponent.get(player);
                 keyPressed = true;
                 break;
             case Input.Keys.F:
@@ -352,9 +382,19 @@ public class GameScreen extends BaseScreen implements EntityListener {
             case Input.Keys.I:
                 Gdx.input.setCursorCatched(inventoryWindow.isVisible() && !game.debug);
                 followMouseSystem.setProcessing(inventoryWindow.isVisible());
+                playerControlSystem.setProcessing(inventoryWindow.isVisible());
                 inventoryWindow.setVisible(!inventoryWindow.isVisible());
                 keyPressed = true;
                 break;
+        }
+        if (playerComponent != null) {
+            InventorySlot slot = inventory.getSelectedSlot();
+            if (!slot.isEmpty()) {
+                playerComponent.switchTool(slot.getItemComponent().itemType.tool);
+            } else {
+                playerComponent.switchTool(PlayerComponent.Tool.NONE);
+                turnFlashLightOff();
+            }
         }
         return keyPressed;
     }
@@ -378,6 +418,11 @@ public class GameScreen extends BaseScreen implements EntityListener {
             engine.removeEntity(fl);
             Mapper.flashLightComponent.get(fl).getLightReference().remove();
         });
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        super.resize(width, height);
     }
 
     @Override

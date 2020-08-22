@@ -56,9 +56,9 @@ public class PlayerComponent implements Component {
         /**
          * returns the transformed offset without position
          *
-         * @param dc
-         * @param rc
-         * @return
+         * @param dc Dimension
+         * @param rc Rotation
+         * @return transformed Vector2 offset
          */
         public Vector2 getTransformedToolOffset(DimensionComponent dc, RotationComponent rc) {
             offset.setZero().set(0, yOffset);
@@ -76,7 +76,7 @@ public class PlayerComponent implements Component {
 
     public float timer = 0;
 
-    private Tool tool = Tool.FLASHLIGHT;
+    private Tool tool = Tool.NONE;
 
     public RenderingSystem.FeetAnimationType feetAnimationType = RenderingSystem.FeetAnimationType.IDLE;
     private RenderingSystem.BodyAnimationType bodyAnimationType = RenderingSystem.BodyAnimationType.IDLE_FLASHLIGHT;
@@ -151,6 +151,9 @@ public class PlayerComponent implements Component {
 
     private RenderingSystem.BodyAnimationType getMeleeAttack() {
         switch (tool) {
+            case NONE:
+                bodyAnimationType = RenderingSystem.BodyAnimationType.MELEE_NONE;
+                break;
             case FLASHLIGHT:
                 bodyAnimationType = RenderingSystem.BodyAnimationType.MELEE_FLASHLIGHT;
                 break;
@@ -158,7 +161,7 @@ public class PlayerComponent implements Component {
                 bodyAnimationType = RenderingSystem.BodyAnimationType.MELEE_HANDGUN;
                 break;
             default:
-                throw new IllegalStateException("No shooting bodyanimationtype found for " + tool);
+                throw new IllegalStateException("No meeleattack bodyanimationtype found for " + tool);
         }
         return bodyAnimationType;
     }
@@ -178,6 +181,9 @@ public class PlayerComponent implements Component {
     private RenderingSystem.BodyAnimationType getIdle() {
         RenderingSystem.BodyAnimationType bodyAnimationType;
         switch (tool) {
+            case NONE:
+                bodyAnimationType = RenderingSystem.BodyAnimationType.IDLE_NONE;
+                break;
             case FLASHLIGHT:
                 bodyAnimationType = RenderingSystem.BodyAnimationType.IDLE_FLASHLIGHT;
                 break;
@@ -193,6 +199,9 @@ public class PlayerComponent implements Component {
     private RenderingSystem.BodyAnimationType getMove() {
         RenderingSystem.BodyAnimationType bodyAnimationType;
         switch (tool) {
+            case NONE:
+                bodyAnimationType = RenderingSystem.BodyAnimationType.MOVE_NONE;
+                break;
             case FLASHLIGHT:
                 bodyAnimationType = RenderingSystem.BodyAnimationType.MOVE_FLASHLIGHT;
                 break;

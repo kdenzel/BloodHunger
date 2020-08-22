@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import de.kswmd.bloodhunger.BloodHungerGame;
 
 public abstract class BaseScreen extends ScreenAdapter implements InputProcessor {
@@ -18,7 +19,7 @@ public abstract class BaseScreen extends ScreenAdapter implements InputProcessor
 
     public BaseScreen(BloodHungerGame game) {
         this.game = game;
-        uiStage = new Stage(new FitViewport(Gdx.graphics.getWidth(),Gdx.graphics.getHeight()));
+        uiStage = new Stage(new StretchViewport(Gdx.graphics.getWidth(),Gdx.graphics.getHeight()));
         camera = new OrthographicCamera(Gdx.graphics.getWidth()*BloodHungerGame.UNIT_SCALE,Gdx.graphics.getHeight()*BloodHungerGame.UNIT_SCALE);
         initialize();
     }
@@ -33,8 +34,8 @@ public abstract class BaseScreen extends ScreenAdapter implements InputProcessor
 
     @Override
     public void resize(int width, int height) {
-        uiStage.getViewport().update(width,height);
         camera.update();
+        uiStage.getViewport().update(width,height,true);
     }
 
     @Override
