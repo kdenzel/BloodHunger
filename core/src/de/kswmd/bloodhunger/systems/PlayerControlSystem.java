@@ -1,6 +1,9 @@
 package de.kswmd.bloodhunger.systems;
 
-import com.badlogic.ashley.core.*;
+import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.EntitySystem;
+import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -35,12 +38,12 @@ public class PlayerControlSystem extends EntitySystem {
             DimensionComponent dimensionComponent = Mapper.dimensionComponent.get(e);
             RotationComponent rotationComponent = Mapper.rotationComponent.get(e);
 
-            pc.feetAnimationType = RenderingSystem.FeetAnimationType.IDLE;
+            pc.feetAnimationType = PlayerComponent.FeetAnimationType.IDLE;
             vc.velocityVec.setLength(0);
             float speed = 100* BloodHungerGame.UNIT_SCALE;
             boolean run = false;
             if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-                pc.feetAnimationType = RenderingSystem.FeetAnimationType.MOVE_FORWARD;
+                pc.feetAnimationType = PlayerComponent.FeetAnimationType.MOVE_FORWARD;
                 if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
                     speed *= 2;
                     pc.feetAnimationType.animation.setFrameDuration(pc.feetAnimationType.getInitialFrameDuration()/2);
@@ -51,20 +54,20 @@ public class PlayerControlSystem extends EntitySystem {
                 vc.velocityVec.set(0, speed);
             } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
                 vc.velocityVec.set(0, -speed);
-                pc.feetAnimationType = RenderingSystem.FeetAnimationType.MOVE_BACKWARD;
+                pc.feetAnimationType = PlayerComponent.FeetAnimationType.MOVE_BACKWARD;
                 rotationComponent.movementAngle += -180;
             } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
                 vc.velocityVec.set(-speed, 0);
-                pc.feetAnimationType = RenderingSystem.FeetAnimationType.MOVE_LEFT;
+                pc.feetAnimationType = PlayerComponent.FeetAnimationType.MOVE_LEFT;
                 rotationComponent.movementAngle += 90;
             } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
                 vc.velocityVec.set(speed, 0);
-                pc.feetAnimationType = RenderingSystem.FeetAnimationType.MOVE_RIGHT;
+                pc.feetAnimationType = PlayerComponent.FeetAnimationType.MOVE_RIGHT;
                 rotationComponent.movementAngle += -90;
             }
             pc.timer += deltaTime % 10;
             //Set polygon depending on frame for bodyanimation
-            RenderingSystem.BodyAnimationType bodyAnimationType = pc.getBodyAnimationType();
+            PlayerComponent.BodyAnimationType bodyAnimationType = pc.getBodyAnimationType();
             if(run){
                 bodyAnimationType.animation.setFrameDuration(bodyAnimationType.getInitialFrameDuration()/2);
             } else {

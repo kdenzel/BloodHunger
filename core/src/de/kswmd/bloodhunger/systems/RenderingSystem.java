@@ -7,7 +7,6 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.maps.MapRenderer;
@@ -25,103 +24,6 @@ import de.kswmd.bloodhunger.utils.Mapper;
 import java.util.List;
 
 public class RenderingSystem extends EntitySystem {
-
-    public enum FeetAnimationType {
-        IDLE(1f, "Top_Down_Survivor_custom/feet/idle/survivor-idle", Animation.PlayMode.LOOP),
-        MOVE_FORWARD(1 / 24f, "Top_Down_Survivor_custom/feet/walk/survivor-walk", Animation.PlayMode.LOOP),
-        MOVE_BACKWARD(1 / 24f, "Top_Down_Survivor_custom/feet/walk/survivor-walk", Animation.PlayMode.LOOP_REVERSED),
-        MOVE_LEFT(1 / 24f, "Top_Down_Survivor_custom/feet/strafe_left/survivor-strafe_left", Animation.PlayMode.LOOP),
-        MOVE_RIGHT(1 / 24f, "Top_Down_Survivor_custom/feet/strafe_right/survivor-strafe_right", Animation.PlayMode.LOOP);
-
-        public final Animation<TextureRegion> animation;
-        private final float initialFrameDuration;
-
-        FeetAnimationType(float initialFrameDuration, String resource, Animation.PlayMode playMode) {
-            TextureAtlas atlas = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_ANIMATIONS);
-            this.initialFrameDuration = initialFrameDuration;
-            this.animation = new Animation<>(initialFrameDuration, atlas.findRegions(resource), playMode);
-        }
-
-        public float getInitialFrameDuration(){
-            return initialFrameDuration;
-        }
-    }
-
-    public enum BodyAnimationType {
-        IDLE_NONE(1/24f,"Top_Down_Survivor_custom/none/idle/survivor-idle_none",Animation.PlayMode.LOOP),
-        MOVE_NONE(1/24f,"Top_Down_Survivor_custom/none/move/survivor-move_none",Animation.PlayMode.LOOP),
-        MELEE_NONE(1/48f,"Top_Down_Survivor_custom/none/meleeattack/survivor-meleeattack_none",Animation.PlayMode.NORMAL),
-        IDLE_FLASHLIGHT(1 / 24f, "Top_Down_Survivor_custom/flashlight/idle/survivor-idle_flashlight", Animation.PlayMode.LOOP),
-        MOVE_FLASHLIGHT(1 / 24f, "Top_Down_Survivor_custom/flashlight/move/survivor-move_flashlight", Animation.PlayMode.LOOP),
-        MELEE_FLASHLIGHT(1 / 48f, "Top_Down_Survivor_custom/flashlight/meleeattack/survivor-meleeattack_flashlight", Animation.PlayMode.NORMAL),
-        IDLE_HANDGUN(1 / 24f, "Top_Down_Survivor_custom/handgun/idle/survivor-idle_handgun", Animation.PlayMode.LOOP),
-        MOVE_HANDGUN(1 / 24f, "Top_Down_Survivor_custom/handgun/move/survivor-move_handgun", Animation.PlayMode.LOOP),
-        SHOOT_HANDGUN(1 / 48f, "Top_Down_Survivor_custom/handgun/shoot/survivor-shoot_handgun", Animation.PlayMode.NORMAL),
-        MELEE_HANDGUN(1 / 48f, "Top_Down_Survivor_custom/handgun/meleeattack/survivor-meleeattack_handgun", Animation.PlayMode.NORMAL),
-        RELOAD_HANDGUN(1 / 24f, "Top_Down_Survivor_custom/handgun/reload/survivor-reload_handgun", Animation.PlayMode.NORMAL);
-
-
-        public final Animation<TextureRegion> animation;
-        private final Array<float[]> polygonVertices = new Array<>();
-        private final Array<float[]> polygonVerticesTransformed = new Array<>();
-        private final float initialFrameDuration;
-
-        BodyAnimationType(float initialFrameDuration, String resource, Animation.PlayMode playMode) {
-            this.initialFrameDuration = initialFrameDuration;
-            TextureAtlas atlas = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_ANIMATIONS);
-            this.animation = new Animation<>(initialFrameDuration, atlas.findRegions(resource), playMode);
-            FileHandle handle = Gdx.files.internal("animation/" + resource + ".poly");
-            if (handle.exists()) {
-                String fileContent = handle.readString();
-                String[] lines = fileContent.split("\\r?\\n");
-                for (String line : lines) {
-                    String[] array = line.replaceAll("[{}]", "").split(",");
-                    float[] vertices = new float[array.length];
-                    for (int j = 0; j < array.length; j++) {
-                        vertices[j] = Float.parseFloat(array[j]);
-                    }
-                    polygonVertices.add(vertices);
-                }
-
-            } else {
-                //Create per default a square from 0,0 to width height
-                polygonVertices.add(new float[]{0,0,1,0,1,1,0,1});
-            }
-            polygonVertices.forEach(v -> polygonVerticesTransformed.add(new float[v.length]));
-        }
-
-        public boolean hasPolygons() {
-            return !polygonVertices.isEmpty();
-        }
-
-        public float[] getVertices(float time, float width, float height) {
-            if (polygonVertices.isEmpty()) {
-                return null;
-            }
-            float scale = ((float) animation.getKeyFrameIndex(time) / animation.getKeyFrames().length);
-            int polygonFrame = (int) (polygonVertices.size * scale);
-
-
-            float[] v = polygonVertices.get(polygonFrame);
-            float[] tv = polygonVerticesTransformed.get(polygonFrame);
-            for (int i = 0; i < v.length; i++) {
-                if (i % 2 == 0) {
-                    tv[i] = v[i] * width;
-                } else {
-                    tv[i] = v[i] * height;
-                }
-            }
-            return tv;
-        }
-
-        public float[] getVertices(float time, DimensionComponent dimensionComponent) {
-            return getVertices(time, dimensionComponent.width, dimensionComponent.height);
-        }
-
-        public float getInitialFrameDuration() {
-            return initialFrameDuration;
-        }
-    }
 
     private final Batch batch;
     private final OrthographicCamera camera;
@@ -218,7 +120,7 @@ public class RenderingSystem extends EntitySystem {
 
             PlayerComponent playerComponent = Mapper.playerComponent.get(entity);
 
-            BodyAnimationType bodyAnimationType = playerComponent.getBodyAnimationType();
+            PlayerComponent.BodyAnimationType bodyAnimationType = playerComponent.getBodyAnimationType();
             TextureRegion bodyRegion = bodyAnimationType.animation.getKeyFrame(playerComponent.timer);
             TextureRegion feetRegion = playerComponent.feetAnimationType.animation.getKeyFrame(playerComponent.timer);
 

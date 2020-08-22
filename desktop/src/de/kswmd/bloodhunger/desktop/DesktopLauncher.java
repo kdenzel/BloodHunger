@@ -12,7 +12,7 @@ public class DesktopLauncher {
     public static final boolean DEBUG = false;
 
     public static void main(String[] arg) {
-        boolean generate = true;
+        boolean generate = false;
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
         config.forceExit = false;
         config.width = 800;
