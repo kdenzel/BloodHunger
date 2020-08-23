@@ -11,7 +11,6 @@ import com.badlogic.gdx.utils.Array;
 import de.kswmd.bloodhunger.Assets;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.ItemComponent;
-import de.kswmd.bloodhunger.components.PlayerComponent;
 
 public final class Inventory {
 
@@ -112,6 +111,8 @@ public final class Inventory {
                 public void drop(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
                 }
             });
+            if(i == 0)
+                inventorySlot.select();
             inventory.addInventorySlot(inventorySlot);
         }
         return inventory;

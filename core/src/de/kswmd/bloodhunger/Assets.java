@@ -3,9 +3,10 @@ package de.kswmd.bloodhunger;
 public final class Assets {
 
     //Atlas
-    public static final String TEXTURE_ATLAS_ANIMATIONS = "atlas/animations.atlas";
+    public static final String TEXTURE_ATLAS_GAME_ANIMATIONS = "atlas/animations.atlas";
     public static final String TEXTURE_ATLAS_PARTICLES = "atlas/particles.atlas";
     public static final String TEXTURE_ATLAS_IMAGES = "atlas/images.atlas";
+    public static final String TEXTURE_ATLAS_SCENES = "atlas/scenes.atlas";
     //UI
     public static final String TEXTURE_ATLAS_UI = "ui/uiskin.atlas";
     //Particles

@@ -40,7 +40,7 @@ public abstract class BaseScreen extends ScreenAdapter implements InputProcessor
     @Override
     public void render(float delta) {
         uiStage.act(delta);
-        Gdx.gl.glClearColor(0.2f, 0.2f, 0.2f, 1);
+        Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         update(delta);
         uiStage.draw();

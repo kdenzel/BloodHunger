@@ -27,10 +27,11 @@ public class InitialLoadingScreen extends BaseScreen {
         shapeRenderer.setAutoShapeType(true);
         shapeRenderer.setColor(Color.WHITE);
         BloodHungerGame.ASSET_MANAGER.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
-        BloodHungerGame.ASSET_MANAGER.load(Assets.TEXTURE_ATLAS_ANIMATIONS, TextureAtlas.class);
+        BloodHungerGame.ASSET_MANAGER.load(Assets.TEXTURE_ATLAS_GAME_ANIMATIONS, TextureAtlas.class);
         BloodHungerGame.ASSET_MANAGER.load(Assets.TEXTURE_ATLAS_PARTICLES, TextureAtlas.class);
         BloodHungerGame.ASSET_MANAGER.load(Assets.TEXTURE_ATLAS_IMAGES, TextureAtlas.class);
         BloodHungerGame.ASSET_MANAGER.load(Assets.TEXTURE_ATLAS_UI, TextureAtlas.class);
+        BloodHungerGame.ASSET_MANAGER.load(Assets.TEXTURE_ATLAS_SCENES, TextureAtlas.class);
     }
 
     @Override
@@ -46,7 +47,7 @@ public class InitialLoadingScreen extends BaseScreen {
         shapeRenderer.end();
         if (manager.update()) {
             game.initAfterLoading();
-            game.setLevel(new LevelExitComponent(BloodHungerGame.SCREEN_GAME, LevelManager.Level.EXAMPLE));
+            game.setLevel(new LevelExitComponent(BloodHungerGame.SCREEN_INTRO, LevelManager.Level.EXAMPLE));
             this.dispose();
         }
     }

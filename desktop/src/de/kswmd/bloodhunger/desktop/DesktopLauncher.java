@@ -26,11 +26,14 @@ public class DesktopLauncher {
         settings.duplicatePadding = false;
         settings.filterMag = Texture.TextureFilter.Linear;
         settings.filterMin = Texture.TextureFilter.Linear;
+        settings.maxHeight = 4096;
+        settings.maxWidth = 4096;
         if (generate) {
             //settings.debug = true;
             //Scale everything down cause we render in synfig everything higher than needed
             settings.scale = new float[]{0.5f};
-            TexturePacker.process(settings, "../../desktop/assets-raw/animations", "./atlas", "animations");
+            TexturePacker.process(settings, "../../desktop/assets-raw/game_animations/animations", "./atlas", "animations");
+            TexturePacker.process(settings, "../../desktop/assets-raw/scenes", "./atlas", "scenes");
             settings.scale = new float[]{1};
             TexturePacker.process(settings, "../../desktop/assets-raw/particles", "./atlas", "particles");
             TexturePacker.process(settings, "../../desktop/assets-raw/images", "./atlas", "images");

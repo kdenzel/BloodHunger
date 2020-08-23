@@ -25,7 +25,7 @@ public class PlayerComponent implements Component {
         private final float initialFrameDuration;
 
         FeetAnimationType(float initialFrameDuration, String resource, Animation.PlayMode playMode) {
-            TextureAtlas atlas = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_ANIMATIONS);
+            TextureAtlas atlas = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_GAME_ANIMATIONS);
             this.initialFrameDuration = initialFrameDuration;
             this.animation = new Animation<>(initialFrameDuration, atlas.findRegions(resource), playMode);
         }
@@ -56,7 +56,7 @@ public class PlayerComponent implements Component {
 
         BodyAnimationType(float initialFrameDuration, String resource, Animation.PlayMode playMode) {
             this.initialFrameDuration = initialFrameDuration;
-            TextureAtlas atlas = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_ANIMATIONS);
+            TextureAtlas atlas = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_GAME_ANIMATIONS);
             this.animation = new Animation<>(initialFrameDuration, atlas.findRegions(resource), playMode);
             FileHandle handle = Gdx.files.internal("animation/" + resource + ".poly");
             if (handle.exists()) {

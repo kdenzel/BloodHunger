@@ -32,7 +32,6 @@ public class LoadNextLevelScreen extends BaseScreen {
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
         shapeRenderer.setColor(Color.WHITE);
-        BloodHungerGame.ASSET_MANAGER.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
         BloodHungerGame.ASSET_MANAGER.load(LevelManager.getInstance().level.getMap(), TiledMap.class);
     }
 
