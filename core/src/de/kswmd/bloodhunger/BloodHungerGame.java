@@ -140,6 +140,7 @@ public class BloodHungerGame extends Game implements EntityListener {
      * @param level The level
      */
     public void setLevel(LevelExitComponent levelExitComponent){
+        rayHandler.removeAll();
         engine.removeAllEntities();
         LevelManager.Level level = levelExitComponent.level;
         if(level != LevelManager.getInstance().level){

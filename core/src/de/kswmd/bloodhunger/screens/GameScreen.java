@@ -56,6 +56,7 @@ public class GameScreen extends BaseScreen implements InventoryListener {
         //engine.addEntity(EntityFactory.createWall(0, 0, 2000*BloodHungerGame.UNIT_SCALE, 64*BloodHungerGame.UNIT_SCALE, null));
         int enemies = MathUtils.random(30) + 10;
         engine.addEntity(EntityFactory.createLevelExit(-0.5f,-0.5f,1f,1f,BloodHungerGame.SCREEN_INTRO, LevelManager.Level.EXAMPLE));
+        game.inventory.addListener(this);
     }
 
     private void createHUD() {
@@ -63,34 +64,37 @@ public class GameScreen extends BaseScreen implements InventoryListener {
         Table table = new Table(skin);
         table.setFillParent(true);
         fpsCounterLabel = new Label("aha", skin);
-        table.add().colspan(3).expand().row();
+        table.add(fpsCounterLabel).left();
+        table.row().expandY();
+        table.add().colspan(3).expandY();
+        table.row();
         Table inventoryTable = new Table(skin);
         inventoryTable.setBackground("inventory_list_box");
-        table.add().pad(20);
+        table.add().expandX();
         inventoryWindow = new Window("Inventory", skin);
         inventoryWindow.setVisible(false);
         inventoryWindow.setMovable(false);
         inventoryWindow.setKeepWithinStage(true);
-        float inventorySlotSizeWidth = ((float) Gdx.graphics.getWidth() * 0.1f);
+        float inventorySlotSizeWidth = ((float) Gdx.graphics.getWidth() * 0.05f);
         float inventorySlotSizeHeight = ((float) Gdx.graphics.getHeight() * 0.1f);
 
         for (int i = 0; i < game.inventory.size(); i++) {
             InventorySlot inventorySlot = game.inventory.get(i);
             if (i < 8) {
-                inventoryTable.add(inventorySlot).size(inventorySlotSizeWidth, inventorySlotSizeHeight).expand().fill().align(Align.center).pad(1);
+                inventoryTable.add(inventorySlot).size(inventorySlotSizeWidth, inventorySlotSizeHeight).expand().fill().align(Align.center).pad(Gdx.graphics.getWidth()*0.001f);
                 inventoryTable.pack();
             } else {
                 if ((i - 8) % 5 == 0 && (i - 8) > 0) {
                     inventoryWindow.row();
                 }
-                inventoryWindow.add(inventorySlot).size(inventorySlotSizeWidth, inventorySlotSizeHeight).expand().fill().align(Align.center).pad(1);
+                inventoryWindow.add(inventorySlot).size(inventorySlotSizeWidth, inventorySlotSizeHeight).expand().fill().align(Align.center).pad(Gdx.graphics.getWidth()*0.001f);
                 inventoryWindow.pack();
             }
             inventorySlot.getChild(0).setSize(inventorySlot.getWidth(), inventorySlot.getHeight());
         }
         inventoryWindow.pack();
-        table.add(inventoryTable).fill();
-        table.add(fpsCounterLabel).size(20);
+        table.add(inventoryTable).center();
+        table.add().expandX();
         table.pack();
         uiStage.addActor(inventoryWindow);
         uiStage.addActor(table);
@@ -305,6 +309,11 @@ public class GameScreen extends BaseScreen implements InventoryListener {
     }
 
 
+    @Override
+    public void hide() {
+        super.hide();
+        game.inventory.removeListener(this);
+    }
 
     @Override
     public void dispose() {

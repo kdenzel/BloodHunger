@@ -15,8 +15,8 @@ public class DesktopLauncher {
         boolean generate = false;
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
         config.forceExit = false;
-        config.width = 800;
-        config.height = 600;
+        config.width = 1920;
+        config.height = 1080;
         config.fullscreen = false;
         //Enables max fps
         /*config.foregroundFPS = -1;
