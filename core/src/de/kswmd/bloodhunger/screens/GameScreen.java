@@ -57,6 +57,7 @@ public class GameScreen extends BaseScreen implements InventoryListener {
         int enemies = MathUtils.random(30) + 10;
         engine.addEntity(EntityFactory.createLevelExit(-0.5f,-0.5f,1f,1f,BloodHungerGame.SCREEN_INTRO, LevelManager.Level.EXAMPLE));
         game.inventory.addListener(this);
+        game.setAmbientLight(0,0,0,0.5f);
     }
 
     private void createHUD() {
@@ -99,7 +100,6 @@ public class GameScreen extends BaseScreen implements InventoryListener {
         uiStage.addActor(inventoryWindow);
         uiStage.addActor(table);
         inventoryWindow.setPosition(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f, Align.center);
-        game.setAmbientLight(0,0,0,0.25f);
         //uiStage.setDebugAll(game.debug);
     }
 
@@ -289,7 +289,7 @@ public class GameScreen extends BaseScreen implements InventoryListener {
         Entity flashLightEntity = EntityFactory.createFlashLight(0, 0);
         game.engine.addEntity(flashLightEntity);
         LightComponent lc = Mapper.flashLightComponent.get(flashLightEntity);
-        lc.setLightReference(new ConeLight(game.rayHandler, 4, null, 10 * 64 * BloodHungerGame.UNIT_SCALE, 0, 0, 0, 45));
+        lc.setLightReference(new ConeLight(game.rayHandler, 50, null, 10 * 64 * BloodHungerGame.UNIT_SCALE, 0, 0, 0, 45));
     }
 
     /**

@@ -1,113 +1,57 @@
 package de.kswmd.bloodhunger.components;
 
 import com.badlogic.ashley.core.Component;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
-import de.kswmd.bloodhunger.Assets;
 import de.kswmd.bloodhunger.BloodHungerGame;
+import de.kswmd.bloodhunger.skins.PlayerSkin;
 import de.kswmd.bloodhunger.ui.inventory.Inventory;
 
 public class PlayerComponent implements Component {
 
     public enum FeetAnimationType {
-        IDLE(1f, "Top_Down_Survivor_custom/feet/idle/survivor-idle", Animation.PlayMode.LOOP),
-        MOVE_FORWARD(1 / 24f, "Top_Down_Survivor_custom/feet/walk/survivor-walk", Animation.PlayMode.LOOP),
-        MOVE_BACKWARD(1 / 24f, "Top_Down_Survivor_custom/feet/walk/survivor-walk", Animation.PlayMode.LOOP_REVERSED),
-        MOVE_LEFT(1 / 24f, "Top_Down_Survivor_custom/feet/strafe_left/survivor-strafe_left", Animation.PlayMode.LOOP),
-        MOVE_RIGHT(1 / 24f, "Top_Down_Survivor_custom/feet/strafe_right/survivor-strafe_right", Animation.PlayMode.LOOP);
+        IDLE(1f, "feet/idle/survivor-idle", Animation.PlayMode.LOOP),
+        MOVE_FORWARD(1 / 24f, "feet/walk/survivor-walk", Animation.PlayMode.LOOP),
+        MOVE_BACKWARD(1 / 24f, "feet/walk/survivor-walk", Animation.PlayMode.LOOP_REVERSED),
+        MOVE_LEFT(1 / 24f, "feet/strafe_left/survivor-strafe_left", Animation.PlayMode.LOOP),
+        MOVE_RIGHT(1 / 24f, "feet/strafe_right/survivor-strafe_right", Animation.PlayMode.LOOP);
 
-        public final Animation<TextureRegion> animation;
-        private final float initialFrameDuration;
+        public final float initialFrameDuration;
+        public String resource;
+        public Animation.PlayMode playMode;
 
         FeetAnimationType(float initialFrameDuration, String resource, Animation.PlayMode playMode) {
-            TextureAtlas atlas = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_GAME_ANIMATIONS);
             this.initialFrameDuration = initialFrameDuration;
-            this.animation = new Animation<>(initialFrameDuration, atlas.findRegions(resource), playMode);
-        }
-
-        public float getInitialFrameDuration(){
-            return initialFrameDuration;
+            this.resource = resource;
+            this.playMode = playMode;
         }
     }
 
     public enum BodyAnimationType {
-        IDLE_NONE(1/24f,"Top_Down_Survivor_custom/none/idle/survivor-idle_none",Animation.PlayMode.LOOP),
-        MOVE_NONE(1/24f,"Top_Down_Survivor_custom/none/move/survivor-move_none",Animation.PlayMode.LOOP),
-        MELEE_NONE(1/48f,"Top_Down_Survivor_custom/none/meleeattack/survivor-meleeattack_none",Animation.PlayMode.NORMAL),
-        IDLE_FLASHLIGHT(1 / 24f, "Top_Down_Survivor_custom/flashlight/idle/survivor-idle_flashlight", Animation.PlayMode.LOOP),
-        MOVE_FLASHLIGHT(1 / 24f, "Top_Down_Survivor_custom/flashlight/move/survivor-move_flashlight", Animation.PlayMode.LOOP),
-        MELEE_FLASHLIGHT(1 / 48f, "Top_Down_Survivor_custom/flashlight/meleeattack/survivor-meleeattack_flashlight", Animation.PlayMode.NORMAL),
-        IDLE_HANDGUN(1 / 24f, "Top_Down_Survivor_custom/handgun/idle/survivor-idle_handgun", Animation.PlayMode.LOOP),
-        MOVE_HANDGUN(1 / 24f, "Top_Down_Survivor_custom/handgun/move/survivor-move_handgun", Animation.PlayMode.LOOP),
-        SHOOT_HANDGUN(1 / 48f, "Top_Down_Survivor_custom/handgun/shoot/survivor-shoot_handgun", Animation.PlayMode.NORMAL),
-        MELEE_HANDGUN(1 / 48f, "Top_Down_Survivor_custom/handgun/meleeattack/survivor-meleeattack_handgun", Animation.PlayMode.NORMAL),
-        RELOAD_HANDGUN(1 / 24f, "Top_Down_Survivor_custom/handgun/reload/survivor-reload_handgun", Animation.PlayMode.NORMAL);
+        //None
+        IDLE_NONE(1 / 24f, "none/idle/survivor-idle_none", Animation.PlayMode.LOOP),
+        MOVE_NONE(1 / 24f, "none/move/survivor-move_none", Animation.PlayMode.LOOP),
+        MELEE_NONE(1 / 48f, "none/meleeattack/survivor-meleeattack_none", Animation.PlayMode.NORMAL),
+        //Flashlight
+        IDLE_FLASHLIGHT(1 / 24f, "flashlight/idle/survivor-idle_flashlight", Animation.PlayMode.LOOP),
+        MOVE_FLASHLIGHT(1 / 24f, "flashlight/move/survivor-move_flashlight", Animation.PlayMode.LOOP),
+        MELEE_FLASHLIGHT(1 / 48f, "flashlight/meleeattack/survivor-meleeattack_flashlight", Animation.PlayMode.NORMAL),
+        //Handgun
+        IDLE_HANDGUN(1 / 24f, "handgun/idle/survivor-idle_handgun", Animation.PlayMode.LOOP),
+        MOVE_HANDGUN(1 / 24f, "handgun/move/survivor-move_handgun", Animation.PlayMode.LOOP),
+        SHOOT_HANDGUN(1 / 48f, "handgun/shoot/survivor-shoot_handgun", Animation.PlayMode.NORMAL),
+        MELEE_HANDGUN(1 / 48f, "handgun/meleeattack/survivor-meleeattack_handgun", Animation.PlayMode.NORMAL),
+        RELOAD_HANDGUN(1 / 24f, "handgun/reload/survivor-reload_handgun", Animation.PlayMode.NORMAL);
 
-
-        public final Animation<TextureRegion> animation;
-        private final Array<float[]> polygonVertices = new Array<>();
-        private final Array<float[]> polygonVerticesTransformed = new Array<>();
-        private final float initialFrameDuration;
+        public final float initialFrameDuration;
+        public final String resource;
+        public final Animation.PlayMode playMode;
 
         BodyAnimationType(float initialFrameDuration, String resource, Animation.PlayMode playMode) {
             this.initialFrameDuration = initialFrameDuration;
-            TextureAtlas atlas = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_GAME_ANIMATIONS);
-            this.animation = new Animation<>(initialFrameDuration, atlas.findRegions(resource), playMode);
-            FileHandle handle = Gdx.files.internal("animation/" + resource + ".poly");
-            if (handle.exists()) {
-                String fileContent = handle.readString();
-                String[] lines = fileContent.split("\\r?\\n");
-                for (String line : lines) {
-                    String[] array = line.replaceAll("[{}]", "").split(",");
-                    float[] vertices = new float[array.length];
-                    for (int j = 0; j < array.length; j++) {
-                        vertices[j] = Float.parseFloat(array[j]);
-                    }
-                    polygonVertices.add(vertices);
-                }
+            this.resource = resource;
+            this.playMode = playMode;
 
-            } else {
-                //Create per default a square from 0,0 to width height
-                polygonVertices.add(new float[]{0,0,1,0,1,1,0,1});
-            }
-            polygonVertices.forEach(v -> polygonVerticesTransformed.add(new float[v.length]));
-        }
-
-        public boolean hasPolygons() {
-            return !polygonVertices.isEmpty();
-        }
-
-        public float[] getVertices(float time, float width, float height) {
-            if (polygonVertices.isEmpty()) {
-                return null;
-            }
-            float scale = ((float) animation.getKeyFrameIndex(time) / animation.getKeyFrames().length);
-            int polygonFrame = (int) (polygonVertices.size * scale);
-
-
-            float[] v = polygonVertices.get(polygonFrame);
-            float[] tv = polygonVerticesTransformed.get(polygonFrame);
-            for (int i = 0; i < v.length; i++) {
-                if (i % 2 == 0) {
-                    tv[i] = v[i] * width;
-                } else {
-                    tv[i] = v[i] * height;
-                }
-            }
-            return tv;
-        }
-
-        public float[] getVertices(float time, DimensionComponent dimensionComponent) {
-            return getVertices(time, dimensionComponent.width, dimensionComponent.height);
-        }
-
-        public float getInitialFrameDuration() {
-            return initialFrameDuration;
         }
     }
 
@@ -180,8 +124,9 @@ public class PlayerComponent implements Component {
     private BodyAnimationType bodyAnimationType = BodyAnimationType.IDLE_FLASHLIGHT;
 
     public final Inventory inventory;
+    private PlayerSkin skin = PlayerSkin.create("player_skin_soldier");
 
-    public PlayerComponent(Inventory  inventory) {
+    public PlayerComponent(Inventory inventory) {
         this.inventory = inventory;
     }
 
@@ -205,7 +150,8 @@ public class PlayerComponent implements Component {
     }
 
     public BodyAnimationType getBodyAnimationType() {
-        if (bodyAnimationType.animation.isAnimationFinished(timer) && bodyAnimationType.animation.getPlayMode().equals(Animation.PlayMode.NORMAL)) {
+        if (skin.getBodyAnimationSkinElement(bodyAnimationType).animation.isAnimationFinished(timer)
+                && skin.getBodyAnimationSkinElement(bodyAnimationType).animation.getPlayMode().equals(Animation.PlayMode.NORMAL)) {
             tool.status = ToolStatus.IDLE;
         }
         BodyAnimationType bodyAnimationType;
@@ -310,6 +256,14 @@ public class PlayerComponent implements Component {
                 throw new IllegalStateException("No moving bodyanimationtype found for " + tool);
         }
         return bodyAnimationType;
+    }
+
+    public PlayerSkin getSkin() {
+        return skin;
+    }
+
+    public void setSkin(PlayerSkin skin){
+        this.skin = skin;
     }
 
     public void switchTool(Tool tool) {

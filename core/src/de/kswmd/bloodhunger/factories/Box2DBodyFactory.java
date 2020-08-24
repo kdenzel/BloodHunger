@@ -27,6 +27,7 @@ public final class Box2DBodyFactory {
 // Create a fixture definition to apply our shape to
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = polygonShape;
+        fixtureDef.density = 1;
 // Create our fixture and attach it to the body
         Fixture fixture = body.createFixture(fixtureDef);
 // Remember to dispose of any shapes after you're done with them!

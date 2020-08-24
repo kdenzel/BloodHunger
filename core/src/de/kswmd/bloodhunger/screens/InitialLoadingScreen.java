@@ -47,7 +47,7 @@ public class InitialLoadingScreen extends BaseScreen {
         shapeRenderer.end();
         if (manager.update()) {
             game.initAfterLoading();
-            game.setLevel(new LevelExitComponent(BloodHungerGame.SCREEN_INTRO, LevelManager.Level.EXAMPLE));
+            game.setLevel(new LevelExitComponent(BloodHungerGame.SCREEN_GAME, LevelManager.Level.EXAMPLE));
             this.dispose();
         }
     }

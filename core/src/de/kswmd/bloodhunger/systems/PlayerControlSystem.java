@@ -10,6 +10,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.*;
+import de.kswmd.bloodhunger.skins.SkinElement;
 import de.kswmd.bloodhunger.utils.Mapper;
 
 public class PlayerControlSystem extends EntitySystem {
@@ -46,10 +47,10 @@ public class PlayerControlSystem extends EntitySystem {
                 pc.feetAnimationType = PlayerComponent.FeetAnimationType.MOVE_FORWARD;
                 if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
                     speed *= 2;
-                    pc.feetAnimationType.animation.setFrameDuration(pc.feetAnimationType.getInitialFrameDuration()/2);
+                    pc.getSkin().getFeetAnimationSkinElement(pc.feetAnimationType).animation.setFrameDuration(pc.feetAnimationType.initialFrameDuration/2);
                     run = true;
                 } else {
-                    pc.feetAnimationType.animation.setFrameDuration(pc.feetAnimationType.getInitialFrameDuration());
+                    pc.getSkin().getFeetAnimationSkinElement(pc.feetAnimationType).animation.setFrameDuration(pc.feetAnimationType.initialFrameDuration);
                 }
                 vc.velocityVec.set(0, speed);
             } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
@@ -68,13 +69,14 @@ public class PlayerControlSystem extends EntitySystem {
             pc.timer += deltaTime % 10;
             //Set polygon depending on frame for bodyanimation
             PlayerComponent.BodyAnimationType bodyAnimationType = pc.getBodyAnimationType();
+            SkinElement bodySkinElement = pc.getSkin().getBodyAnimationSkinElement(bodyAnimationType);
             if(run){
-                bodyAnimationType.animation.setFrameDuration(bodyAnimationType.getInitialFrameDuration()/2);
+                bodySkinElement.animation.setFrameDuration(bodyAnimationType.initialFrameDuration/2);
             } else {
-                bodyAnimationType.animation.setFrameDuration(bodyAnimationType.getInitialFrameDuration());
+                bodySkinElement.animation.setFrameDuration(bodyAnimationType.initialFrameDuration);
             }
-            if (bodyAnimationType.hasPolygons()) {
-                boundsComponent.setPolygon(bodyAnimationType.getVertices(pc.timer, dimensionComponent), 1);
+            if (bodySkinElement.hasPolygons()) {
+                boundsComponent.setPolygon(bodySkinElement.getPolygonInWorldSize(pc.timer, dimensionComponent), 1);
             }
             Vector2 weaponFront = pc.getTool().getTransformedToolPositionWithOffset(positionComponent,dimensionComponent,rotationComponent);
             flashLights.forEach(f -> {

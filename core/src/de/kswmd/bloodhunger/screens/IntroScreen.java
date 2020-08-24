@@ -46,6 +46,7 @@ public class IntroScreen extends BaseScreen {
 
     @Override
     protected void initialize() {
+        Gdx.input.setCursorCatched(false);
         scenes = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_SCENES);
         tvScreenAnimation = new Animation<>(1 / 4f, scenes.findRegions("intro/tv_image"), Animation.PlayMode.LOOP);
         backgroudTextureRegion = scenes.findRegion("intro/background");

@@ -17,6 +17,7 @@ import de.kswmd.bloodhunger.Assets;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.*;
 import de.kswmd.bloodhunger.factories.EntityFactory;
+import de.kswmd.bloodhunger.skins.SkinElement;
 import de.kswmd.bloodhunger.ui.inventory.Inventory;
 import de.kswmd.bloodhunger.utils.LevelManager;
 import de.kswmd.bloodhunger.utils.Mapper;
@@ -123,8 +124,11 @@ public class RenderingSystem extends EntitySystem {
             PlayerComponent playerComponent = Mapper.playerComponent.get(entity);
 
             PlayerComponent.BodyAnimationType bodyAnimationType = playerComponent.getBodyAnimationType();
-            TextureRegion bodyRegion = bodyAnimationType.animation.getKeyFrame(playerComponent.timer);
-            TextureRegion feetRegion = playerComponent.feetAnimationType.animation.getKeyFrame(playerComponent.timer);
+            SkinElement bodySkinElement = playerComponent.getSkin().getBodyAnimationSkinElement(bodyAnimationType);
+            SkinElement feetSkinElement = playerComponent.getSkin().getFeetAnimationSkinElement(playerComponent.feetAnimationType);
+
+            TextureRegion bodyRegion = bodySkinElement.animation.getKeyFrame(playerComponent.timer);
+            TextureRegion feetRegion = feetSkinElement.animation.getKeyFrame(playerComponent.timer);
 
             float bodyWidthInDimensions = dimensionComponent.width / bodyRegion.getRegionWidth();
             float bodyHeightInDimensions = dimensionComponent.height / bodyRegion.getRegionHeight();
