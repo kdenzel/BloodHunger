@@ -1,9 +1,11 @@
 package de.kswmd.bloodhunger.factories;
 
+import box2dLight.ConeLight;
+import box2dLight.RayHandler;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObjects;
@@ -11,12 +13,9 @@ import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.Array;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.*;
-import de.kswmd.bloodhunger.screens.GameScreen;
 import de.kswmd.bloodhunger.ui.inventory.Inventory;
-import de.kswmd.bloodhunger.ui.inventory.InventorySlot;
 import de.kswmd.bloodhunger.utils.LevelManager;
 import de.kswmd.bloodhunger.utils.Mapper;
 
@@ -28,14 +27,14 @@ public final class EntityFactory {
     private EntityFactory() {
     }
 
-    public static Entity createPlayer(float x, float y, Inventory inventory) {
+    public static Entity createPlayer(float x, float y, PlayerComponent playerComponent) {
         Entity player = new Entity();
-        player.add(new PositionComponent(x,y));
+        player.add(new PositionComponent(x, y));
         player.add(new VelocityComponent());
         player.add(new DimensionComponent(128 * BloodHungerGame.UNIT_SCALE, 128 * BloodHungerGame.UNIT_SCALE));
         player.add(new RotationComponent());
         player.add(new CenterCameraComponent());
-        player.add(new PlayerComponent(inventory));
+        player.add(playerComponent);
         DimensionComponent dc = Mapper.dimensionComponent.get(player);
         //Creates new boundscomponent with feet vertices for z-layer 0
         BoundsComponent bc = new BoundsComponent(dc.width, dc.height,
@@ -56,7 +55,7 @@ public final class EntityFactory {
         wall.add(new DimensionComponent(width, height));
         wall.add(new RotationComponent());
         BoundsComponent bc = new BoundsComponent(Mapper.dimensionComponent.get(wall));
-        bc.getPolygon(0).setPosition(x,y);
+        bc.getPolygon(0).setPosition(x, y);
         wall.add(bc);
         return wall;
     }
@@ -76,7 +75,7 @@ public final class EntityFactory {
                         0.5f * dc.width, 0.5f * dc.height,
                         0.0f * dc.width, 0.5f * dc.height
                 });
-        bc.setBoundaryPolygon(4,1);
+        bc.setBoundaryPolygon(4, 1);
         enemy.add(bc);
         enemy.add(new EnemyComponent());
         return enemy;
@@ -137,60 +136,72 @@ public final class EntityFactory {
         stone.add(new DimensionComponent(width, height));
         BoundsComponent bc = new BoundsComponent(Mapper.dimensionComponent.get(stone));
         bc.setPolygon(vertices, 0);
-        bc.setPosition(x,y);
+        bc.setPosition(x, y);
         stone.add(bc);
         return stone;
     }
 
     public static Entity createCrosshair(float x, float y, float width, float height) {
         Entity crossHair = new Entity();
-        crossHair.add(new PositionComponent(x,y));
-        crossHair.add(new DimensionComponent(width,height));
+        crossHair.add(new PositionComponent(x, y));
+        crossHair.add(new DimensionComponent(width, height));
         crossHair.add(new FollowMouseComponent());
         crossHair.add(new RotationComponent());
         return crossHair;
     }
 
-    public static Entity createStaticLight(float x, float y, LightComponent.Type type){
+    public static Entity createStaticLight(float x, float y, LightComponent lightComponent) {
         Entity light = new Entity();
-        light.add(new PositionComponent(x,y));
+        light.add(new PositionComponent(x, y));
         light.add(new RotationComponent());
-        light.add(new LightComponent(type));
+        light.add(lightComponent);
         return light;
     }
 
-    public static Entity createDynamicLight(float x, float y, LightComponent.Type type){
-        Entity light = createStaticLight(x,y,type);
+    public static Entity createDynamicLight(float x, float y, LightComponent lightComponent) {
+        Entity light = createStaticLight(x, y, lightComponent);
         light.add(new VelocityComponent());
         return light;
     }
 
-    public static Entity createFlashLight(float x, float y){
-        Entity light = createDynamicLight(x,y, LightComponent.Type.CONE);
-        light.remove(LightComponent.class);
-        light.add(new FlashLightComponent(LightComponent.Type.CONE));
+    public static Entity createFlashLight(float x, float y, RayHandler rayHandler) {
+        Entity light = createDynamicLight(x, y, new FlashLightComponent(LightComponent.Type.CONE));
+        LightComponent lc = Mapper.flashLightComponent.get(light);
+        lc.setLightReference(new ConeLight(
+                rayHandler, 50, null, 10 * BloodHungerGame.UNIT * BloodHungerGame.UNIT_SCALE, 0, 0, 0, 45
+        ));
         return light;
     }
 
-    public static Entity createItem(float x, float y,float width, float height,ItemComponent.ItemType itemType){
+    public static Entity createPlayerLight(float x, float y, RayHandler rayHandler) {
+        Entity light = createDynamicLight(x, y, new PlayerLightComponent(LightComponent.Type.POINT));
+        Mapper.playerLightComponent.get(light).setLightReference(
+                new ConeLight(rayHandler, 10,null, 4, 0, 0, 0, 360
+                )
+        );
+
+        return light;
+    }
+
+    public static Entity createItem(float x, float y, float width, float height, ItemComponent.ItemType itemType) {
         Entity item = new Entity();
-        item.add(new PositionComponent(x,y));
-        item.add(new DimensionComponent(width,height));
-        BoundsComponent bc = new BoundsComponent(width,height);
-        bc.setPosition(x,y);
+        item.add(new PositionComponent(x, y));
+        item.add(new DimensionComponent(width, height));
+        BoundsComponent bc = new BoundsComponent(width, height);
+        bc.setPosition(x, y);
         item.add(bc);
         item.add(new ItemComponent(itemType));
         return item;
     }
 
-    public static Entity createLevelExit(float x, float y, float width, float height, Screen nextScreen, LevelManager.Level level){
+    public static Entity createLevelExit(float x, float y, float width, float height, Screen nextScreen, LevelManager.Level level) {
         Entity item = new Entity();
-        item.add(new PositionComponent(x,y));
-        item.add(new DimensionComponent(width,height));
-        BoundsComponent bc = new BoundsComponent(width,height);
-        bc.setPosition(x,y);
+        item.add(new PositionComponent(x, y));
+        item.add(new DimensionComponent(width, height));
+        BoundsComponent bc = new BoundsComponent(width, height);
+        bc.setPosition(x, y);
         item.add(bc);
-        item.add(new LevelExitComponent(nextScreen,level));
+        item.add(new LevelExitComponent(nextScreen, level));
         return item;
     }
 

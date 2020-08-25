@@ -1,6 +1,5 @@
 package de.kswmd.bloodhunger.screens;
 
-import box2dLight.ConeLight;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
@@ -8,7 +7,6 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -18,6 +16,7 @@ import com.badlogic.gdx.utils.Align;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.*;
 import de.kswmd.bloodhunger.factories.EntityFactory;
+import de.kswmd.bloodhunger.ui.inventory.Inventory;
 import de.kswmd.bloodhunger.ui.inventory.InventoryListener;
 import de.kswmd.bloodhunger.ui.inventory.InventorySlot;
 import de.kswmd.bloodhunger.utils.LevelManager;
@@ -48,16 +47,17 @@ public class GameScreen extends BaseScreen implements InventoryListener {
         createHUD();
         Engine engine = game.engine;
         engine.addEntity(EntityFactory.createCrosshair(0, 0, 48 * BloodHungerGame.UNIT_SCALE, 48 * BloodHungerGame.UNIT_SCALE));
-        engine.addEntity(EntityFactory.createPlayer(2, 2, game.inventory));
+        engine.addEntity(EntityFactory.createPlayer(2, 2, game.playerComponent));
+        engine.addEntity(EntityFactory.createPlayerLight(0, 0, game.rayHandler));
         for (int i = 0; i < 9; i++)
             engine.addEntity(EntityFactory.createItem(5 + i, 5, 32 * BloodHungerGame.UNIT_SCALE, 32 * BloodHungerGame.UNIT_SCALE, ItemComponent.ItemType.FLASHLIGHT));
         for (int i = 0; i < 9; i++)
             engine.addEntity(EntityFactory.createItem(5 + i, 4, 32 * BloodHungerGame.UNIT_SCALE, 32 * BloodHungerGame.UNIT_SCALE, ItemComponent.ItemType.HANDGUN));
         //engine.addEntity(EntityFactory.createWall(0, 0, 2000*BloodHungerGame.UNIT_SCALE, 64*BloodHungerGame.UNIT_SCALE, null));
-        int enemies = MathUtils.random(30) + 10;
-        engine.addEntity(EntityFactory.createLevelExit(-0.5f,-0.5f,1f,1f,BloodHungerGame.SCREEN_INTRO, LevelManager.Level.EXAMPLE));
-        game.inventory.addListener(this);
-        game.setAmbientLight(0,0,0,0.5f);
+        //int enemies = MathUtils.random(30) + 10;
+        engine.addEntity(EntityFactory.createLevelExit(-0.5f, -0.5f, 1f, 1f, BloodHungerGame.SCREEN_INTRO, LevelManager.Level.EXAMPLE));
+        game.playerComponent.inventory.addListener(this);
+        game.setAmbientLight(0, 0, 0, 0.01f);
     }
 
     private void createHUD() {
@@ -77,18 +77,18 @@ public class GameScreen extends BaseScreen implements InventoryListener {
         inventoryWindow.setMovable(false);
         inventoryWindow.setKeepWithinStage(true);
         float inventorySlotSizeWidth = ((float) Gdx.graphics.getWidth() * 0.05f);
-        float inventorySlotSizeHeight = ((float) Gdx.graphics.getHeight() * 0.1f);
+        float inventorySlotSizeHeight = ((float) Gdx.graphics.getHeight() * 0.08f);
 
-        for (int i = 0; i < game.inventory.size(); i++) {
-            InventorySlot inventorySlot = game.inventory.get(i);
+        for (int i = 0; i < game.playerComponent.inventory.size(); i++) {
+            InventorySlot inventorySlot = game.playerComponent.inventory.get(i);
             if (i < 8) {
-                inventoryTable.add(inventorySlot).size(inventorySlotSizeWidth, inventorySlotSizeHeight).expand().fill().align(Align.center).pad(Gdx.graphics.getWidth()*0.001f);
+                inventoryTable.add(inventorySlot).size(inventorySlotSizeWidth, inventorySlotSizeHeight).expand().fill().align(Align.center).pad(Gdx.graphics.getWidth() * 0.001f);
                 inventoryTable.pack();
             } else {
-                if ((i - 8) % 5 == 0 && (i - 8) > 0) {
+                if ((i - Inventory.SLOTS) % 5 == 0 && (i - Inventory.SLOTS) > 0) {
                     inventoryWindow.row();
                 }
-                inventoryWindow.add(inventorySlot).size(inventorySlotSizeWidth, inventorySlotSizeHeight).expand().fill().align(Align.center).pad(Gdx.graphics.getWidth()*0.001f);
+                inventoryWindow.add(inventorySlot).size(inventorySlotSizeWidth, inventorySlotSizeHeight).expand().fill().align(Align.center).pad(Gdx.graphics.getWidth() * 0.001f);
                 inventoryWindow.pack();
             }
             inventorySlot.getChild(0).setSize(inventorySlot.getWidth(), inventorySlot.getHeight());
@@ -127,8 +127,8 @@ public class GameScreen extends BaseScreen implements InventoryListener {
         game.shapeRenderer.setProjectionMatrix(game.camera.combined);
         game.shapeRenderer.setColor(Color.WHITE);
         int gridSize = 100;
-        for (int y = 0; y <= BloodHungerGame.UNIT_SCALE * gridSize; y += 64 * BloodHungerGame.UNIT_SCALE) {
-            for (int x = 0; x <= BloodHungerGame.UNIT_SCALE * gridSize; x += 64 * BloodHungerGame.UNIT_SCALE) {
+        for (int y = 0; y <= BloodHungerGame.UNIT_SCALE * gridSize; y += BloodHungerGame.UNIT * BloodHungerGame.UNIT_SCALE) {
+            for (int x = 0; x <= BloodHungerGame.UNIT_SCALE * gridSize; x += BloodHungerGame.UNIT * BloodHungerGame.UNIT_SCALE) {
                 game.shapeRenderer.line(x, 0, x, BloodHungerGame.UNIT_SCALE * gridSize);
             }
             game.shapeRenderer.line(0, y, BloodHungerGame.UNIT_SCALE * gridSize, y);
@@ -205,49 +205,49 @@ public class GameScreen extends BaseScreen implements InventoryListener {
         switch (keycode) {
             case Input.Keys.NUM_1:
                 player = game.engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-                game.inventory.setSelected(0);
+                game.playerComponent.inventory.setSelected(0);
                 playerComponent = Mapper.playerComponent.get(player);
                 keyPressed = true;
                 break;
             case Input.Keys.NUM_2:
                 player = game.engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-                game.inventory.setSelected(1);
+                game.playerComponent.inventory.setSelected(1);
                 playerComponent = Mapper.playerComponent.get(player);
                 keyPressed = true;
                 break;
             case Input.Keys.NUM_3:
                 player = game.engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-                game.inventory.setSelected(2);
+                game.playerComponent.inventory.setSelected(2);
                 playerComponent = Mapper.playerComponent.get(player);
                 keyPressed = true;
                 break;
             case Input.Keys.NUM_4:
                 player = game.engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-                game.inventory.setSelected(3);
+                game.playerComponent.inventory.setSelected(3);
                 playerComponent = Mapper.playerComponent.get(player);
                 keyPressed = true;
                 break;
             case Input.Keys.NUM_5:
                 player = game.engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-                game.inventory.setSelected(4);
+                game.playerComponent.inventory.setSelected(4);
                 playerComponent = Mapper.playerComponent.get(player);
                 keyPressed = true;
                 break;
             case Input.Keys.NUM_6:
                 player = game.engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-                game.inventory.setSelected(5);
+                game.playerComponent.inventory.setSelected(5);
                 playerComponent = Mapper.playerComponent.get(player);
                 keyPressed = true;
                 break;
             case Input.Keys.NUM_7:
                 player = game.engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-                game.inventory.setSelected(6);
+                game.playerComponent.inventory.setSelected(6);
                 playerComponent = Mapper.playerComponent.get(player);
                 keyPressed = true;
                 break;
             case Input.Keys.NUM_8:
                 player = game.engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
-                game.inventory.setSelected(7);
+                game.playerComponent.inventory.setSelected(7);
                 playerComponent = Mapper.playerComponent.get(player);
                 keyPressed = true;
                 break;
@@ -262,16 +262,18 @@ public class GameScreen extends BaseScreen implements InventoryListener {
                 keyPressed = true;
                 break;
             case Input.Keys.I:
-                Gdx.input.setCursorCatched(inventoryWindow.isVisible() && !game.debug);
-                game.followMouseSystem.setProcessing(inventoryWindow.isVisible());
-                game.playerControlSystem.setProcessing(inventoryWindow.isVisible());
-                inventoryWindow.setVisible(!inventoryWindow.isVisible());
-                Gdx.app.debug(TAG,"Inventory Window visible="+inventoryWindow.isVisible());
-                keyPressed = true;
+                if (game.playerComponent.inventory.hasBackpack()) {
+                    Gdx.input.setCursorCatched(inventoryWindow.isVisible() && !game.debug);
+                    game.followMouseSystem.setProcessing(inventoryWindow.isVisible());
+                    game.playerControlSystem.setProcessing(inventoryWindow.isVisible());
+                    inventoryWindow.setVisible(!inventoryWindow.isVisible());
+                    Gdx.app.debug(TAG, "Inventory Window visible=" + inventoryWindow.isVisible());
+                    keyPressed = true;
+                }
                 break;
         }
         if (playerComponent != null) {
-            InventorySlot slot = game.inventory.getSelectedSlot();
+            InventorySlot slot = game.playerComponent.inventory.getSelectedSlot();
             if (!slot.isEmpty()) {
                 playerComponent.switchTool(slot.getItemComponent().itemType.tool);
             } else {
@@ -286,10 +288,9 @@ public class GameScreen extends BaseScreen implements InventoryListener {
      * adds a new flashlight to the scene
      */
     private void turnFlashLightOn() {
-        Entity flashLightEntity = EntityFactory.createFlashLight(0, 0);
+        Entity flashLightEntity = EntityFactory.createFlashLight(0, 0, game.rayHandler);
         game.engine.addEntity(flashLightEntity);
-        LightComponent lc = Mapper.flashLightComponent.get(flashLightEntity);
-        lc.setLightReference(new ConeLight(game.rayHandler, 50, null, 10 * 64 * BloodHungerGame.UNIT_SCALE, 0, 0, 0, 45));
+
     }
 
     /**
@@ -312,7 +313,7 @@ public class GameScreen extends BaseScreen implements InventoryListener {
     @Override
     public void hide() {
         super.hide();
-        game.inventory.removeListener(this);
+        game.playerComponent.inventory.removeListener(this);
     }
 
     @Override

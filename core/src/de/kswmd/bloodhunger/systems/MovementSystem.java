@@ -24,9 +24,9 @@ public class MovementSystem extends IteratingSystem {
             BoundsComponent bc = Mapper.boundsComponent.get(entity);
             bc.setPosition(pc.x, pc.y);
         }
-        if (Mapper.flashLightComponent.has(entity)) {
-            LightComponent lc = Mapper.flashLightComponent.get(entity);
-            lc.getLightReference().setPosition(pc.x, pc.y);
+        if (Mapper.lightComponent.has(entity)) {
+            LightComponent lc = Mapper.lightComponent.get(entity);
+            lc.setPosition(pc.x, pc.y);
         }
     }
 }

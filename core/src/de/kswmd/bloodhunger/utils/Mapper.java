@@ -23,6 +23,7 @@ public final class Mapper {
     public static final ComponentMapper<VelocityComponent> velocityComponent = ComponentMapper.getFor(VelocityComponent.class);
     public static final ComponentMapper<LightComponent> lightComponent = ComponentMapper.getFor(LightComponent.class);
     public static final ComponentMapper<FlashLightComponent> flashLightComponent = ComponentMapper.getFor(FlashLightComponent.class);
+    public static final ComponentMapper<PlayerLightComponent> playerLightComponent = ComponentMapper.getFor(PlayerLightComponent.class);
     public static final ComponentMapper<ItemComponent> itemComponent = ComponentMapper.getFor(ItemComponent.class);
     public static final ComponentMapper<LevelExitComponent> levelExitComponent = ComponentMapper.getFor(LevelExitComponent.class);
 

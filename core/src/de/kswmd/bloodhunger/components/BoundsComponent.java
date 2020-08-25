@@ -4,7 +4,6 @@ import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -12,7 +11,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.factories.Box2DBodyFactory;
-import de.kswmd.bloodhunger.screens.GameScreen;
 
 /**
  * for collision detection
@@ -84,7 +82,7 @@ public class BoundsComponent implements Component, Disposable {
             polygon.setRotation(degree);
         });
         box2DBodyArray.forEach(body ->
-                body.setTransform(width/2, height/2, degree * MathUtils.degreesToRadians)
+                body.setTransform(-width/2,-height/2, degree * MathUtils.degreesToRadians)
         );
     }
 
@@ -116,18 +114,20 @@ public class BoundsComponent implements Component, Disposable {
             p = new Polygon(vertices);
             Rectangle r = p.getBoundingRectangle();
             boundaryPolygonArray.insert(z, p);
-            box2DBodyArray.insert(z, Box2DBodyFactory.createKinematicRectangleBody(r.x, r.y, r.width, r.height));
+            box2DBodyArray.insert(z, Box2DBodyFactory.createKinematicRectanglePolygonBody(width,height));
         } else {
             p = boundaryPolygonArray.get(z);
             p.setVertices(vertices);
             Rectangle r = p.getBoundingRectangle();
+            float hx = Math.min(r.width,width)/2;
+            float hy = Math.min(r.height,height)/2;
             Body b = box2DBodyArray.get(z);
             Array<Fixture> fixtures = b.getFixtureList();
             fixtures.forEach(fixture -> {
                 switch (fixture.getType()) {
                     case Polygon:
                         PolygonShape ps = (PolygonShape) fixture.getShape();
-                        ps.setAsBox(r.width / 2, r.height / 2);
+                        ps.setAsBox(hx,hy);
                         break;
 
                 }
@@ -166,7 +166,7 @@ public class BoundsComponent implements Component, Disposable {
     private void setPosition(float x, float y, int z) {
         boundaryPolygonArray.get(z).setPosition(x, y);
         Body b = box2DBodyArray.get(z);
-        b.setTransform(x + width / 2, y + height / 2, b.getAngle());
+        b.setTransform(x+width/2, y+height/2, b.getAngle());
     }
 
 

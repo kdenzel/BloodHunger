@@ -19,7 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Logger;
 import de.kswmd.bloodhunger.components.LevelExitComponent;
-import de.kswmd.bloodhunger.factories.EntityFactory;
+import de.kswmd.bloodhunger.components.PlayerComponent;
 import de.kswmd.bloodhunger.screens.GameScreen;
 import de.kswmd.bloodhunger.screens.InitialLoadingScreen;
 import de.kswmd.bloodhunger.screens.IntroScreen;
@@ -27,8 +27,6 @@ import de.kswmd.bloodhunger.screens.LoadNextLevelScreen;
 import de.kswmd.bloodhunger.systems.*;
 import de.kswmd.bloodhunger.ui.inventory.Inventory;
 import de.kswmd.bloodhunger.utils.LevelManager;
-
-import java.util.List;
 
 public class BloodHungerGame extends Game implements EntityListener {
 
@@ -60,7 +58,7 @@ public class BloodHungerGame extends Game implements EntityListener {
     public SpriteBatch spriteBatch;
     public RayHandler rayHandler;
     public OrthographicCamera camera;
-    public Inventory inventory;
+    public PlayerComponent playerComponent;
     public Skin uiSkin;
 
 
@@ -95,7 +93,7 @@ public class BloodHungerGame extends Game implements EntityListener {
     }
 
     public void initAfterLoading() {
-        this.inventory = Inventory.create();
+        playerComponent = new PlayerComponent(Inventory.create());
         TextureAtlas uiTextureAtlas = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_UI);
         uiSkin = new Skin(Gdx.files.internal("ui/uiskin.json"), uiTextureAtlas);
         followMouseSystem = new FollowMouseSystem(camera);

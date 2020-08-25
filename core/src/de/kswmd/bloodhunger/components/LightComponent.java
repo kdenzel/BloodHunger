@@ -26,4 +26,8 @@ public class LightComponent implements Component {
     public Light getLightReference() {
         return lightReference;
     }
+
+    public void setPosition(float x, float y){
+        lightReference.setPosition(x,y);
+    }
 }

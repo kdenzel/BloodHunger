@@ -17,11 +17,13 @@ public class PlayerControlSystem extends EntitySystem {
 
     private ImmutableArray<Entity> entities;
     private ImmutableArray<Entity> flashLights;
+    private ImmutableArray<Entity> playerLights;
 
     @Override
     public void addedToEngine(Engine engine) {
         entities = engine.getEntitiesFor(Family.all(PlayerComponent.class, VelocityComponent.class).get());
         flashLights = engine.getEntitiesFor(Family.all(FlashLightComponent.class).get());
+        playerLights = engine.getEntitiesFor(Family.all(PlayerLightComponent.class).get());
     }
 
     @Override
@@ -31,13 +33,13 @@ public class PlayerControlSystem extends EntitySystem {
 
     @Override
     public void update(float deltaTime) {
-        for (Entity e : entities) {
-            PositionComponent positionComponent = Mapper.positionComponent.get(e);
-            VelocityComponent vc = Mapper.velocityComponent.get(e);
-            PlayerComponent pc = Mapper.playerComponent.get(e);
-            BoundsComponent boundsComponent = Mapper.boundsComponent.get(e);
-            DimensionComponent dimensionComponent = Mapper.dimensionComponent.get(e);
-            RotationComponent rotationComponent = Mapper.rotationComponent.get(e);
+        for (Entity playerComponent : entities) {
+            PositionComponent positionComponent = Mapper.positionComponent.get(playerComponent);
+            VelocityComponent vc = Mapper.velocityComponent.get(playerComponent);
+            PlayerComponent pc = Mapper.playerComponent.get(playerComponent);
+            BoundsComponent boundsComponent = Mapper.boundsComponent.get(playerComponent);
+            DimensionComponent dimensionComponent = Mapper.dimensionComponent.get(playerComponent);
+            RotationComponent rotationComponent = Mapper.rotationComponent.get(playerComponent);
 
             pc.feetAnimationType = PlayerComponent.FeetAnimationType.IDLE;
             vc.velocityVec.setLength(0);
@@ -80,10 +82,19 @@ public class PlayerControlSystem extends EntitySystem {
             }
             Vector2 weaponFront = pc.getTool().getTransformedToolPositionWithOffset(positionComponent,dimensionComponent,rotationComponent);
             flashLights.forEach(f -> {
+                FlashLightComponent flashLightComponent = Mapper.flashLightComponent.get(f);
                 PositionComponent fpos = Mapper.positionComponent.get(f);
                 RotationComponent frot = Mapper.rotationComponent.get(f);
                 frot.lookingAngle = rotationComponent.lookingAngle;
                 fpos.set(weaponFront);
+                flashLightComponent.setPosition(weaponFront.x, weaponFront.y);
+            });
+            playerLights.forEach(pl -> {
+                PlayerLightComponent playerLightComponent = Mapper.playerLightComponent.get(pl);
+                PositionComponent plpos = Mapper.positionComponent.get(pl);
+                plpos.x = positionComponent.x + dimensionComponent.originX;
+                plpos.y = positionComponent.y + dimensionComponent.originY;
+                playerLightComponent.setPosition(plpos.x, plpos.y);
             });
         }
     }

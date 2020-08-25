@@ -16,11 +16,14 @@ public final class Inventory {
 
     private static final String TAG = Inventory.class.getSimpleName();
     public static final int SIZE = 33;
+    public static final int SLOTS = 8;
+    public static final int BACKPACK_SIZE = SIZE - SLOTS;
 
     private int itemCount;
     private int selectedSlotIndex;
-    private final Array<InventorySlot> inventorySlots = new Array<>(8);
+    private final Array<InventorySlot> inventorySlots = new Array<>(SLOTS);
     private final Array<InventoryListener> inventoryListeners = new Array<>(1);
+    private boolean backpack;
 
     private Inventory() {
     }
@@ -118,12 +121,20 @@ public final class Inventory {
         return inventory;
     }
 
-    public void addInventorySlot(InventorySlot slot) {
+    public boolean hasBackpack(){
+        return backpack;
+    }
+
+    public void setBackpack(boolean backpack) {
+        this.backpack = backpack;
+    }
+
+    private void addInventorySlot(InventorySlot slot) {
         slot.setInventory(this);
         inventorySlots.add(slot);
     }
 
-    public boolean removeInventorySlot(InventorySlot slot) {
+    private boolean removeInventorySlot(InventorySlot slot) {
         slot.setInventory(null);
         return inventorySlots.removeValue(slot, true);
     }
@@ -142,7 +153,7 @@ public final class Inventory {
     }
 
     public boolean isFull() {
-        return itemCount == inventorySlots.size;
+        return itemCount == SLOTS && !backpack || itemCount == inventorySlots.size;
     }
 
     public void setSelected(int slotIndex) {
