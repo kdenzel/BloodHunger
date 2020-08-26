@@ -174,7 +174,7 @@ public class RenderingSystem extends EntitySystem {
         if (playerComponent.getTool().getStatus().equals(PlayerComponent.ToolStatus.SHOOT)) {
             // Create effect:
             ParticleEffectPool.PooledEffect effect = shootEffectPool.obtain();
-            Vector2 bulletPosition = playerComponent.getTool().getTransformedToolPositionWithOffset(positionComponent, dimensionComponent, rotationComponent);
+            Vector2 bulletPosition = playerComponent.getSkin().getTransformedToolPositionWithOffset(positionComponent, dimensionComponent, rotationComponent);
             float x = bulletPosition.x;
             float y = bulletPosition.y;
             effect.setPosition(x, y);

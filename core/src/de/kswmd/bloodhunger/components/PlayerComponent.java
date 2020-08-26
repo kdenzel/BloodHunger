@@ -56,18 +56,16 @@ public class PlayerComponent implements Component {
     }
 
     public enum Tool {
-        NONE(false, 0),
-        FLASHLIGHT(false, -25 * BloodHungerGame.UNIT_SCALE),
-        HANDGUN(true, -25 * BloodHungerGame.UNIT_SCALE);
+        NONE(false),
+        FLASHLIGHT(false),
+        HANDGUN(true);
 
         private final Vector2 position = new Vector2();
         private final Vector2 offset = new Vector2();
         private ToolStatus status = ToolStatus.IDLE;
         private boolean shoot;
-        private float yOffset;
 
-        Tool(boolean shoot, float yOffset) {
-            this.yOffset = yOffset;
+        Tool(boolean shoot) {
             this.shoot = shoot;
         }
 
@@ -79,34 +77,6 @@ public class PlayerComponent implements Component {
             return status;
         }
 
-        /*
-         * Returns the transformed position with offset of the weapon, for example the flashlight is not centered and instead a little on the right/left,
-         * the Position of the light cone will be a little offset. The same for guns and bullets.
-         *
-         * @param pc Position
-         * @param dc Dimension
-         * @param rc Rotation
-         * @return
-         */
-        public Vector2 getTransformedToolPositionWithOffset(PositionComponent pc, DimensionComponent dc, RotationComponent rc) {
-            position.setZero().set(dc.originX + 1 * BloodHungerGame.UNIT_SCALE, yOffset);
-            position.rotate(rc.lookingAngle);
-            position.add(pc.x + dc.originX, pc.y + dc.originY);
-            return position;
-        }
-
-        /**
-         * returns the transformed offset without position
-         *
-         * @param dc Dimension
-         * @param rc Rotation
-         * @return transformed Vector2 offset
-         */
-        public Vector2 getTransformedToolOffset(DimensionComponent dc, RotationComponent rc) {
-            offset.setZero().set(0, yOffset);
-            offset.rotate(rc.lookingAngle);
-            return offset;
-        }
     }
 
     public enum ToolStatus {
@@ -124,7 +94,7 @@ public class PlayerComponent implements Component {
     private BodyAnimationType bodyAnimationType = BodyAnimationType.IDLE_FLASHLIGHT;
 
     public final Inventory inventory;
-    private PlayerSkin skin = PlayerSkin.create("player_skin_soldier");
+    private PlayerSkin skin = PlayerSkin.create("player_skin_civil",0,-20f * BloodHungerGame.UNIT_SCALE);
 
     public PlayerComponent(Inventory inventory) {
         this.inventory = inventory;
@@ -272,5 +242,10 @@ public class PlayerComponent implements Component {
 
     public Tool getTool() {
         return tool;
+    }
+
+
+    public void update(float deltaTime) {
+        this.timer += deltaTime % 100;
     }
 }

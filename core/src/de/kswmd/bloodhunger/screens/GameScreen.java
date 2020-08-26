@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.Align;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.*;
 import de.kswmd.bloodhunger.factories.EntityFactory;
+import de.kswmd.bloodhunger.skins.PlayerSkin;
 import de.kswmd.bloodhunger.ui.inventory.Inventory;
 import de.kswmd.bloodhunger.ui.inventory.InventoryListener;
 import de.kswmd.bloodhunger.ui.inventory.InventorySlot;
@@ -55,6 +56,7 @@ public class GameScreen extends BaseScreen implements InventoryListener {
             engine.addEntity(EntityFactory.createItem(5 + i, 4, 32 * BloodHungerGame.UNIT_SCALE, 32 * BloodHungerGame.UNIT_SCALE, ItemComponent.ItemType.HANDGUN));
         //engine.addEntity(EntityFactory.createWall(0, 0, 2000*BloodHungerGame.UNIT_SCALE, 64*BloodHungerGame.UNIT_SCALE, null));
         //int enemies = MathUtils.random(30) + 10;
+        engine.addEntity(EntityFactory.createSkinEntity(4,4,1,1, PlayerSkin.create("player_skin_soldier",0,-25f*BloodHungerGame.UNIT_SCALE)));
         engine.addEntity(EntityFactory.createLevelExit(-0.5f, -0.5f, 1f, 1f, BloodHungerGame.SCREEN_INTRO, LevelManager.Level.EXAMPLE));
         game.playerComponent.inventory.addListener(this);
         game.setAmbientLight(0, 0, 0, 0.01f);
@@ -171,7 +173,7 @@ public class GameScreen extends BaseScreen implements InventoryListener {
             PositionComponent bulletPos = Mapper.positionComponent.get(bullet);
             DimensionComponent bulletDim = Mapper.dimensionComponent.get(bullet);
             //Okay, get inital position
-            Vector2 bulletPosition = playerComponent.getTool().getTransformedToolPositionWithOffset(pc, dc, rc);
+            Vector2 bulletPosition = playerComponent.getSkin().getTransformedToolPositionWithOffset(pc, dc, rc);
             BULLET_OFFSET
                     .setZero()
                     .set(bulletDim.originX, 0)

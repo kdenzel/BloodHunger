@@ -17,7 +17,7 @@ public class BoundsCollisionSystem extends EntitySystem {
     private ImmutableArray<Entity> playerEntities;
     private Intersector.MinimumTranslationVector mtv = new Intersector.MinimumTranslationVector();
 
-    public BoundsCollisionSystem(BloodHungerGame game){
+    public BoundsCollisionSystem(BloodHungerGame game) {
         this.game = game;
     }
 
@@ -47,31 +47,8 @@ public class BoundsCollisionSystem extends EntitySystem {
                 }
                 //BE AWARE THE POLYGONS MUST BE COUNTER CLOCKWISE OTHERWISE GLITCHES APPEAR!!!!!!!1111!!!!!!!!!!!!!!!!
                 boolean polygonOverlap = Intersector.overlapConvexPolygons(poly1, poly2, mtv);
-                if (polygonOverlap && !Mapper.velocityComponent.has(otherBoundsEntity)) {
-                    //If it is an item, collect it
-                    if (Mapper.itemComponent.has(otherBoundsEntity)) {
-                        ItemComponent itemComponent = Mapper.itemComponent.get(otherBoundsEntity);
-                        //If item was added to inventory remove the entity
-                        if (Mapper.playerComponent.get(playerEntity).inventory.addItem(itemComponent))
-                            getEngine().removeEntity(otherBoundsEntity);
-                    }
-                    //If next level was reached, set next screen
-                    else if(Mapper.levelExitComponent.has(otherBoundsEntity)){
-                        game.setLevel(Mapper.levelExitComponent.get(otherBoundsEntity));
-                        break;
-                    }
-                    //If velocity is attached to the entity, it is a dynamic object that can be moved
-                    else if (Mapper.positionComponent.has(playerEntity) && Mapper.velocityComponent.has(playerEntity)) {
-                        PositionComponent pc = Mapper.positionComponent.get(playerEntity);
-                        float x = mtv.depth * mtv.normal.x;
-                        float y = mtv.depth * mtv.normal.y;
-                        pc.moveBy(x, y);
-                    }
-                } //Otherwise the player overlaps with an enemy, take damage
-                else if (polygonOverlap && Mapper.enemyComponent.has(otherBoundsEntity)) {
-                    Gdx.app.debug("DAMAGE", "OUCH " + System.currentTimeMillis());
-                } else if (polygonOverlap) {
-                    Gdx.app.debug("COLLISION DETECTED", "WITH SOME MOVING OBJECT");
+                if (polygonOverlap) {
+                    onPlayerCollidesWithObject(playerEntity, otherBoundsEntity);
                 }
 
             }
@@ -101,6 +78,41 @@ public class BoundsCollisionSystem extends EntitySystem {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     *
+     * @param playerEntity the player
+     * @param otherBoundsEntity the entity he collides with
+     */
+    private void onPlayerCollidesWithObject(Entity playerEntity, Entity otherBoundsEntity) {
+        if (!Mapper.velocityComponent.has(otherBoundsEntity)) {
+            //If it is an item, collect it
+            if (Mapper.itemComponent.has(otherBoundsEntity)) {
+                ItemComponent itemComponent = Mapper.itemComponent.get(otherBoundsEntity);
+                //If item was added to inventory remove the entity
+                if (Mapper.playerComponent.get(playerEntity).inventory.addItem(itemComponent))
+                    getEngine().removeEntity(otherBoundsEntity);
+            }
+            //If next level was reached, set next screen
+            else if (Mapper.levelExitComponent.has(otherBoundsEntity)) {
+                game.setLevel(Mapper.levelExitComponent.get(otherBoundsEntity));
+            } else if(Mapper.playerSkinComponent.has(otherBoundsEntity)){
+                Mapper.playerComponent.get(playerEntity).setSkin(Mapper.playerSkinComponent.get(otherBoundsEntity).skin);
+            }
+            //If velocity is attached to the playerentity, it is a dynamic object that can be moved
+            else if (Mapper.positionComponent.has(playerEntity) && Mapper.velocityComponent.has(playerEntity)) {
+                PositionComponent pc = Mapper.positionComponent.get(playerEntity);
+                float x = mtv.depth * mtv.normal.x;
+                float y = mtv.depth * mtv.normal.y;
+                pc.moveBy(x, y);
+            }
+        } //Otherwise the player overlaps with an enemy, take damage
+        else if (Mapper.enemyComponent.has(otherBoundsEntity)) {
+            Gdx.app.debug("DAMAGE", "OUCH " + System.currentTimeMillis());
+        } else {
+            Gdx.app.debug("COLLISION DETECTED", "WITH SOME MOVING OBJECT");
         }
     }
 }

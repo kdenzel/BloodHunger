@@ -26,6 +26,6 @@ public final class Mapper {
     public static final ComponentMapper<PlayerLightComponent> playerLightComponent = ComponentMapper.getFor(PlayerLightComponent.class);
     public static final ComponentMapper<ItemComponent> itemComponent = ComponentMapper.getFor(ItemComponent.class);
     public static final ComponentMapper<LevelExitComponent> levelExitComponent = ComponentMapper.getFor(LevelExitComponent.class);
-
+    public static final ComponentMapper<PlayerSkinComponent> playerSkinComponent = ComponentMapper.getFor(PlayerSkinComponent.class);
 
 }

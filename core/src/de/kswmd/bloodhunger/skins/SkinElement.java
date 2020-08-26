@@ -19,17 +19,31 @@ public class SkinElement {
     //Array with polygons
     private final Array<float[]> polygonVertices = new Array<>(1);
     private final Array<float[]> polygonVerticesTransformed = new Array<>(1);
+    public final float initialFrameDuration;
 
     public SkinElement(String rootSkinPath, float initialFrameDuration, String resource, Animation.PlayMode playMode) {
         String fullResourcePath = rootSkinPath + "/" + resource;
         TextureAtlas atlas = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_GAME_ANIMATIONS);
-        this.animation = new Animation<>(initialFrameDuration,
-                atlas.findRegions(fullResourcePath), playMode);
+        Array<TextureAtlas.AtlasRegion> regions = atlas.findRegions(fullResourcePath);
+        this.initialFrameDuration = initialFrameDuration;
+        this.animation = new Animation<>(initialFrameDuration, regions
+                , playMode);
+        loadPolygons(resource);
+    }
+
+    public SkinElement(String rootSkinPath, String resource, Animation.PlayMode playMode) {
+        String fullResourcePath = rootSkinPath + "/" + resource;
+        TextureAtlas atlas = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_GAME_ANIMATIONS);
+        Array<TextureAtlas.AtlasRegion> regions = atlas.findRegions(fullResourcePath);
+        this.initialFrameDuration = 1f / regions.size;
+        this.animation = new Animation<>(initialFrameDuration, regions
+                , playMode);
         loadPolygons(resource);
     }
 
     /**
      * loads the polygons for each frame
+     *
      * @param resource loads the .poly file for the specified resource
      */
     public void loadPolygons(String resource) {
@@ -62,9 +76,10 @@ public class SkinElement {
         if (polygonVertices.isEmpty()) {
             return null;
         }
-        float scale = ((float) animation.getKeyFrameIndex(time) / animation.getKeyFrames().length);
+        float kfi = (float) animation.getKeyFrameIndex(time);
+        float length = animation.getKeyFrames().length;
+        float scale = (kfi / length);
         int polygonFrame = (int) (polygonVertices.size * scale);
-
 
         float[] v = polygonVertices.get(polygonFrame);
         float[] tv = polygonVerticesTransformed.get(polygonFrame);

@@ -47,12 +47,13 @@ public class PlayerControlSystem extends EntitySystem {
             boolean run = false;
             if (Gdx.input.isKeyPressed(Input.Keys.W)) {
                 pc.feetAnimationType = PlayerComponent.FeetAnimationType.MOVE_FORWARD;
+                SkinElement feetSkinElement = pc.getSkin().getFeetAnimationSkinElement(pc.feetAnimationType);
                 if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
                     speed *= 2;
-                    pc.getSkin().getFeetAnimationSkinElement(pc.feetAnimationType).animation.setFrameDuration(pc.feetAnimationType.initialFrameDuration/2);
+                    feetSkinElement.animation.setFrameDuration(feetSkinElement.initialFrameDuration/2);
                     run = true;
                 } else {
-                    pc.getSkin().getFeetAnimationSkinElement(pc.feetAnimationType).animation.setFrameDuration(pc.feetAnimationType.initialFrameDuration);
+                    feetSkinElement.animation.setFrameDuration(feetSkinElement.initialFrameDuration);
                 }
                 vc.velocityVec.set(0, speed);
             } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
@@ -68,19 +69,19 @@ public class PlayerControlSystem extends EntitySystem {
                 pc.feetAnimationType = PlayerComponent.FeetAnimationType.MOVE_RIGHT;
                 rotationComponent.movementAngle += -90;
             }
-            pc.timer += deltaTime % 10;
+            pc.update(deltaTime);
             //Set polygon depending on frame for bodyanimation
             PlayerComponent.BodyAnimationType bodyAnimationType = pc.getBodyAnimationType();
             SkinElement bodySkinElement = pc.getSkin().getBodyAnimationSkinElement(bodyAnimationType);
             if(run){
-                bodySkinElement.animation.setFrameDuration(bodyAnimationType.initialFrameDuration/2);
+                bodySkinElement.animation.setFrameDuration(bodySkinElement.initialFrameDuration/2);
             } else {
-                bodySkinElement.animation.setFrameDuration(bodyAnimationType.initialFrameDuration);
+                bodySkinElement.animation.setFrameDuration(bodySkinElement.initialFrameDuration);
             }
             if (bodySkinElement.hasPolygons()) {
                 boundsComponent.setPolygon(bodySkinElement.getPolygonInWorldSize(pc.timer, dimensionComponent), 1);
             }
-            Vector2 weaponFront = pc.getTool().getTransformedToolPositionWithOffset(positionComponent,dimensionComponent,rotationComponent);
+            Vector2 weaponFront = pc.getSkin().getTransformedToolPositionWithOffset(positionComponent,dimensionComponent,rotationComponent);
             flashLights.forEach(f -> {
                 FlashLightComponent flashLightComponent = Mapper.flashLightComponent.get(f);
                 PositionComponent fpos = Mapper.positionComponent.get(f);

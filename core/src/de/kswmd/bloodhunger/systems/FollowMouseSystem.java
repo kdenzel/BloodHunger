@@ -55,7 +55,7 @@ public class FollowMouseSystem extends EntitySystem {
             RotationComponent rc = Mapper.rotationComponent.get(entity);
             rc.movementAngle = angle;
             rc.lookingAngle = angle;
-            toolOffset = playerComponent.getTool().getTransformedToolOffset(dc, rc);
+            toolOffset = playerComponent.getSkin().getTransformedToolOffset(dc, rc);
         }
 
         /*

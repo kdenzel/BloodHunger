@@ -5,7 +5,6 @@ import box2dLight.RayHandler;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObjects;
@@ -15,7 +14,7 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.*;
-import de.kswmd.bloodhunger.ui.inventory.Inventory;
+import de.kswmd.bloodhunger.skins.PlayerSkin;
 import de.kswmd.bloodhunger.utils.LevelManager;
 import de.kswmd.bloodhunger.utils.Mapper;
 
@@ -203,6 +202,17 @@ public final class EntityFactory {
         item.add(bc);
         item.add(new LevelExitComponent(nextScreen, level));
         return item;
+    }
+
+    public static Entity createSkinEntity(float x, float y, float width, float height, PlayerSkin skin){
+        Entity entity = new Entity();
+        entity.add(new PositionComponent(x,y));
+        entity.add(new DimensionComponent(width,height));
+        BoundsComponent bc = new BoundsComponent(width, height);
+        bc.setPosition(x, y);
+        entity.add(bc);
+        entity.add(new PlayerSkinComponent(skin));
+        return entity;
     }
 
 }
