@@ -82,7 +82,7 @@ public class BoundsComponent implements Component, Disposable {
             polygon.setRotation(degree);
         });
         box2DBodyArray.forEach(body ->
-                body.setTransform(-width/2,-height/2, degree * MathUtils.degreesToRadians)
+                body.setTransform(0,0, degree * MathUtils.degreesToRadians)
         );
     }
 

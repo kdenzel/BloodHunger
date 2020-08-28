@@ -33,7 +33,7 @@ public class CenterCameraSystem extends EntitySystem {
             if (Mapper.positionComponent.has(e) && Mapper.dimensionComponent.has(e)) {
                 PositionComponent pc = Mapper.positionComponent.get(e);
                 DimensionComponent dc = Mapper.dimensionComponent.get(e);
-                camera.position.set(pc.x, pc.y, 0);
+                camera.position.set(pc.x+dc.originX, pc.y+dc.originY, 0);
                 camera.update();
             }
         }

@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.utils.Array;
 import de.kswmd.bloodhunger.Assets;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.LevelExitComponent;
@@ -51,8 +52,9 @@ public class LoadNextLevelScreen extends BaseScreen {
         Gdx.app.debug("Progress", progress + "%");
         shapeRenderer.end();
         if (manager.update()) {
-            LevelManager.getInstance().setTiledMap(BloodHungerGame.ASSET_MANAGER.get(LevelManager.getInstance().getMap()));
-            List<Entity> entities = EntityFactory.createMapObjects(game,LevelManager.getInstance().getTiledMap().getLayers().get("objects"));
+            LevelManager levelManager = LevelManager.getInstance();
+            levelManager.setTiledMap(BloodHungerGame.ASSET_MANAGER.get(LevelManager.getInstance().getMap()));
+            Array<Entity> entities = levelManager.loadMapObjects(game);
             entities.forEach(entity -> game.engine.addEntity(entity));
             //update maprenderer
             game.renderingSystem.updateLevel();

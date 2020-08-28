@@ -94,10 +94,11 @@ public class PlayerComponent implements Component {
     private BodyAnimationType bodyAnimationType = BodyAnimationType.IDLE_FLASHLIGHT;
 
     public final Inventory inventory;
-    private PlayerSkin skin = PlayerSkin.create("player_skin_civil",0,-20f * BloodHungerGame.UNIT_SCALE);
+    private PlayerSkin skin;
 
     public PlayerComponent(Inventory inventory) {
         this.inventory = inventory;
+        setSkin(PlayerSkin.create("player_skin_civil",-10f*BloodHungerGame.UNIT_SCALE,-20f * BloodHungerGame.UNIT_SCALE,false));
     }
 
     public void shoot() {
@@ -234,6 +235,7 @@ public class PlayerComponent implements Component {
 
     public void setSkin(PlayerSkin skin){
         this.skin = skin;
+        this.inventory.setBackpack(skin.backpack);
     }
 
     public void switchTool(Tool tool) {

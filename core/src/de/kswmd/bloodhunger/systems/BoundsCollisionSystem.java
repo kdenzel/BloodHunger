@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Polygon;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.*;
+import de.kswmd.bloodhunger.skins.PlayerSkin;
 import de.kswmd.bloodhunger.utils.Mapper;
 
 public class BoundsCollisionSystem extends EntitySystem {
@@ -40,17 +41,21 @@ public class BoundsCollisionSystem extends EntitySystem {
 
             for (Entity otherBoundsEntity : boundEntitiesWithoutPlayerAndBullets) {
                 BoundsComponent otherBounds = Mapper.boundsComponent.get(otherBoundsEntity);
-                Polygon poly1 = playerBounds.getPolygon(0);
-                Polygon poly2 = otherBounds.getPolygon(0);
-                if (!poly1.getBoundingRectangle().overlaps(poly2.getBoundingRectangle())) {
-                    continue;
+                //Check all layers of the player
+                for (int z = 0; z < otherBounds.size(); z++) {
+                    if (otherBounds.size() <= z)
+                        continue;
+                    Polygon poly1 = playerBounds.getPolygon(z);
+                    Polygon poly2 = otherBounds.getPolygon(z);
+                    if (!poly1.getBoundingRectangle().overlaps(poly2.getBoundingRectangle())) {
+                        continue;
+                    }
+                    //BE AWARE THE POLYGONS MUST BE COUNTER CLOCKWISE OTHERWISE GLITCHES APPEAR!!!!!!!1111!!!!!!!!!!!!!!!!
+                    boolean polygonOverlap = Intersector.overlapConvexPolygons(poly1, poly2, mtv);
+                    if (polygonOverlap) {
+                        onPlayerCollidesWithObject(playerEntity, otherBoundsEntity);
+                    }
                 }
-                //BE AWARE THE POLYGONS MUST BE COUNTER CLOCKWISE OTHERWISE GLITCHES APPEAR!!!!!!!1111!!!!!!!!!!!!!!!!
-                boolean polygonOverlap = Intersector.overlapConvexPolygons(poly1, poly2, mtv);
-                if (polygonOverlap) {
-                    onPlayerCollidesWithObject(playerEntity, otherBoundsEntity);
-                }
-
             }
         }
         //Check other objects to collide with each other like enemies with enemies and enemies with objects
@@ -58,23 +63,28 @@ public class BoundsCollisionSystem extends EntitySystem {
             Entity entity = boundEntitiesWithoutPlayerAndBullets.get(i);
             for (int j = 0; j < boundEntitiesWithoutPlayerAndBullets.size(); j++) {
                 Entity entityToCollideWith = boundEntitiesWithoutPlayerAndBullets.get(j);
-                if (i == j) {
+                if (i == j)
                     continue;
-                }
+
                 BoundsComponent entityBounds = Mapper.boundsComponent.get(entity);
                 BoundsComponent otherBounds = Mapper.boundsComponent.get(entityToCollideWith);
-                Polygon poly1 = entityBounds.getPolygon(0);
-                Polygon poly2 = otherBounds.getPolygon(0);
-                if (!poly1.getBoundingRectangle().overlaps(poly2.getBoundingRectangle())) {
-                    continue;
-                }
-                boolean polygonOverlap = Intersector.overlapConvexPolygons(poly1, poly2, mtv);
+                //Check all layers of the moving entity
+                for (int z = 0; z < entityBounds.size(); z++) {
+                    if (otherBounds.size() <= z)
+                        continue;
+                    Polygon poly1 = entityBounds.getPolygon(0);
+                    Polygon poly2 = otherBounds.getPolygon(0);
+                    if (!poly1.getBoundingRectangle().overlaps(poly2.getBoundingRectangle())) {
+                        continue;
+                    }
+                    boolean polygonOverlap = Intersector.overlapConvexPolygons(poly1, poly2, mtv);
 
-                if (polygonOverlap) {
-                    //If velocity is attached to the entity, it is a dynamic object that can be moved
-                    if (Mapper.positionComponent.has(entity) && Mapper.velocityComponent.has(entity)) {
-                        PositionComponent pc = Mapper.positionComponent.get(entity);
-                        pc.moveBy(mtv.normal.x * mtv.depth, mtv.normal.y * mtv.depth);
+                    if (polygonOverlap) {
+                        //If velocity is attached to the entity, it is a dynamic object that can be moved
+                        if (Mapper.positionComponent.has(entity) && Mapper.velocityComponent.has(entity)) {
+                            PositionComponent pc = Mapper.positionComponent.get(entity);
+                            pc.moveBy(mtv.normal.x * mtv.depth, mtv.normal.y * mtv.depth);
+                        }
                     }
                 }
             }
@@ -82,8 +92,7 @@ public class BoundsCollisionSystem extends EntitySystem {
     }
 
     /**
-     *
-     * @param playerEntity the player
+     * @param playerEntity      the player
      * @param otherBoundsEntity the entity he collides with
      */
     private void onPlayerCollidesWithObject(Entity playerEntity, Entity otherBoundsEntity) {
@@ -98,8 +107,10 @@ public class BoundsCollisionSystem extends EntitySystem {
             //If next level was reached, set next screen
             else if (Mapper.levelExitComponent.has(otherBoundsEntity)) {
                 game.setLevel(Mapper.levelExitComponent.get(otherBoundsEntity));
-            } else if(Mapper.playerSkinComponent.has(otherBoundsEntity)){
-                Mapper.playerComponent.get(playerEntity).setSkin(Mapper.playerSkinComponent.get(otherBoundsEntity).skin);
+            } else if (Mapper.playerSkinComponent.has(otherBoundsEntity)) {
+                PlayerComponent pc = Mapper.playerComponent.get(playerEntity);
+                PlayerSkin skin = Mapper.playerSkinComponent.get(otherBoundsEntity).skin;
+                pc.setSkin(skin);
             }
             //If velocity is attached to the playerentity, it is a dynamic object that can be moved
             else if (Mapper.positionComponent.has(playerEntity) && Mapper.velocityComponent.has(playerEntity)) {

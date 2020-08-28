@@ -14,12 +14,14 @@ public class PlayerSkin {
     private final Vector2 weaponPosition = new Vector2();
     private final float xWeaponOffset;
     private final float yWeaponOffset;
+    public final boolean backpack;
     public final Array<SkinElement> feetAnimations = new Array<>(PlayerComponent.FeetAnimationType.values().length);
     public final Array<SkinElement> bodyAnimations = new Array<>(PlayerComponent.BodyAnimationType.values().length);
 
-    private PlayerSkin(float xWeaponOffset, float yWeaponOffset) {
+    private PlayerSkin(float xWeaponOffset, float yWeaponOffset,boolean backpack) {
         this.xWeaponOffset = xWeaponOffset;
         this.yWeaponOffset = yWeaponOffset;
+        this.backpack = backpack;
         weaponOffset.set(xWeaponOffset,yWeaponOffset);
     }
 
@@ -28,9 +30,9 @@ public class PlayerSkin {
      * @param skin, the skin top folder
      * @return The Skin for the player
      */
-    public static PlayerSkin create(String skin, float xWeaponOffset, float yWeaponOffset) {
+    public static PlayerSkin create(String skin, float xWeaponOffset, float yWeaponOffset, boolean backpack) {
         //Create PlayerSkin
-        PlayerSkin playerSkin = new PlayerSkin(xWeaponOffset,yWeaponOffset);
+        PlayerSkin playerSkin = new PlayerSkin(xWeaponOffset,yWeaponOffset,backpack);
         //Initialize FeetAnimations
         PlayerComponent.FeetAnimationType[] feetAnimationTypes = PlayerComponent.FeetAnimationType.values();
         for (int i = 0; i < feetAnimationTypes.length; i++) {

@@ -1,0 +1,70 @@
+{
+"com.badlogic.gdx.graphics.g2d.BitmapFont": {
+	"default": {
+		"file": "default.fnt"
+	}
+},
+"com.badlogic.gdx.graphics.Color": {
+	"WHITE": {
+		"r": 1,
+		"g": 1,
+		"b": 1,
+		"a": 1
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle": {
+	"default": {
+		"up": "default_button",
+		"down": "default_button_down",
+		"over": "default_button_over"
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle": {
+	"default": {
+		"checkboxOn": "default_checkbox_on",
+		"checkboxOff": "default_checkbox_off",
+		"font": "default"
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle": {
+	"default": {
+		"parent": "default"
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton$ImageTextButtonStyle": {
+	"default": {
+		"parent": "default",
+		"font": "default"
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {
+	"default": {
+		"font": "default"
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle": {
+	"default": {
+		"font": "default",
+		"fontColorSelected": "WHITE",
+		"fontColorUnselected": "WHITE",
+		"selection": "default_list_selection"
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle": {
+	"default": {
+		"parent": "default",
+		"font": "default"
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle": {
+	"default": {
+		"label": "default"
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle": {
+	"default": {
+		"background": "default_window_background",
+		"titleFont": "default"
+	}
+}
+}

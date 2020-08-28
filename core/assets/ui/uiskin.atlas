@@ -1,0 +1,111 @@
+
+uiskin.png
+size: 256,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+default
+  rotate: false
+  xy: 2, 66
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+default_button
+  rotate: false
+  xy: 132, 180
+  size: 14, 14
+  split: 2, 2, 2, 2
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+default_button_down
+  rotate: false
+  xy: 2, 18
+  size: 14, 14
+  split: 1, 1, 1, 1
+  pad: 2, 2, 2, 2
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+default_list_selection
+  rotate: false
+  xy: 2, 18
+  size: 14, 14
+  split: 2, 2, 2, 2
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+default_button_over
+  rotate: false
+  xy: 34, 50
+  size: 14, 14
+  split: 2, 2, 2, 2
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+default_checkbox_off
+  rotate: false
+  xy: 132, 164
+  size: 14, 14
+  split: 1, 1, 1, 1
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+default_checkbox_on
+  rotate: false
+  xy: 148, 180
+  size: 14, 14
+  split: 1, 1, 1, 1
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+default_window_background
+  rotate: false
+  xy: 2, 34
+  size: 30, 30
+  split: 9, 9, 9, 9
+  pad: 14, 14, 18, 10
+  orig: 30, 30
+  offset: 0, 0
+  index: -1
+inventory_box
+  rotate: false
+  xy: 2, 2
+  size: 14, 14
+  split: 2, 2, 2, 2
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+inventory_box_hover
+  rotate: false
+  xy: 18, 18
+  size: 14, 14
+  split: 2, 2, 2, 2
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+inventory_box_hover_selected
+  rotate: false
+  xy: 34, 34
+  size: 14, 14
+  split: 2, 2, 2, 2
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+inventory_box_selected
+  rotate: false
+  xy: 50, 50
+  size: 14, 14
+  split: 2, 2, 2, 2
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
+inventory_list_box
+  rotate: false
+  xy: 132, 148
+  size: 14, 14
+  split: 2, 2, 2, 2
+  orig: 14, 14
+  offset: 0, 0
+  index: -1

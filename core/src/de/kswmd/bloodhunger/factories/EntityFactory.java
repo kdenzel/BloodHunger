@@ -52,9 +52,9 @@ public final class EntityFactory {
         wall.add(new PositionComponent(x, y));
         wall.add(new TextureRegionComponent(textureRegion));
         wall.add(new DimensionComponent(width, height));
-        wall.add(new RotationComponent());
         BoundsComponent bc = new BoundsComponent(Mapper.dimensionComponent.get(wall));
-        bc.getPolygon(0).setPosition(x, y);
+        bc.setPolygon(bc.getPolygon(0).getVertices(),1);
+        bc.setPosition(x,y);
         wall.add(bc);
         return wall;
     }
@@ -104,31 +104,6 @@ public final class EntityFactory {
         return tile;
     }
 
-    public static List<Entity> createMapObjects(BloodHungerGame game, MapLayer mapLayer) {
-        List<Entity> entities = new ArrayList<>(16);
-        MapObjects objects = mapLayer.getObjects();
-        objects.forEach(mapObject -> {
-            MapProperties properties = mapObject.getProperties();
-            String typeKey = "type";
-            if (properties.containsKey(typeKey)) {
-                if (properties.get(typeKey, String.class).equals("stone")) {
-                    float x = properties.get("x", Float.class) * BloodHungerGame.UNIT_SCALE;
-                    float y = properties.get("y", Float.class) * BloodHungerGame.UNIT_SCALE;
-
-                    Polygon poly = ((PolygonMapObject) mapObject).getPolygon();
-                    Rectangle rect = poly.getBoundingRectangle();
-                    float[] v = new float[poly.getVertices().length];
-                    for (int i = 0; i < poly.getVertices().length; i++) {
-                        v[i] = poly.getVertices()[i] * BloodHungerGame.UNIT_SCALE;
-                    }
-                    Entity stone = createStone(x, y, rect.width * BloodHungerGame.UNIT_SCALE, rect.height * BloodHungerGame.UNIT_SCALE, v);
-                    entities.add(stone);
-                }
-            }
-        });
-        return entities;
-    }
-
     public static Entity createStone(float x, float y, float width, float height, float[] vertices) {
         Entity stone = new Entity();
         stone.add(new PositionComponent(x, y));
@@ -152,7 +127,6 @@ public final class EntityFactory {
     public static Entity createStaticLight(float x, float y, LightComponent lightComponent) {
         Entity light = new Entity();
         light.add(new PositionComponent(x, y));
-        light.add(new RotationComponent());
         light.add(lightComponent);
         return light;
     }
@@ -164,7 +138,8 @@ public final class EntityFactory {
     }
 
     public static Entity createFlashLight(float x, float y, RayHandler rayHandler) {
-        Entity light = createDynamicLight(x, y, new FlashLightComponent(LightComponent.Type.CONE));
+        Entity light = createDynamicLight(x, y, new FlashLightComponent());
+        light.add(new RotationComponent());
         LightComponent lc = Mapper.flashLightComponent.get(light);
         lc.setLightReference(new ConeLight(
                 rayHandler, 50, null, 10 * BloodHungerGame.UNIT * BloodHungerGame.UNIT_SCALE, 0, 0, 0, 45
@@ -173,8 +148,9 @@ public final class EntityFactory {
     }
 
     public static Entity createPlayerLight(float x, float y, RayHandler rayHandler) {
-        Entity light = createDynamicLight(x, y, new PlayerLightComponent(LightComponent.Type.POINT));
-        Mapper.playerLightComponent.get(light).setLightReference(
+        PlayerLightComponent pcLc = new PlayerLightComponent();
+        Entity light = createDynamicLight(x, y, pcLc);
+        pcLc.setLightReference(
                 new ConeLight(rayHandler, 10,null, 4, 0, 0, 0, 360
                 )
         );

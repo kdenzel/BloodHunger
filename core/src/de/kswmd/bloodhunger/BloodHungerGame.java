@@ -82,8 +82,8 @@ public class BloodHungerGame extends Game implements EntityListener {
         setScreen(new InitialLoadingScreen(this));
     }
 
-    private void init(){
-        camera = new OrthographicCamera(Gdx.graphics.getWidth()*BloodHungerGame.UNIT_SCALE,Gdx.graphics.getHeight()*BloodHungerGame.UNIT_SCALE);
+    private void init() {
+        camera = new OrthographicCamera(Gdx.graphics.getWidth() * BloodHungerGame.UNIT_SCALE, Gdx.graphics.getHeight() * BloodHungerGame.UNIT_SCALE);
         spriteBatch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
@@ -120,6 +120,14 @@ public class BloodHungerGame extends Game implements EntityListener {
         debugRenderSystem.setProcessing(debug);
     }
 
+    public void setDayLightOn() {
+        rayHandler.setShadows(false);
+    }
+
+    public void setDayLightOff() {
+        rayHandler.setShadows(true);
+    }
+
     @Override
     public void entityAdded(Entity entity) {
     }
@@ -137,20 +145,21 @@ public class BloodHungerGame extends Game implements EntityListener {
      * convenient method for switching screens with level
      * @param level The level
      */
-    public void setLevel(LevelExitComponent levelExitComponent){
+    public void setLevel(LevelExitComponent levelExitComponent) {
         rayHandler.removeAll();
         engine.removeAllEntities();
         LevelManager.Level level = levelExitComponent.level;
-        if(level != LevelManager.getInstance().level){
-            BloodHungerGame.ASSET_MANAGER.unload(LevelManager.getInstance().level.getMap());
+        if (level != LevelManager.getInstance().level) {
+            if (BloodHungerGame.ASSET_MANAGER.isLoaded(LevelManager.getInstance().level.getMap()))
+                BloodHungerGame.ASSET_MANAGER.unload(LevelManager.getInstance().level.getMap());
         }
         LevelManager.getInstance().setLevel(level);
         BloodHungerGame.SCREEN_LOAD_NEXT_LEVEL.setNextScreen(levelExitComponent.nextScreen);
         setScreen(BloodHungerGame.SCREEN_LOAD_NEXT_LEVEL);
     }
 
-    public void setAmbientLight(float r, float g, float b, float a){
-        renderingSystem.setAmbientLight(r,g,b,a);
+    public void setAmbientLight(float r, float g, float b, float a) {
+        renderingSystem.setAmbientLight(r, g, b, a);
     }
 
     @Override

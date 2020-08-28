@@ -1,6 +1,6 @@
 name=Terrain_Pack
 filename=
-output=terrain_texture
+output=../../core/assets/maps/terrain_texture
 
 alias=true
 alphaThreshold=0
