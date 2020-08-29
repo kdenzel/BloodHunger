@@ -11,6 +11,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2D;
@@ -29,6 +30,8 @@ import de.kswmd.bloodhunger.ui.inventory.Inventory;
 import de.kswmd.bloodhunger.utils.LevelManager;
 
 public class BloodHungerGame extends Game implements EntityListener {
+
+    private static final String TAG = BloodHungerGame.class.getSimpleName();
 
     public static Screen SCREEN_GAME;
     public static Screen SCREEN_INTRO;
@@ -50,6 +53,7 @@ public class BloodHungerGame extends Game implements EntityListener {
     public CenterCameraSystem centerCameraSystem;
     public DebugRenderSystem debugRenderSystem;
     public EnemyFollowPlayerSystem enemyFollowPlayerSystem;
+    public UpdateShadersSystem updateShadersSystem;
     public RenderingSystem renderingSystem;
     public BulletSystem bulletSystem;
 
@@ -60,6 +64,8 @@ public class BloodHungerGame extends Game implements EntityListener {
     public OrthographicCamera camera;
     public PlayerComponent playerComponent;
     public Skin uiSkin;
+
+    public ShaderProgram shaderProgram;
 
 
     public BloodHungerGame(boolean debug) {
@@ -84,6 +90,14 @@ public class BloodHungerGame extends Game implements EntityListener {
 
     private void init() {
         camera = new OrthographicCamera(Gdx.graphics.getWidth() * BloodHungerGame.UNIT_SCALE, Gdx.graphics.getHeight() * BloodHungerGame.UNIT_SCALE);
+
+        shaderProgram = new ShaderProgram(Gdx.files.internal("shaders/BasicShadowVertex.glsl"),
+                Gdx.files.internal("shaders/BasicShadowFragment.glsl"));
+        if(!shaderProgram.isCompiled()){
+            Gdx.app.debug(TAG,shaderProgram.getLog());
+            throw new RuntimeException("Couldn't  compile shaders...");
+        }
+
         spriteBatch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
@@ -104,7 +118,8 @@ public class BloodHungerGame extends Game implements EntityListener {
         centerCameraSystem = new CenterCameraSystem(camera);
         debugRenderSystem = new DebugRenderSystem(shapeRenderer, camera, WORLD);
         enemyFollowPlayerSystem = new EnemyFollowPlayerSystem();
-        renderingSystem = new RenderingSystem(spriteBatch, camera, rayHandler);
+        updateShadersSystem = new UpdateShadersSystem(camera,shaderProgram);
+        renderingSystem = new RenderingSystem(camera,spriteBatch, rayHandler, shaderProgram);
         bulletSystem = new BulletSystem();
 
         engine.addSystem(followMouseSystem);
@@ -115,6 +130,7 @@ public class BloodHungerGame extends Game implements EntityListener {
         engine.addSystem(boundsCollisionSystem);
         engine.addSystem(bulletSystem);
         engine.addSystem(centerCameraSystem);
+        engine.addSystem(updateShadersSystem);
         engine.addSystem(renderingSystem);
         engine.addSystem(debugRenderSystem);
         debugRenderSystem.setProcessing(debug);

@@ -46,19 +46,16 @@ public class GameScreen extends BaseScreen implements InventoryListener {
     protected void initialize() {
         Gdx.input.setCursorCatched(!game.debug);
         createHUD();
-        Engine engine = game.engine;
-        engine.addEntity(EntityFactory.createCrosshair(0, 0, 48 * BloodHungerGame.UNIT_SCALE, 48 * BloodHungerGame.UNIT_SCALE));
-
-        for (int i = 0; i < 9; i++)
+        /*for (int i = 0; i < 9; i++)
             engine.addEntity(EntityFactory.createItem(5 + i, 5, 32 * BloodHungerGame.UNIT_SCALE, 32 * BloodHungerGame.UNIT_SCALE, ItemComponent.ItemType.FLASHLIGHT));
         for (int i = 0; i < 9; i++)
             engine.addEntity(EntityFactory.createItem(5 + i, 4, 32 * BloodHungerGame.UNIT_SCALE, 32 * BloodHungerGame.UNIT_SCALE, ItemComponent.ItemType.HANDGUN));
+        */
         //engine.addEntity(EntityFactory.createWall(0, 0, 2000*BloodHungerGame.UNIT_SCALE, 64*BloodHungerGame.UNIT_SCALE, null));
         //int enemies = MathUtils.random(30) + 10;
-        engine.addEntity(EntityFactory.createSkinEntity(4,4,1,1, PlayerSkin.create("player_skin_soldier",0,-25f*BloodHungerGame.UNIT_SCALE,true)));
-        engine.addEntity(EntityFactory.createLevelExit(-0.5f, -0.5f, 1f, 1f, BloodHungerGame.SCREEN_INTRO, LevelManager.Level.EXAMPLE));
+        //engine.addEntity(EntityFactory.createSkinEntity(4, 4, 1, 1, PlayerSkin.create("player_skin_soldier", 0, -25f * BloodHungerGame.UNIT_SCALE, true)));
+        //engine.addEntity(EntityFactory.createLevelExit(-0.5f, -0.5f, 1f, 1f, BloodHungerGame.SCREEN_INTRO, LevelManager.Level.EXAMPLE));
         game.playerComponent.inventory.addListener(this);
-        //game.setDayLightOn();
     }
 
     private void createHUD() {
@@ -106,6 +103,12 @@ public class GameScreen extends BaseScreen implements InventoryListener {
 
     @Override
     public void onItemAdded(InventorySlot slot, ItemComponent itemComponent) {
+        if (itemComponent.itemType == ItemComponent.ItemType.FLASHLIGHT) {
+            //Only create one entity flashlight and set lights on or off
+            if (game.engine.getEntitiesFor(Family.all(FlashLightComponent.class).get()).size() == 0) {
+                game.engine.addEntity(EntityFactory.createFlashLight(0, 0, game.rayHandler));
+            }
+        }
         if (slot.isSelected()) {
             Entity player = game.engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).first();
             PlayerComponent playerComponent = Mapper.playerComponent.get(player);
@@ -188,10 +191,10 @@ public class GameScreen extends BaseScreen implements InventoryListener {
             return true;
         } else if (playerComponent.getTool().equals(PlayerComponent.Tool.FLASHLIGHT)) {
             ImmutableArray<Entity> flashLights = game.engine.getEntitiesFor(Family.all(FlashLightComponent.class).get());
-            if (flashLights.size() == 0) {
-                turnFlashLightOn();
-            } else {
+            if (Mapper.flashLightComponent.get(flashLights.first()).getLightReference().isActive()) {
                 turnFlashLightOff();
+            } else {
+                turnFlashLightOn();
             }
             return true;
         }
@@ -289,10 +292,10 @@ public class GameScreen extends BaseScreen implements InventoryListener {
      * adds a new flashlight to the scene
      */
     private void turnFlashLightOn() {
-        Entity flashLightEntity = EntityFactory.createFlashLight(0, 0, game.rayHandler);
-        Mapper.flashLightComponent.get(flashLightEntity).getLightReference().setSoftnessLength(0);
-        game.engine.addEntity(flashLightEntity);
-
+        ImmutableArray<Entity> flashLights = game.engine.getEntitiesFor(Family.all(FlashLightComponent.class).get());
+        if (flashLights.size() > 0) {
+            Mapper.flashLightComponent.get(flashLights.first()).getLightReference().setActive(true);
+        }
     }
 
     /**
@@ -300,10 +303,9 @@ public class GameScreen extends BaseScreen implements InventoryListener {
      */
     private void turnFlashLightOff() {
         ImmutableArray<Entity> flashLights = game.engine.getEntitiesFor(Family.all(FlashLightComponent.class).get());
-        flashLights.forEach(fl -> {
-            game.engine.removeEntity(fl);
-            Mapper.flashLightComponent.get(fl).getLightReference().remove();
-        });
+        if (flashLights.size() > 0) {
+            Mapper.flashLightComponent.get(flashLights.first()).getLightReference().setActive(false);
+        }
     }
 
     @Override

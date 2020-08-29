@@ -76,12 +76,14 @@ public final class LevelManager {
         entities.clear();
         MapLayer mapLayer = tiledMap.getLayers().get("objects");
         MapObjects objects = mapLayer.getObjects();
-        objects.forEach(mapObject -> placeMapObjectOnMap(game,mapObject));
+        objects.forEach(mapObject -> placeMapObjectOnMap(game, mapObject));
         return entities;
     }
 
-    private void placeMapObjectOnMap(BloodHungerGame game, MapObject mapObject){
+    private void placeMapObjectOnMap(BloodHungerGame game, MapObject mapObject) {
         MapProperties properties = mapObject.getProperties();
+        if (!mapObject.isVisible())
+            return;
         float x = properties.get("x", Float.class) * BloodHungerGame.UNIT_SCALE;
         float y = properties.get("y", Float.class) * BloodHungerGame.UNIT_SCALE;
         float width = properties.get("width", Float.class) * BloodHungerGame.UNIT_SCALE;
@@ -106,16 +108,30 @@ public final class LevelManager {
                 break;
             case "light":
                 String lighttype = (String) properties.get("ltype");
-                if (lighttype.equals("cone")) {
-                    Color c = properties.get("color", Color.class);
-                    float directionDegree = properties.get("directionDegree", Float.class);
-                    float coneDegree = properties.get("coneDegree", Float.class);
-                    float distance = properties.get("distance", Float.class)*BloodHungerGame.UNIT*BloodHungerGame.UNIT_SCALE;
-                    int rays = properties.get("rays", Integer.class);
-                    Light light = LightFactory.createConeLight(game.rayHandler,rays,c,x,y,distance,directionDegree,coneDegree);
-                    LightComponent component = new LightComponent(light);
-                    Entity entity = EntityFactory.createStaticLight(x, y, component);
-                    entities.add(entity);
+                Color c = properties.get("color", Color.class);
+                float directionDegree = properties.get("directionDegree", Float.class);
+                float coneDegree = properties.get("coneDegree", Float.class);
+                float distance = properties.get("distance", Float.class) * BloodHungerGame.UNIT * BloodHungerGame.UNIT_SCALE;
+                int rays = properties.get("rays", Integer.class);
+                switch (lighttype.toLowerCase()) {
+                    case "cone":
+                        Light light = LightFactory.createConeLight(game.rayHandler, rays, c, x, y, distance, directionDegree, coneDegree);
+                        LightComponent component = new LightComponent(light);
+                        Entity entity = EntityFactory.createStaticLight(x, y, component);
+                        entities.add(entity);
+                        break;
+                    case "directional":
+                        light = LightFactory.createDirectionalLight(game.rayHandler, rays, c, directionDegree);
+                        component = new LightComponent(light);
+                        entity = EntityFactory.createStaticLight(x, y, component);
+                        entities.add(entity);
+                        break;
+                    case "point":
+                        light = LightFactory.createPointLight(game.rayHandler, rays, c, distance, x, y);
+                        component = new LightComponent(light);
+                        entity = EntityFactory.createStaticLight(x, y, component);
+                        entities.add(entity);
+                        break;
                 }
                 break;
             case "window":
@@ -125,6 +141,7 @@ public final class LevelManager {
             case "start":
                 entities.add(EntityFactory.createPlayer(x, y, game.playerComponent));
                 entities.add(EntityFactory.createPlayerLight(x, y, game.rayHandler));
+                entities.add(EntityFactory.createCrosshair(0, 0, 48 * BloodHungerGame.UNIT_SCALE, 48 * BloodHungerGame.UNIT_SCALE));
                 break;
         }
     }

@@ -9,20 +9,16 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.maps.MapRenderer;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import de.kswmd.bloodhunger.Assets;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.*;
-import de.kswmd.bloodhunger.factories.EntityFactory;
 import de.kswmd.bloodhunger.skins.SkinElement;
-import de.kswmd.bloodhunger.ui.inventory.Inventory;
 import de.kswmd.bloodhunger.utils.LevelManager;
 import de.kswmd.bloodhunger.utils.Mapper;
-
-import java.util.List;
 
 public class RenderingSystem extends EntitySystem {
 
@@ -38,16 +34,18 @@ public class RenderingSystem extends EntitySystem {
 
     //Lights
     private RayHandler rayHandler;
+    private ShaderProgram shaderProgram;
 
-    public RenderingSystem(Batch batch, OrthographicCamera camera, RayHandler rayHandler) {
+    public RenderingSystem(OrthographicCamera camera, SpriteBatch batch, RayHandler rayHandler, ShaderProgram shaderProgram) {
         this.batch = batch;
         this.camera = camera;
+        this.rayHandler = rayHandler;
+        this.shaderProgram = shaderProgram;
         TextureAtlas particles = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_PARTICLES);
         ParticleEffect shootEffect = new ParticleEffect();
         shootEffect.load(Gdx.files.internal("particles/shoot.p"), particles);
         shootEffect.scaleEffect(BloodHungerGame.UNIT_SCALE);
         this.shootEffectPool = new ParticleEffectPool(shootEffect, 1, 200);
-        this.rayHandler = rayHandler;
     }
 
     public void updateLevel() {
@@ -77,9 +75,11 @@ public class RenderingSystem extends EntitySystem {
 
     @Override
     public void update(float deltaTime) {
+        batch.setShader(shaderProgram);
         renderLevel(deltaTime);
         batch.begin();
         batch.setProjectionMatrix(camera.combined);
+        batch.setShader(null);
         renderItems(deltaTime);
         renderPlayers(deltaTime);
         batch.end();
@@ -89,7 +89,6 @@ public class RenderingSystem extends EntitySystem {
         renderEffects(deltaTime);
         renderCrosshair(deltaTime);
         batch.end();
-
     }
 
     /**
@@ -120,7 +119,6 @@ public class RenderingSystem extends EntitySystem {
             PositionComponent positionComponent = Mapper.positionComponent.get(entity);
             DimensionComponent dimensionComponent = Mapper.dimensionComponent.get(entity);
             RotationComponent rotationComponent = Mapper.rotationComponent.get(entity);
-
             PlayerComponent playerComponent = Mapper.playerComponent.get(entity);
 
             PlayerComponent.BodyAnimationType bodyAnimationType = playerComponent.getBodyAnimationType();

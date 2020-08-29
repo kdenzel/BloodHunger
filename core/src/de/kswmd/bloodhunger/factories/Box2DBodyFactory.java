@@ -29,7 +29,6 @@ public final class Box2DBodyFactory {
         fixtureDef.shape = polygonShape;
         fixtureDef.isSensor = true;
         fixtureDef.filter.categoryBits = category;
-
 // Create our fixture and attach it to the body
         Fixture fixture = body.createFixture(fixtureDef);
 // Remember to dispose of any shapes after you're done with them!

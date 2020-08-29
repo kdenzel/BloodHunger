@@ -32,7 +32,7 @@ public final class EntityFactory {
                         0.69921875f * dc.width, 0.65234375f * dc.height,
                         0.703125f * dc.width, 0.28515625f * dc.height,
                         0.28125f * dc.width, 0.29296875f * dc.height
-                }, Box2DBodyFactory.CATEGORY_BOUNDARY);
+                }, Box2DBodyFactory.CATEGORY_IGNORE);
         player.add(bc);
         return player;
     }
