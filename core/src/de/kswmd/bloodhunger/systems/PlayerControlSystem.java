@@ -54,10 +54,10 @@ public class PlayerControlSystem extends EntitySystem {
 
                 if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
                     speed *= 2;
-                    feetSkinElement.animation.setFrameDuration(feetSkinElement.initialFrameDuration/2);
+                    feetSkinElement.getAnimation().setFrameDuration(feetSkinElement.initialFrameDuration/2);
                     run = true;
                 } else {
-                    feetSkinElement.animation.setFrameDuration(feetSkinElement.initialFrameDuration);
+                    feetSkinElement.getAnimation().setFrameDuration(feetSkinElement.initialFrameDuration);
                 }
                 vc.velocityVec.set(0, speed);
             } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
@@ -78,9 +78,9 @@ public class PlayerControlSystem extends EntitySystem {
             SkinElement bodySkinElement = pc.getSkin().getBodyAnimationSkinElement(bodyAnimationType);
             //Set speed of animation 2 times higher if the player is running
             if(run){
-                bodySkinElement.animation.setFrameDuration(bodySkinElement.initialFrameDuration/2);
+                bodySkinElement.getAnimation().setFrameDuration(bodySkinElement.initialFrameDuration/2);
             } else {
-                bodySkinElement.animation.setFrameDuration(bodySkinElement.initialFrameDuration);
+                bodySkinElement.getAnimation().setFrameDuration(bodySkinElement.initialFrameDuration);
             }
             //update Polygons for each frame defined in skinelement
             if(feetSkinElement.hasPolygons()){

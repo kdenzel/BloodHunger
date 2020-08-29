@@ -121,8 +121,8 @@ public class PlayerComponent implements Component {
     }
 
     public BodyAnimationType getBodyAnimationType() {
-        if (skin.getBodyAnimationSkinElement(bodyAnimationType).animation.isAnimationFinished(timer)
-                && skin.getBodyAnimationSkinElement(bodyAnimationType).animation.getPlayMode().equals(Animation.PlayMode.NORMAL)) {
+        if (skin.getBodyAnimationSkinElement(bodyAnimationType).getAnimation().isAnimationFinished(timer)
+                && skin.getBodyAnimationSkinElement(bodyAnimationType).getAnimation().getPlayMode().equals(Animation.PlayMode.NORMAL)) {
             tool.status = ToolStatus.IDLE;
         }
         BodyAnimationType bodyAnimationType;

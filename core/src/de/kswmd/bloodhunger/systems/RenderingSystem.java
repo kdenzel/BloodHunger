@@ -127,8 +127,8 @@ public class RenderingSystem extends EntitySystem {
             SkinElement bodySkinElement = playerComponent.getSkin().getBodyAnimationSkinElement(bodyAnimationType);
             SkinElement feetSkinElement = playerComponent.getSkin().getFeetAnimationSkinElement(playerComponent.feetAnimationType);
 
-            TextureRegion bodyRegion = bodySkinElement.animation.getKeyFrame(playerComponent.timer);
-            TextureRegion feetRegion = feetSkinElement.animation.getKeyFrame(playerComponent.timer);
+            TextureRegion bodyRegion = bodySkinElement.getAnimation().getKeyFrame(playerComponent.timer);
+            TextureRegion feetRegion = feetSkinElement.getAnimation().getKeyFrame(playerComponent.timer);
 
             float bodyWidthInDimensions = dimensionComponent.width / bodyRegion.getRegionWidth();
             float bodyHeightInDimensions = dimensionComponent.height / bodyRegion.getRegionHeight();

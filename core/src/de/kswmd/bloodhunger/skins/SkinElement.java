@@ -15,14 +15,16 @@ import de.kswmd.bloodhunger.components.DimensionComponent;
  */
 public class SkinElement {
 
-    public final Animation<TextureRegion> animation;
+    private final Animation<TextureRegion> animation;
     //Array with polygons
     private final Array<float[]> polygonVertices = new Array<>(1);
     private final Array<float[]> polygonVerticesTransformed = new Array<>(1);
+    private final String resource;
     public final float initialFrameDuration;
 
     public SkinElement(String rootSkinPath, float initialFrameDuration, String resource, Animation.PlayMode playMode) {
         String fullResourcePath = rootSkinPath + "/" + resource;
+        this.resource = fullResourcePath;
         TextureAtlas atlas = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_GAME_ANIMATIONS);
         Array<TextureAtlas.AtlasRegion> regions = atlas.findRegions(fullResourcePath);
         this.initialFrameDuration = initialFrameDuration;
@@ -33,6 +35,7 @@ public class SkinElement {
 
     public SkinElement(String rootSkinPath, String resource, Animation.PlayMode playMode) {
         String fullResourcePath = rootSkinPath + "/" + resource;
+        this.resource = fullResourcePath;
         TextureAtlas atlas = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_GAME_ANIMATIONS);
         Array<TextureAtlas.AtlasRegion> regions = atlas.findRegions(fullResourcePath);
         this.initialFrameDuration = 1f / regions.size;
@@ -76,6 +79,9 @@ public class SkinElement {
         if (polygonVertices.isEmpty()) {
             return null;
         }
+        if(animation.getKeyFrames().length==0){
+            throw new RuntimeException("No Animation for ");
+        }
         float kfi = (float) animation.getKeyFrameIndex(time);
         float length = animation.getKeyFrames().length;
         float scale = (kfi / length);
@@ -95,5 +101,12 @@ public class SkinElement {
 
     public float[] getPolygonInWorldSize(float time, DimensionComponent dimensionComponent) {
         return getPolygonInWorldSize(time, dimensionComponent.width, dimensionComponent.height);
+    }
+
+    public Animation<TextureRegion> getAnimation() {
+        if(animation.getKeyFrames().length == 0){
+            throw new RuntimeException("Animation is empty for " + resource + ". No textureregions found.");
+        }
+        return animation;
     }
 }
