@@ -1,0 +1,1 @@
+The texture atlas for the embedded tsx files in the maps

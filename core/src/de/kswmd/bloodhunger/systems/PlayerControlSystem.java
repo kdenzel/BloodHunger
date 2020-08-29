@@ -40,14 +40,18 @@ public class PlayerControlSystem extends EntitySystem {
             BoundsComponent boundsComponent = Mapper.boundsComponent.get(playerComponent);
             DimensionComponent dimensionComponent = Mapper.dimensionComponent.get(playerComponent);
             RotationComponent rotationComponent = Mapper.rotationComponent.get(playerComponent);
-
+            //updates the animation timer
+            pc.update(deltaTime);
             pc.feetAnimationType = PlayerComponent.FeetAnimationType.IDLE;
             vc.velocityVec.setLength(0);
+            //Speed of player per default 100 units per second
             float speed = 100* BloodHungerGame.UNIT_SCALE;
             boolean run = false;
+
+            SkinElement feetSkinElement = pc.getSkin().getFeetAnimationSkinElement(pc.feetAnimationType);
             if (Gdx.input.isKeyPressed(Input.Keys.W)) {
                 pc.feetAnimationType = PlayerComponent.FeetAnimationType.MOVE_FORWARD;
-                SkinElement feetSkinElement = pc.getSkin().getFeetAnimationSkinElement(pc.feetAnimationType);
+
                 if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
                     speed *= 2;
                     feetSkinElement.animation.setFrameDuration(feetSkinElement.initialFrameDuration/2);
@@ -69,18 +73,25 @@ public class PlayerControlSystem extends EntitySystem {
                 pc.feetAnimationType = PlayerComponent.FeetAnimationType.MOVE_RIGHT;
                 rotationComponent.movementAngle += -90;
             }
-            pc.update(deltaTime);
-            //Set polygon depending on frame for bodyanimation
+
             PlayerComponent.BodyAnimationType bodyAnimationType = pc.getBodyAnimationType();
             SkinElement bodySkinElement = pc.getSkin().getBodyAnimationSkinElement(bodyAnimationType);
+            //Set speed of animation 2 times higher if the player is running
             if(run){
                 bodySkinElement.animation.setFrameDuration(bodySkinElement.initialFrameDuration/2);
             } else {
                 bodySkinElement.animation.setFrameDuration(bodySkinElement.initialFrameDuration);
             }
+            //update Polygons for each frame defined in skinelement
+            if(feetSkinElement.hasPolygons()){
+                boundsComponent.setPolygon(feetSkinElement.getPolygonInWorldSize(pc.timer, dimensionComponent), 0);
+            }
+
             if (bodySkinElement.hasPolygons()) {
                 boundsComponent.setPolygon(bodySkinElement.getPolygonInWorldSize(pc.timer, dimensionComponent), 1);
             }
+
+            //Set flashlights depending on Position of Player
             Vector2 weaponFront = pc.getSkin().getTransformedToolPositionWithOffset(positionComponent,dimensionComponent,rotationComponent);
             flashLights.forEach(f -> {
                 FlashLightComponent flashLightComponent = Mapper.flashLightComponent.get(f);
@@ -90,6 +101,7 @@ public class PlayerControlSystem extends EntitySystem {
                 fpos.set(weaponFront);
                 flashLightComponent.setPosition(weaponFront.x, weaponFront.y);
             });
+            //Set player lights depending on Position of Player
             playerLights.forEach(pl -> {
                 PlayerLightComponent playerLightComponent = Mapper.playerLightComponent.get(pl);
                 PositionComponent plpos = Mapper.positionComponent.get(pl);

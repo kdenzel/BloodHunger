@@ -67,15 +67,8 @@ public final class EntityFactory {
         DimensionComponent dc = new DimensionComponent(width, height);
         enemy.add(dc);
         enemy.add(new RotationComponent());
-        BoundsComponent bc = new BoundsComponent(dc.width, dc.height,
-                new float[]{
-                        0.0f * dc.width, 0.0f * dc.height,
-                        0.5f * dc.width, 0.0f * dc.height,
-                        0.5f * dc.width, 0.5f * dc.height,
-                        0.0f * dc.width, 0.5f * dc.height
-                });
-        bc.setBoundaryPolygon(4, 1);
-        enemy.add(bc);
+        //Boundscomponent gets updated in Playercontrolsystem for each frame
+        enemy.add(new BoundsComponent(width,height));
         enemy.add(new EnemyComponent());
         return enemy;
     }

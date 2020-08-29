@@ -38,7 +38,7 @@ public class SkinElement {
         this.initialFrameDuration = 1f / regions.size;
         this.animation = new Animation<>(initialFrameDuration, regions
                 , playMode);
-        loadPolygons(resource);
+        loadPolygons(fullResourcePath);
     }
 
     /**

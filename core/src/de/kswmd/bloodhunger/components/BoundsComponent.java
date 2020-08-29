@@ -115,12 +115,15 @@ public class BoundsComponent implements Component, Disposable {
             Rectangle r = p.getBoundingRectangle();
             boundaryPolygonArray.insert(z, p);
             box2DBodyArray.insert(z, Box2DBodyFactory.createKinematicRectanglePolygonBody(width,height));
+            rotate(0);
         } else {
+            //IMPORTANT: To get the correct bounding rectangle, we have to rotate to 0 degrees (start position) first
+            rotate(0);
             p = boundaryPolygonArray.get(z);
             p.setVertices(vertices);
             Rectangle r = p.getBoundingRectangle();
-            float hx = Math.min(r.width,width)/2;
-            float hy = Math.min(r.height,height)/2;
+            float hx = r.width/2;
+            float hy = r.height/2;
             Body b = box2DBodyArray.get(z);
             Array<Fixture> fixtures = b.getFixtureList();
             fixtures.forEach(fixture -> {
@@ -133,7 +136,6 @@ public class BoundsComponent implements Component, Disposable {
                 }
             });
         }
-        rotate(0);
     }
 
     public Polygon getPolygon(int z) {
