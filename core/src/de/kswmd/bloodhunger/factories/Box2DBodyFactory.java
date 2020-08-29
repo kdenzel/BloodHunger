@@ -1,17 +1,18 @@
 package de.kswmd.bloodhunger.factories;
 
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import de.kswmd.bloodhunger.BloodHungerGame;
-import de.kswmd.bloodhunger.screens.GameScreen;
 
 public final class Box2DBodyFactory {
+
+    public static final short CATEGORY_BOUNDARY = 0x001;
+    public static final short CATEGORY_LIGHT = 0x002;
+    public static final short CATEGORY_IGNORE = 0x004;
 
     private Box2DBodyFactory() {
     }
 
-    public static Body createKinematicRectanglePolygonBody(float width, float height) {
+    public static Body createKinematicRectanglePolygonBody(float width, float height,short category) {
         // First we create a body definition
         BodyDef bodyDef = new BodyDef();
 // We set our body to dynamic, for something like ground which doesn't move we would set it to StaticBody
@@ -26,7 +27,9 @@ public final class Box2DBodyFactory {
 // Create a fixture definition to apply our shape to
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = polygonShape;
-        fixtureDef.density = 1;
+        fixtureDef.isSensor = true;
+        fixtureDef.filter.categoryBits = category;
+
 // Create our fixture and attach it to the body
         Fixture fixture = body.createFixture(fixtureDef);
 // Remember to dispose of any shapes after you're done with them!

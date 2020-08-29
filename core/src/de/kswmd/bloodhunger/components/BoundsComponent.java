@@ -17,62 +17,72 @@ import de.kswmd.bloodhunger.factories.Box2DBodyFactory;
  */
 public class BoundsComponent implements Component, Disposable {
 
-    private float width;
-    private float height;
+    private final float width;
+    private final float height;
+    private final short category;
     private final Array<Polygon> boundaryPolygonArray = new Array<>(1);
     private final Array<Body> box2DBodyArray = new Array<>(1);
 
-    public BoundsComponent(DimensionComponent dimensionComponent) {
+    public BoundsComponent(DimensionComponent dimensionComponent, short category) {
         this.width = dimensionComponent.width;
         this.height = dimensionComponent.height;
+        this.category = category;
         setBoundaryRectangle(0);
     }
 
-    public BoundsComponent(DimensionComponent dimensionComponent, int numSides) {
+    public BoundsComponent(DimensionComponent dimensionComponent, int numSides, short category) {
         this.width = dimensionComponent.width;
         this.height = dimensionComponent.height;
+        this.category = category;
         setBoundaryPolygon(numSides, 0);
     }
 
-    public BoundsComponent(DimensionComponent dimensionComponent, float scale) {
+    public BoundsComponent(DimensionComponent dimensionComponent, float scale,short category) {
         this.width = dimensionComponent.width * scale;
         this.height = dimensionComponent.height * scale;
+        this.category = category;
         setBoundaryRectangle(0);
     }
 
-    public BoundsComponent(DimensionComponent dimensionComponent, float scale, int numSides) {
+    public BoundsComponent(DimensionComponent dimensionComponent, float scale, int numSides, short category) {
         this.width = dimensionComponent.width * scale;
         this.height = dimensionComponent.height * scale;
+        this.category = category;
         setBoundaryPolygon(numSides, 0);
     }
 
-    public BoundsComponent(DimensionComponent dimensionComponent, float scaleX, float scaleY) {
+    public BoundsComponent(DimensionComponent dimensionComponent, float scaleX, float scaleY, short category) {
         this.width = dimensionComponent.width * scaleX;
         this.height = dimensionComponent.height * scaleY;
+        this.category = category;
         setBoundaryRectangle(0);
     }
 
-    public BoundsComponent(DimensionComponent dimensionComponent, float scaleX, float scaleY, int numSides) {
+    public BoundsComponent(DimensionComponent dimensionComponent, float scaleX, float scaleY, int numSides, short category) {
         this.width = dimensionComponent.width * scaleX;
         this.height = dimensionComponent.height * scaleY;
+        this.category = category;
         setBoundaryPolygon(numSides, 0);
     }
 
-    public BoundsComponent(float width, float height) {
+    public BoundsComponent(float width, float height, short category) {
         this.width = width;
         this.height = height;
+        this.category = category;
         setBoundaryRectangle(0);
     }
 
-    public BoundsComponent(float width, float height, int numSides) {
+    public BoundsComponent(float width, float height, int numSides, short category) {
         this.width = width;
         this.height = height;
+        this.category = category;
         setBoundaryPolygon(numSides, 0);
     }
 
-    public BoundsComponent(float width, float height, float[] vertices) {
+    public BoundsComponent(float width, float height, float[] vertices, short category) {
         this.width = width;
         this.height = height;
+        this.category = category;
         setPolygon(vertices, 0);
     }
 
@@ -114,7 +124,7 @@ public class BoundsComponent implements Component, Disposable {
             p = new Polygon(vertices);
             Rectangle r = p.getBoundingRectangle();
             boundaryPolygonArray.insert(z, p);
-            box2DBodyArray.insert(z, Box2DBodyFactory.createKinematicRectanglePolygonBody(width,height));
+            box2DBodyArray.insert(z, Box2DBodyFactory.createKinematicRectanglePolygonBody(width,height, category));
             rotate(0);
         } else {
             //IMPORTANT: To get the correct bounding rectangle, we have to rotate to 0 degrees (start position) first

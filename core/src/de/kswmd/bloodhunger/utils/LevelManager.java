@@ -1,26 +1,25 @@
 package de.kswmd.bloodhunger.utils;
 
 import box2dLight.ConeLight;
+import box2dLight.DirectionalLight;
 import box2dLight.Light;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import de.kswmd.bloodhunger.Assets;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.LightComponent;
+import de.kswmd.bloodhunger.factories.Box2DBodyFactory;
 import de.kswmd.bloodhunger.factories.EntityFactory;
-
-import java.util.ArrayList;
-import java.util.List;
+import de.kswmd.bloodhunger.factories.LightFactory;
 
 public final class LevelManager {
 
@@ -77,18 +76,21 @@ public final class LevelManager {
         entities.clear();
         MapLayer mapLayer = tiledMap.getLayers().get("objects");
         MapObjects objects = mapLayer.getObjects();
-        objects.forEach(mapObject -> {
-            MapProperties properties = mapObject.getProperties();
-            float x = properties.get("x", Float.class) * BloodHungerGame.UNIT_SCALE;
-            float y = properties.get("y", Float.class) * BloodHungerGame.UNIT_SCALE;
-            float width = properties.get("width",Float.class) * BloodHungerGame.UNIT_SCALE;
-            float height = properties.get("height",Float.class) * BloodHungerGame.UNIT_SCALE;
+        objects.forEach(mapObject -> placeMapObjectOnMap(game,mapObject));
+        return entities;
+    }
 
-            String type = (String)properties.get("type");
-            if(type == null)
-                return;
-            if (type.equals("Stone")) {
-
+    private void placeMapObjectOnMap(BloodHungerGame game, MapObject mapObject){
+        MapProperties properties = mapObject.getProperties();
+        float x = properties.get("x", Float.class) * BloodHungerGame.UNIT_SCALE;
+        float y = properties.get("y", Float.class) * BloodHungerGame.UNIT_SCALE;
+        float width = properties.get("width", Float.class) * BloodHungerGame.UNIT_SCALE;
+        float height = properties.get("height", Float.class) * BloodHungerGame.UNIT_SCALE;
+        String type = (String) properties.get("type");
+        if (type == null)
+            return;
+        switch (type.toLowerCase()) {
+            case "stone":
                 Polygon poly = ((PolygonMapObject) mapObject).getPolygon();
                 Rectangle rect = poly.getBoundingRectangle();
                 float[] v = new float[poly.getVertices().length];
@@ -97,27 +99,33 @@ public final class LevelManager {
                 }
                 Entity stone = EntityFactory.createStone(x, y, rect.width * BloodHungerGame.UNIT_SCALE, rect.height * BloodHungerGame.UNIT_SCALE, v);
                 entities.add(stone);
-            } else if(type.equals("Wall")){
-                Entity wall = EntityFactory.createWall(x,y,width,height,null);
+                break;
+            case "wall":
+                Entity wall = EntityFactory.createWall(x, y, width, height, null);
                 entities.add(wall);
-            } else if(type.equals("Light")) {
+                break;
+            case "light":
                 String lighttype = (String) properties.get("ltype");
-                switch (lighttype){
-                    case "cone":
-                        Color c = properties.get("color",Color.class);
-                        float directionDegree = properties.get("directionDegree",Float.class);
-                        float coneDegree = properties.get("coneDegree",Float.class);
-                        float distance = properties.get("distance", Float.class);
-                        int rays = properties.get("rays",Integer.class);
-                        Light light = new ConeLight(game.rayHandler, rays,c,distance*BloodHungerGame.UNIT_SCALE,x,y,directionDegree, coneDegree);
-                        LightComponent component = new LightComponent(light);
-                        Entity entity = EntityFactory.createStaticLight(x,y,component);
-                        entities.add(entity);
-                        break;
+                if (lighttype.equals("cone")) {
+                    Color c = properties.get("color", Color.class);
+                    float directionDegree = properties.get("directionDegree", Float.class);
+                    float coneDegree = properties.get("coneDegree", Float.class);
+                    float distance = properties.get("distance", Float.class)*BloodHungerGame.UNIT*BloodHungerGame.UNIT_SCALE;
+                    int rays = properties.get("rays", Integer.class);
+                    Light light = LightFactory.createConeLight(game.rayHandler,rays,c,x,y,distance,directionDegree,coneDegree);
+                    LightComponent component = new LightComponent(light);
+                    Entity entity = EntityFactory.createStaticLight(x, y, component);
+                    entities.add(entity);
                 }
-
-            }
-        });
-        return entities;
+                break;
+            case "window":
+                Entity window = EntityFactory.createWindow(x, y, width, height, null);
+                entities.add(window);
+                break;
+            case "start":
+                entities.add(EntityFactory.createPlayer(x, y, game.playerComponent));
+                entities.add(EntityFactory.createPlayerLight(x, y, game.rayHandler));
+                break;
+        }
     }
 }

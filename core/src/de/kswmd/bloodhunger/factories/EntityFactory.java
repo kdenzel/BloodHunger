@@ -1,25 +1,15 @@
 package de.kswmd.bloodhunger.factories;
 
-import box2dLight.ConeLight;
 import box2dLight.RayHandler;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.MapLayer;
-import com.badlogic.gdx.maps.MapObjects;
-import com.badlogic.gdx.maps.MapProperties;
-import com.badlogic.gdx.maps.objects.PolygonMapObject;
-import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Rectangle;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.*;
 import de.kswmd.bloodhunger.skins.PlayerSkin;
 import de.kswmd.bloodhunger.utils.LevelManager;
 import de.kswmd.bloodhunger.utils.Mapper;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public final class EntityFactory {
 
@@ -42,7 +32,7 @@ public final class EntityFactory {
                         0.69921875f * dc.width, 0.65234375f * dc.height,
                         0.703125f * dc.width, 0.28515625f * dc.height,
                         0.28125f * dc.width, 0.29296875f * dc.height
-                });
+                }, Box2DBodyFactory.CATEGORY_BOUNDARY);
         player.add(bc);
         return player;
     }
@@ -52,7 +42,19 @@ public final class EntityFactory {
         wall.add(new PositionComponent(x, y));
         wall.add(new TextureRegionComponent(textureRegion));
         wall.add(new DimensionComponent(width, height));
-        BoundsComponent bc = new BoundsComponent(Mapper.dimensionComponent.get(wall));
+        BoundsComponent bc = new BoundsComponent(Mapper.dimensionComponent.get(wall), Box2DBodyFactory.CATEGORY_BOUNDARY);
+        bc.setPolygon(bc.getPolygon(0).getVertices(),1);
+        bc.setPosition(x,y);
+        wall.add(bc);
+        return wall;
+    }
+
+    public static Entity createWindow(float x, float y, float width, float height, TextureRegion textureRegion) {
+        Entity wall = new Entity();
+        wall.add(new PositionComponent(x, y));
+        wall.add(new TextureRegionComponent(textureRegion));
+        wall.add(new DimensionComponent(width, height));
+        BoundsComponent bc = new BoundsComponent(Mapper.dimensionComponent.get(wall),Box2DBodyFactory.CATEGORY_IGNORE);
         bc.setPolygon(bc.getPolygon(0).getVertices(),1);
         bc.setPosition(x,y);
         wall.add(bc);
@@ -68,7 +70,7 @@ public final class EntityFactory {
         enemy.add(dc);
         enemy.add(new RotationComponent());
         //Boundscomponent gets updated in Playercontrolsystem for each frame
-        enemy.add(new BoundsComponent(width,height));
+        enemy.add(new BoundsComponent(width,height,Box2DBodyFactory.CATEGORY_BOUNDARY));
         enemy.add(new EnemyComponent());
         return enemy;
     }
@@ -78,7 +80,7 @@ public final class EntityFactory {
         bullet.add(new PositionComponent(x, y));
         bullet.add(new VelocityComponent(2000 * BloodHungerGame.UNIT_SCALE, angle));
         bullet.add(new DimensionComponent(32 * BloodHungerGame.UNIT_SCALE, 32 * BloodHungerGame.UNIT_SCALE));
-        bullet.add(new BoundsComponent(Mapper.dimensionComponent.get(bullet), 16));
+        bullet.add(new BoundsComponent(Mapper.dimensionComponent.get(bullet), 16,Box2DBodyFactory.CATEGORY_BOUNDARY));
         bullet.add(new BulletComponent());
         return bullet;
     }
@@ -101,7 +103,7 @@ public final class EntityFactory {
         Entity stone = new Entity();
         stone.add(new PositionComponent(x, y));
         stone.add(new DimensionComponent(width, height));
-        BoundsComponent bc = new BoundsComponent(Mapper.dimensionComponent.get(stone));
+        BoundsComponent bc = new BoundsComponent(Mapper.dimensionComponent.get(stone),Box2DBodyFactory.CATEGORY_BOUNDARY);
         bc.setPolygon(vertices, 0);
         bc.setPosition(x, y);
         stone.add(bc);
@@ -134,20 +136,14 @@ public final class EntityFactory {
         Entity light = createDynamicLight(x, y, new FlashLightComponent());
         light.add(new RotationComponent());
         LightComponent lc = Mapper.flashLightComponent.get(light);
-        lc.setLightReference(new ConeLight(
-                rayHandler, 50, null, 10 * BloodHungerGame.UNIT * BloodHungerGame.UNIT_SCALE, 0, 0, 0, 45
-        ));
+        lc.setLightReference(LightFactory.createFlashLight(rayHandler));
         return light;
     }
 
     public static Entity createPlayerLight(float x, float y, RayHandler rayHandler) {
         PlayerLightComponent pcLc = new PlayerLightComponent();
         Entity light = createDynamicLight(x, y, pcLc);
-        pcLc.setLightReference(
-                new ConeLight(rayHandler, 10,null, 4, 0, 0, 0, 360
-                )
-        );
-
+        pcLc.setLightReference(LightFactory.createPlayerLight(rayHandler));
         return light;
     }
 
@@ -155,7 +151,7 @@ public final class EntityFactory {
         Entity item = new Entity();
         item.add(new PositionComponent(x, y));
         item.add(new DimensionComponent(width, height));
-        BoundsComponent bc = new BoundsComponent(width, height);
+        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_IGNORE);
         bc.setPosition(x, y);
         item.add(bc);
         item.add(new ItemComponent(itemType));
@@ -166,7 +162,7 @@ public final class EntityFactory {
         Entity item = new Entity();
         item.add(new PositionComponent(x, y));
         item.add(new DimensionComponent(width, height));
-        BoundsComponent bc = new BoundsComponent(width, height);
+        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_IGNORE);
         bc.setPosition(x, y);
         item.add(bc);
         item.add(new LevelExitComponent(nextScreen, level));
@@ -177,7 +173,7 @@ public final class EntityFactory {
         Entity entity = new Entity();
         entity.add(new PositionComponent(x,y));
         entity.add(new DimensionComponent(width,height));
-        BoundsComponent bc = new BoundsComponent(width, height);
+        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_IGNORE);
         bc.setPosition(x, y);
         entity.add(bc);
         entity.add(new PlayerSkinComponent(skin));

@@ -48,8 +48,7 @@ public class GameScreen extends BaseScreen implements InventoryListener {
         createHUD();
         Engine engine = game.engine;
         engine.addEntity(EntityFactory.createCrosshair(0, 0, 48 * BloodHungerGame.UNIT_SCALE, 48 * BloodHungerGame.UNIT_SCALE));
-        engine.addEntity(EntityFactory.createPlayer(2, 2, game.playerComponent));
-        engine.addEntity(EntityFactory.createPlayerLight(0, 0, game.rayHandler));
+
         for (int i = 0; i < 9; i++)
             engine.addEntity(EntityFactory.createItem(5 + i, 5, 32 * BloodHungerGame.UNIT_SCALE, 32 * BloodHungerGame.UNIT_SCALE, ItemComponent.ItemType.FLASHLIGHT));
         for (int i = 0; i < 9; i++)
@@ -291,6 +290,7 @@ public class GameScreen extends BaseScreen implements InventoryListener {
      */
     private void turnFlashLightOn() {
         Entity flashLightEntity = EntityFactory.createFlashLight(0, 0, game.rayHandler);
+        Mapper.flashLightComponent.get(flashLightEntity).getLightReference().setSoftnessLength(0);
         game.engine.addEntity(flashLightEntity);
 
     }
