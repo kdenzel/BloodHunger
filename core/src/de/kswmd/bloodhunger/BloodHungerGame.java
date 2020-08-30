@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Logger;
 import de.kswmd.bloodhunger.components.LevelExitComponent;
 import de.kswmd.bloodhunger.components.PlayerComponent;
+import de.kswmd.bloodhunger.factories.EntityFactory;
 import de.kswmd.bloodhunger.screens.GameScreen;
 import de.kswmd.bloodhunger.screens.InitialLoadingScreen;
 import de.kswmd.bloodhunger.screens.IntroScreen;
@@ -101,7 +102,9 @@ public class BloodHungerGame extends Game implements EntityListener {
         spriteBatch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
+
         rayHandler = new RayHandler(BloodHungerGame.WORLD);
+        rayHandler.setPseudo3dLight(true);
         engine = new Engine();
         engine.addEntityListener(this);
     }
@@ -134,6 +137,11 @@ public class BloodHungerGame extends Game implements EntityListener {
         engine.addSystem(renderingSystem);
         engine.addSystem(debugRenderSystem);
         debugRenderSystem.setProcessing(debug);
+    }
+
+    public void setUpLightEnvironment() {
+        engine.addEntity(EntityFactory.createPlayerLight(0, 0, rayHandler));
+        engine.addEntity(EntityFactory.createFlashLight(0,0,rayHandler));
     }
 
     public void setDayLightOn() {

@@ -11,14 +11,14 @@ public final class LightFactory {
 
     public static Light createFlashLight(RayHandler rayHandler) {
         Light flashLight = new ConeLight(
-                rayHandler, 50, null, 10 * BloodHungerGame.UNIT * BloodHungerGame.UNIT_SCALE, 0, 0, 0, 45
+                rayHandler, 50, null, 5 * BloodHungerGame.UNIT * BloodHungerGame.UNIT_SCALE, 0, 0, 0, 45
         );
         setDefaultLightSettings(flashLight);
         return flashLight;
     }
 
     public static Light createPlayerLight(RayHandler rayHandler) {
-        return createPointLight(rayHandler, 10, null, BloodHungerGame.UNIT * BloodHungerGame.UNIT_SCALE, 0, 0);
+        return createPointLight(rayHandler, 4, null, BloodHungerGame.UNIT * BloodHungerGame.UNIT_SCALE, 0, 0);
     }
 
     public static Light createPointLight(RayHandler rayHandler, int rays, Color c, float distance, float x ,float y){
@@ -33,9 +33,10 @@ public final class LightFactory {
         return light;
     }
 
-    public static Light createDirectionalLight(RayHandler rayHandler, int rays, Color c,float directionDegree) {
+    public static Light createDirectionalLight(RayHandler rayHandler, int rays, Color c,float directionDegree,float height) {
         Light light = new DirectionalLight(rayHandler, rays, c, directionDegree);
         setDefaultLightSettings(light);
+        light.setHeight(height);
         return light;
     }
 
@@ -43,5 +44,7 @@ public final class LightFactory {
         //i am category light and i am collide with category boundary per default, ignoring all others
         light.setContactFilter(Box2DBodyFactory.CATEGORY_LIGHT, (short) 0, Box2DBodyFactory.CATEGORY_BOUNDARY);
         light.setSoftnessLength(0);
+        light.setSoft(false);
+        light.setHeight(1);
     }
 }

@@ -1,7 +1,5 @@
 package de.kswmd.bloodhunger.utils;
 
-import box2dLight.ConeLight;
-import box2dLight.DirectionalLight;
 import box2dLight.Light;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.Color;
@@ -17,7 +15,6 @@ import com.badlogic.gdx.utils.Array;
 import de.kswmd.bloodhunger.Assets;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.LightComponent;
-import de.kswmd.bloodhunger.factories.Box2DBodyFactory;
 import de.kswmd.bloodhunger.factories.EntityFactory;
 import de.kswmd.bloodhunger.factories.LightFactory;
 
@@ -113,6 +110,7 @@ public final class LevelManager {
                 float coneDegree = properties.get("coneDegree", Float.class);
                 float distance = properties.get("distance", Float.class) * BloodHungerGame.UNIT * BloodHungerGame.UNIT_SCALE;
                 int rays = properties.get("rays", Integer.class);
+                float lheight = properties.get("lheight", Float.class);
                 switch (lighttype.toLowerCase()) {
                     case "cone":
                         Light light = LightFactory.createConeLight(game.rayHandler, rays, c, x, y, distance, directionDegree, coneDegree);
@@ -121,7 +119,7 @@ public final class LevelManager {
                         entities.add(entity);
                         break;
                     case "directional":
-                        light = LightFactory.createDirectionalLight(game.rayHandler, rays, c, directionDegree);
+                        light = LightFactory.createDirectionalLight(game.rayHandler, rays, c, directionDegree,lheight);
                         component = new LightComponent(light);
                         entity = EntityFactory.createStaticLight(x, y, component);
                         entities.add(entity);
@@ -140,7 +138,6 @@ public final class LevelManager {
                 break;
             case "start":
                 entities.add(EntityFactory.createPlayer(x, y, game.playerComponent));
-                entities.add(EntityFactory.createPlayerLight(x, y, game.rayHandler));
                 entities.add(EntityFactory.createCrosshair(0, 0, 48 * BloodHungerGame.UNIT_SCALE, 48 * BloodHungerGame.UNIT_SCALE));
                 break;
         }

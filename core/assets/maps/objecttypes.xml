@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objecttypes>
+ <objecttype name="Light" color="#ffff00">
+  <property name="color" type="color"/>
+  <property name="coneDegree" type="float" default="0"/>
+  <property name="directionDegree" type="float" default="0"/>
+  <property name="distance" type="float" default="64"/>
+  <property name="lheight" type="float" default="1"/>
+  <property name="ltype" type="string" default="cone"/>
+  <property name="rays" type="int" default="0"/>
+ </objecttype>
+ <objecttype name="Start" color="#ff0000"/>
+ <objecttype name="Wall" color="#000000"/>
+ <objecttype name="Window" color="#888888"/>
+</objecttypes>

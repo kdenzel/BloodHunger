@@ -1,5 +1,6 @@
 package de.kswmd.bloodhunger.factories;
 
+import box2dLight.LightData;
 import com.badlogic.gdx.physics.box2d.*;
 import de.kswmd.bloodhunger.BloodHungerGame;
 
@@ -12,7 +13,7 @@ public final class Box2DBodyFactory {
     private Box2DBodyFactory() {
     }
 
-    public static Body createKinematicRectanglePolygonBody(float width, float height,short category) {
+    public static Body createKinematicRectanglePolygonBody(float width, float height, short category) {
         // First we create a body definition
         BodyDef bodyDef = new BodyDef();
 // We set our body to dynamic, for something like ground which doesn't move we would set it to StaticBody
@@ -27,10 +28,12 @@ public final class Box2DBodyFactory {
 // Create a fixture definition to apply our shape to
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = polygonShape;
-        fixtureDef.isSensor = true;
+        fixtureDef.isSensor = false;
         fixtureDef.filter.categoryBits = category;
+        //fixtureDef.filter.maskBits = CATEGORY_LIGHT;
 // Create our fixture and attach it to the body
         Fixture fixture = body.createFixture(fixtureDef);
+        fixture.setUserData(new LightData(height));
 // Remember to dispose of any shapes after you're done with them!
 // BodyDef and FixtureDef don't need disposing, but shapes do.
         polygonShape.dispose();
@@ -39,6 +42,7 @@ public final class Box2DBodyFactory {
 
     /**
      * Only between 3 and 8 vertices possible in box2d
+     *
      * @param vertices - the vertices of the polygon
      * @return the box2d bodyobject with the polygon shape
      */

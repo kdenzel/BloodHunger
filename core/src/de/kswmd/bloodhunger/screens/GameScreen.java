@@ -46,15 +46,17 @@ public class GameScreen extends BaseScreen implements InventoryListener {
     protected void initialize() {
         Gdx.input.setCursorCatched(!game.debug);
         createHUD();
-        /*for (int i = 0; i < 9; i++)
-            engine.addEntity(EntityFactory.createItem(5 + i, 5, 32 * BloodHungerGame.UNIT_SCALE, 32 * BloodHungerGame.UNIT_SCALE, ItemComponent.ItemType.FLASHLIGHT));
         for (int i = 0; i < 9; i++)
+            game.engine.addEntity(EntityFactory.createItem(5 + i, 5, 32 * BloodHungerGame.UNIT_SCALE, 32 * BloodHungerGame.UNIT_SCALE, ItemComponent.ItemType.FLASHLIGHT));
+        /*for (int i = 0; i < 9; i++)
             engine.addEntity(EntityFactory.createItem(5 + i, 4, 32 * BloodHungerGame.UNIT_SCALE, 32 * BloodHungerGame.UNIT_SCALE, ItemComponent.ItemType.HANDGUN));
         */
         //engine.addEntity(EntityFactory.createWall(0, 0, 2000*BloodHungerGame.UNIT_SCALE, 64*BloodHungerGame.UNIT_SCALE, null));
         //int enemies = MathUtils.random(30) + 10;
         //engine.addEntity(EntityFactory.createSkinEntity(4, 4, 1, 1, PlayerSkin.create("player_skin_soldier", 0, -25f * BloodHungerGame.UNIT_SCALE, true)));
         //engine.addEntity(EntityFactory.createLevelExit(-0.5f, -0.5f, 1f, 1f, BloodHungerGame.SCREEN_INTRO, LevelManager.Level.EXAMPLE));
+        game.setUpLightEnvironment();
+        game.playerComponent.inventory.addItem(new ItemComponent(ItemComponent.ItemType.FLASHLIGHT));
         game.playerComponent.inventory.addListener(this);
     }
 
@@ -318,6 +320,7 @@ public class GameScreen extends BaseScreen implements InventoryListener {
     public void hide() {
         super.hide();
         game.playerComponent.inventory.removeListener(this);
+        Gdx.app.debug(TAG,"HIDE");
     }
 
     @Override

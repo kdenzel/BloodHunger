@@ -22,7 +22,7 @@ allprojects {
         appName = "BloodHunger"
         gdxVersion = '1.9.11'
         roboVMVersion = '2.3.8'
-        box2DLightsVersion = '1.4'
+        box2DLightsVersion = '1.6-SNAPSHOT'
         ashleyVersion = '1.7.3'
         aiVersion = '1.8.0'
         visuiVersion = '1.4.6'
