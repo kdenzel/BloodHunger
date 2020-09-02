@@ -1,23 +1,21 @@
 package de.kswmd.bloodhunger.systems;
 
-import com.badlogic.ashley.core.*;
-import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.EntitySystem;
+import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.BoundsComponent;
 import de.kswmd.bloodhunger.components.DimensionComponent;
 import de.kswmd.bloodhunger.components.PositionComponent;
-import de.kswmd.bloodhunger.components.RotationComponent;
 import de.kswmd.bloodhunger.utils.Mapper;
-import org.w3c.dom.css.Rect;
 
 public class DebugRenderSystem extends EntitySystem {
 
@@ -66,7 +64,10 @@ public class DebugRenderSystem extends EntitySystem {
                 BoundsComponent bc = Mapper.boundsComponent.get(entity);
                 //Draw every polygon on each layer
                 for (int z = 0; z < bc.size(); z++) {
-                    debugRenderer.polygon(bc.getPolygon(z).getTransformedVertices());
+                    Polygon poly = bc.getPolygon(z);
+                    if(poly == null)
+                        continue;
+                    debugRenderer.polygon(poly.getTransformedVertices());
                 }
 
                 /*Rectangle r = bc.boundaryPolygon.getBoundingRectangle();

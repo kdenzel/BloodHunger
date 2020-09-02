@@ -43,11 +43,11 @@ public class BoundsCollisionSystem extends EntitySystem {
                 BoundsComponent otherBounds = Mapper.boundsComponent.get(otherBoundsEntity);
                 //Check all layers of the player
                 for (int z = 0; z < otherBounds.size(); z++) {
-                    if (otherBounds.size() <= z)
+                    if (otherBounds.size() <= z || playerBounds.size() <= z)
                         continue;
                     Polygon poly1 = playerBounds.getPolygon(z);
                     Polygon poly2 = otherBounds.getPolygon(z);
-                    if (!poly1.getBoundingRectangle().overlaps(poly2.getBoundingRectangle())) {
+                    if (poly1 == null || poly2 == null || !poly1.getBoundingRectangle().overlaps(poly2.getBoundingRectangle())) {
                         continue;
                     }
                     //BE AWARE THE POLYGONS MUST BE COUNTER CLOCKWISE OTHERWISE GLITCHES APPEAR!!!!!!!1111!!!!!!!!!!!!!!!!
@@ -70,11 +70,11 @@ public class BoundsCollisionSystem extends EntitySystem {
                 BoundsComponent otherBounds = Mapper.boundsComponent.get(entityToCollideWith);
                 //Check all layers of the moving entity
                 for (int z = 0; z < entityBounds.size(); z++) {
-                    if (otherBounds.size() <= z)
+                    if (otherBounds.size() <= z || entityBounds.size() <= z)
                         continue;
                     Polygon poly1 = entityBounds.getPolygon(0);
                     Polygon poly2 = otherBounds.getPolygon(0);
-                    if (!poly1.getBoundingRectangle().overlaps(poly2.getBoundingRectangle())) {
+                    if (poly1 == null || poly2 == null || !poly1.getBoundingRectangle().overlaps(poly2.getBoundingRectangle())) {
                         continue;
                     }
                     boolean polygonOverlap = Intersector.overlapConvexPolygons(poly1, poly2, mtv);

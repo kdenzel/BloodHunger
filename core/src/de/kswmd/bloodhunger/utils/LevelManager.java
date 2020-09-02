@@ -8,6 +8,7 @@ import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.PolygonMapObject;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
@@ -119,7 +120,7 @@ public final class LevelManager {
                         entities.add(entity);
                         break;
                     case "directional":
-                        light = LightFactory.createDirectionalLight(game.rayHandler, rays, c, directionDegree,lheight);
+                        light = LightFactory.createDirectionalLight(game.rayHandler, rays, c, directionDegree, lheight);
                         component = new LightComponent(light);
                         entity = EntityFactory.createStaticLight(x, y, component);
                         entities.add(entity);
@@ -139,6 +140,9 @@ public final class LevelManager {
             case "start":
                 entities.add(EntityFactory.createPlayer(x, y, game.playerComponent));
                 entities.add(EntityFactory.createCrosshair(0, 0, 48 * BloodHungerGame.UNIT_SCALE, 48 * BloodHungerGame.UNIT_SCALE));
+                break;
+            case "roof":
+                entities.add(EntityFactory.createRoof(x, y, width, height, null));
                 break;
         }
     }

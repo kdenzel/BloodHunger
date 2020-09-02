@@ -23,88 +23,36 @@ public class BoundsComponent implements Component, Disposable {
     private final Array<Polygon> boundaryPolygonArray = new Array<>(1);
     private final Array<Body> box2DBodyArray = new Array<>(1);
 
-    public BoundsComponent(DimensionComponent dimensionComponent, short category) {
-        this.width = dimensionComponent.width;
-        this.height = dimensionComponent.height;
-        this.category = category;
-        setBoundaryRectangle(0);
-    }
-
-    public BoundsComponent(DimensionComponent dimensionComponent, int numSides, short category) {
-        this.width = dimensionComponent.width;
-        this.height = dimensionComponent.height;
-        this.category = category;
-        setBoundaryPolygon(numSides, 0);
-    }
-
-    public BoundsComponent(DimensionComponent dimensionComponent, float scale,short category) {
-        this.width = dimensionComponent.width * scale;
-        this.height = dimensionComponent.height * scale;
-        this.category = category;
-        setBoundaryRectangle(0);
-    }
-
-    public BoundsComponent(DimensionComponent dimensionComponent, float scale, int numSides, short category) {
-        this.width = dimensionComponent.width * scale;
-        this.height = dimensionComponent.height * scale;
-        this.category = category;
-        setBoundaryPolygon(numSides, 0);
-    }
-
-    public BoundsComponent(DimensionComponent dimensionComponent, float scaleX, float scaleY, short category) {
-        this.width = dimensionComponent.width * scaleX;
-        this.height = dimensionComponent.height * scaleY;
-        this.category = category;
-        setBoundaryRectangle(0);
-    }
-
-    public BoundsComponent(DimensionComponent dimensionComponent, float scaleX, float scaleY, int numSides, short category) {
-        this.width = dimensionComponent.width * scaleX;
-        this.height = dimensionComponent.height * scaleY;
-        this.category = category;
-        setBoundaryPolygon(numSides, 0);
-    }
-
     public BoundsComponent(float width, float height, short category) {
         this.width = width;
         this.height = height;
         this.category = category;
-        setBoundaryRectangle(0);
-    }
-
-    public BoundsComponent(float width, float height, int numSides, short category) {
-        this.width = width;
-        this.height = height;
-        this.category = category;
-        setBoundaryPolygon(numSides, 0);
-    }
-
-    public BoundsComponent(float width, float height, float[] vertices, short category) {
-        this.width = width;
-        this.height = height;
-        this.category = category;
-        setPolygon(vertices, 0);
     }
 
     public void rotate(float degree) {
         boundaryPolygonArray.forEach(polygon -> {
+            if (polygon == null)
+                return;
             polygon.setOrigin(width / 2, height / 2);
             polygon.setRotation(degree);
         });
-        box2DBodyArray.forEach(body ->
-                body.setTransform(0,0, degree * MathUtils.degreesToRadians)
+        box2DBodyArray.forEach(body -> {
+                    if (body == null)
+                        return;
+                    body.setTransform(0, 0, degree * MathUtils.degreesToRadians);
+                }
         );
     }
 
-    private void setBoundaryRectangle(int z) {
+    public BoundsComponent setBoundaryRectangle(int z) {
         float w = width;
         float h = height;
         float[] vertices = {0, 0, w, 0, w, h, 0, h};
         setPolygon(vertices, z);
-
+        return this;
     }
 
-    public void setBoundaryPolygon(int numSides, int z) {
+    public BoundsComponent setBoundaryPolygon(int numSides, int z) {
         float w = width;
         float h = height;
         float[] vertices = new float[2 * numSides];
@@ -116,15 +64,20 @@ public class BoundsComponent implements Component, Disposable {
             vertices[2 * i + 1] = h / 2 * MathUtils.sin(angle) + h / 2;
         }
         setPolygon(vertices, z);
+        return this;
     }
 
-    public void setPolygon(float[] vertices, int z) {
+    public BoundsComponent setPolygon(float[] vertices, int z) {
         Polygon p;
         if (boundaryPolygonArray.size <= z) {
             p = new Polygon(vertices);
             Rectangle r = p.getBoundingRectangle();
+            while (z > boundaryPolygonArray.size) {
+                boundaryPolygonArray.add(null);
+                box2DBodyArray.add(null);
+            }
             boundaryPolygonArray.insert(z, p);
-            box2DBodyArray.insert(z, Box2DBodyFactory.createKinematicRectanglePolygonBody(width,height, category));
+            box2DBodyArray.insert(z, Box2DBodyFactory.createKinematicRectanglePolygonBody(width, height, category));
             rotate(0);
         } else {
             //IMPORTANT: To get the correct bounding rectangle, we have to rotate to 0 degrees (start position) first
@@ -132,20 +85,20 @@ public class BoundsComponent implements Component, Disposable {
             p = boundaryPolygonArray.get(z);
             p.setVertices(vertices);
             Rectangle r = p.getBoundingRectangle();
-            float hx = r.width/2;
-            float hy = r.height/2;
+            float hx = r.width / 2;
+            float hy = r.height / 2;
             Body b = box2DBodyArray.get(z);
             Array<Fixture> fixtures = b.getFixtureList();
             fixtures.forEach(fixture -> {
                 switch (fixture.getType()) {
                     case Polygon:
                         PolygonShape ps = (PolygonShape) fixture.getShape();
-                        ps.setAsBox(hx,hy);
+                        ps.setAsBox(hx, hy);
                         break;
-
                 }
             });
         }
+        return this;
     }
 
     public Polygon getPolygon(int z) {
@@ -166,24 +119,33 @@ public class BoundsComponent implements Component, Disposable {
 
     /**
      * Move every polygon on all layers
+     *
      * @param x - x-coordinate
      * @param y - y-coordinate
      */
-    public void setPosition(float x, float y){
-        for(int z = 0; z < boundaryPolygonArray.size; z++){
-            setPosition(x,y,z);
+    public BoundsComponent setPosition(float x, float y) {
+        for (int z = 0; z < boundaryPolygonArray.size; z++) {
+            setPosition(x, y, z);
         }
+        return this;
     }
 
-    private void setPosition(float x, float y, int z) {
+    private BoundsComponent setPosition(float x, float y, int z) {
+        if (getPolygon(z) == null)
+            return this;
         boundaryPolygonArray.get(z).setPosition(x, y);
         Body b = box2DBodyArray.get(z);
-        b.setTransform(x+width/2, y+height/2, b.getAngle());
+        b.setTransform(x + width / 2, y + height / 2, b.getAngle());
+        return this;
     }
 
 
     @Override
     public void dispose() {
-        box2DBodyArray.forEach(BloodHungerGame.WORLD::destroyBody);
+        box2DBodyArray.forEach(body -> {
+            if(body == null)
+                return;
+            BloodHungerGame.WORLD.destroyBody(body);
+        });
     }
 }

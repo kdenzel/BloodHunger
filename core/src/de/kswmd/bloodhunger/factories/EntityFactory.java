@@ -1,5 +1,6 @@
 package de.kswmd.bloodhunger.factories;
 
+import box2dLight.LightData;
 import box2dLight.RayHandler;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
@@ -26,13 +27,13 @@ public final class EntityFactory {
         player.add(playerComponent);
         DimensionComponent dc = Mapper.dimensionComponent.get(player);
         //Creates new boundscomponent with feet vertices for z-layer 0
-        BoundsComponent bc = new BoundsComponent(dc.width, dc.height,
-                new float[]{
-                        0.28125f * dc.width, 0.6484375f * dc.height,
-                        0.69921875f * dc.width, 0.65234375f * dc.height,
-                        0.703125f * dc.width, 0.28515625f * dc.height,
-                        0.28125f * dc.width, 0.29296875f * dc.height
-                }, Box2DBodyFactory.CATEGORY_BOUNDARY);
+        BoundsComponent bc = new BoundsComponent(dc.width, dc.height, Box2DBodyFactory.CATEGORY_BOUNDARY);
+        bc.setPolygon(new float[]{
+                0.28125f * dc.width, 0.6484375f * dc.height,
+                0.69921875f * dc.width, 0.65234375f * dc.height,
+                0.703125f * dc.width, 0.28515625f * dc.height,
+                0.28125f * dc.width, 0.29296875f * dc.height
+        }, 0);
         player.add(bc);
         return player;
     }
@@ -42,9 +43,9 @@ public final class EntityFactory {
         wall.add(new PositionComponent(x, y));
         wall.add(new TextureRegionComponent(textureRegion));
         wall.add(new DimensionComponent(width, height));
-        BoundsComponent bc = new BoundsComponent(Mapper.dimensionComponent.get(wall), Box2DBodyFactory.CATEGORY_BOUNDARY);
-        bc.setPolygon(bc.getPolygon(0).getVertices(),1);
-        bc.setPosition(x,y);
+        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_BOUNDARY);
+        bc.setBoundaryRectangle(0).setBoundaryRectangle(1);
+        bc.setPosition(x, y);
         wall.add(bc);
         return wall;
     }
@@ -54,11 +55,24 @@ public final class EntityFactory {
         wall.add(new PositionComponent(x, y));
         wall.add(new TextureRegionComponent(textureRegion));
         wall.add(new DimensionComponent(width, height));
-        BoundsComponent bc = new BoundsComponent(Mapper.dimensionComponent.get(wall),Box2DBodyFactory.CATEGORY_IGNORE);
-        bc.setPolygon(bc.getPolygon(0).getVertices(),1);
-        bc.setPosition(x,y);
+        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_IGNORE);
+        bc.setBoundaryRectangle(0).setBoundaryRectangle(1);
+        bc.setPosition(x, y);
         wall.add(bc);
         return wall;
+    }
+
+    public static Entity createRoof(float x, float y, float width, float height, TextureRegion textureRegion) {
+        Entity roof = new Entity();
+        roof.add(new PositionComponent(x, y));
+        roof.add(new TextureRegionComponent(textureRegion));
+        roof.add(new DimensionComponent(width, height));
+        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_BOUNDARY);
+        bc.setBoundaryRectangle(2);
+        ((LightData) bc.getBody(2).getUserData()).shadow = true;
+        bc.setPosition(x, y);
+        roof.add(bc);
+        return roof;
     }
 
     public static Entity createEnemey(float x, float y, float width, float height, TextureRegion textureRegion) {
@@ -70,17 +84,19 @@ public final class EntityFactory {
         enemy.add(dc);
         enemy.add(new RotationComponent());
         //Boundscomponent gets updated in Playercontrolsystem for each frame
-        enemy.add(new BoundsComponent(width,height,Box2DBodyFactory.CATEGORY_BOUNDARY));
+        enemy.add(new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_BOUNDARY).setBoundaryRectangle(0));
         enemy.add(new EnemyComponent());
         return enemy;
     }
 
     public static Entity createBullet(float x, float y, float angle) {
+        float width = 32 * BloodHungerGame.UNIT_SCALE;
+        float height = 32 * BloodHungerGame.UNIT_SCALE;
         Entity bullet = new Entity();
         bullet.add(new PositionComponent(x, y));
         bullet.add(new VelocityComponent(2000 * BloodHungerGame.UNIT_SCALE, angle));
-        bullet.add(new DimensionComponent(32 * BloodHungerGame.UNIT_SCALE, 32 * BloodHungerGame.UNIT_SCALE));
-        bullet.add(new BoundsComponent(Mapper.dimensionComponent.get(bullet), 16,Box2DBodyFactory.CATEGORY_BOUNDARY));
+        bullet.add(new DimensionComponent(width, height));
+        bullet.add(new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_BOUNDARY).setBoundaryPolygon(16, 0));
         bullet.add(new BulletComponent());
         return bullet;
     }
@@ -103,7 +119,7 @@ public final class EntityFactory {
         Entity stone = new Entity();
         stone.add(new PositionComponent(x, y));
         stone.add(new DimensionComponent(width, height));
-        BoundsComponent bc = new BoundsComponent(Mapper.dimensionComponent.get(stone),Box2DBodyFactory.CATEGORY_BOUNDARY);
+        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_BOUNDARY);
         bc.setPolygon(vertices, 0);
         bc.setPosition(x, y);
         stone.add(bc);
@@ -153,6 +169,7 @@ public final class EntityFactory {
         item.add(new PositionComponent(x, y));
         item.add(new DimensionComponent(width, height));
         BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_IGNORE);
+        bc.setBoundaryRectangle(0);
         bc.setPosition(x, y);
         item.add(bc);
         item.add(new ItemComponent(itemType));
@@ -164,17 +181,19 @@ public final class EntityFactory {
         item.add(new PositionComponent(x, y));
         item.add(new DimensionComponent(width, height));
         BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_IGNORE);
+        bc.setBoundaryRectangle(0);
         bc.setPosition(x, y);
         item.add(bc);
         item.add(new LevelExitComponent(nextScreen, level));
         return item;
     }
 
-    public static Entity createSkinEntity(float x, float y, float width, float height, PlayerSkin skin){
+    public static Entity createSkinEntity(float x, float y, float width, float height, PlayerSkin skin) {
         Entity entity = new Entity();
-        entity.add(new PositionComponent(x,y));
-        entity.add(new DimensionComponent(width,height));
+        entity.add(new PositionComponent(x, y));
+        entity.add(new DimensionComponent(width, height));
         BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_IGNORE);
+        bc.setBoundaryRectangle(0);
         bc.setPosition(x, y);
         entity.add(bc);
         entity.add(new PlayerSkinComponent(skin));

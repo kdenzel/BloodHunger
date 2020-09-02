@@ -32,8 +32,10 @@ public final class Box2DBodyFactory {
         fixtureDef.filter.categoryBits = category;
         //fixtureDef.filter.maskBits = CATEGORY_LIGHT;
 // Create our fixture and attach it to the body
+        LightData lightData = new LightData(height);
         Fixture fixture = body.createFixture(fixtureDef);
-        fixture.setUserData(new LightData(height));
+        fixture.setUserData(lightData);
+        body.setUserData(lightData);
 // Remember to dispose of any shapes after you're done with them!
 // BodyDef and FixtureDef don't need disposing, but shapes do.
         polygonShape.dispose();

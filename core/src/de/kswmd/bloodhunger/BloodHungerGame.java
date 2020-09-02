@@ -102,8 +102,10 @@ public class BloodHungerGame extends Game implements EntityListener {
         spriteBatch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
-
+        RayHandler.useDiffuseLight(true);
+        RayHandler.setGammaCorrection(true);
         rayHandler = new RayHandler(BloodHungerGame.WORLD);
+        rayHandler.setShadows(true);
         rayHandler.setPseudo3dLight(true);
         engine = new Engine();
         engine.addEntityListener(this);

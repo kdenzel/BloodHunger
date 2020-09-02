@@ -1,6 +1,5 @@
 package de.kswmd.bloodhunger.screens;
 
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
@@ -16,11 +15,9 @@ import com.badlogic.gdx.utils.Align;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.*;
 import de.kswmd.bloodhunger.factories.EntityFactory;
-import de.kswmd.bloodhunger.skins.PlayerSkin;
 import de.kswmd.bloodhunger.ui.inventory.Inventory;
 import de.kswmd.bloodhunger.ui.inventory.InventoryListener;
 import de.kswmd.bloodhunger.ui.inventory.InventorySlot;
-import de.kswmd.bloodhunger.utils.LevelManager;
 import de.kswmd.bloodhunger.utils.Mapper;
 
 public class GameScreen extends BaseScreen implements InventoryListener {
