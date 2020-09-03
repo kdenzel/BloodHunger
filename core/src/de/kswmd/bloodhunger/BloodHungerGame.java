@@ -48,15 +48,16 @@ public class BloodHungerGame extends Game implements EntityListener {
 
     public FollowMouseSystem followMouseSystem;
     public PlayerControlSystem playerControlSystem;
+    public EnemyFollowPlayerSystem enemyFollowPlayerSystem;
     public RotationSystem rotationSystem;
     public MovementSystem movementSystem;
     public BoundsCollisionSystem boundsCollisionSystem;
-    public CenterCameraSystem centerCameraSystem;
-    public DebugRenderSystem debugRenderSystem;
-    public EnemyFollowPlayerSystem enemyFollowPlayerSystem;
-    public UpdateShadersSystem updateShadersSystem;
-    public RenderingSystem renderingSystem;
     public BulletSystem bulletSystem;
+    public CenterCameraSystem centerCameraSystem;
+    public SunCyclusSystem sunCyclusSystem;
+    public UpdateShadersSystem updateShadersSystem;
+    public DebugRenderSystem debugRenderSystem;
+    public RenderingSystem renderingSystem;
 
     public Engine engine;
     public ShapeRenderer shapeRenderer;
@@ -126,19 +127,26 @@ public class BloodHungerGame extends Game implements EntityListener {
         updateShadersSystem = new UpdateShadersSystem(camera,shaderProgram);
         renderingSystem = new RenderingSystem(camera,spriteBatch, rayHandler, shaderProgram);
         bulletSystem = new BulletSystem();
+        sunCyclusSystem = new SunCyclusSystem();
 
+        //Control
         engine.addSystem(followMouseSystem);
         engine.addSystem(playerControlSystem);
+        //update
         engine.addSystem(enemyFollowPlayerSystem);
         engine.addSystem(rotationSystem);
         engine.addSystem(movementSystem);
         engine.addSystem(boundsCollisionSystem);
         engine.addSystem(bulletSystem);
         engine.addSystem(centerCameraSystem);
+        engine.addSystem(sunCyclusSystem);
         engine.addSystem(updateShadersSystem);
+        //render
         engine.addSystem(renderingSystem);
         engine.addSystem(debugRenderSystem);
+        //Debugsystems
         debugRenderSystem.setProcessing(debug);
+        sunCyclusSystem.setProcessing(debug);
     }
 
     public void setUpLightEnvironment() {
@@ -186,6 +194,24 @@ public class BloodHungerGame extends Game implements EntityListener {
 
     public void setAmbientLight(float r, float g, float b, float a) {
         renderingSystem.setAmbientLight(r, g, b, a);
+    }
+
+    /**
+     * calculates given float multiplied by world units
+     * @param xy the value you want to convert multiplied by worldUnits, could be anything like x,y,width or height
+     * @return the new calculated value
+     */
+    public static float worldUnits(float xy) {
+        return xy * BloodHungerGame.UNIT * BloodHungerGame.UNIT_SCALE;
+    }
+
+    /**
+     * calculates given float to world units
+     * @param xy the value you want to convert to worldUnits, could be anything like x,y,width or height
+     * @return the new calculated value
+     */
+    public static float toWorldUnits(float xy) {
+        return xy * BloodHungerGame.UNIT_SCALE;
     }
 
     @Override

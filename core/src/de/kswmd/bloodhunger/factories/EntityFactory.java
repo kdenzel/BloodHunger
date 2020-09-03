@@ -21,11 +21,9 @@ public final class EntityFactory {
         Entity player = new Entity();
         player.add(new PositionComponent(x, y));
         player.add(new VelocityComponent());
-        player.add(new DimensionComponent(128 * BloodHungerGame.UNIT_SCALE, 128 * BloodHungerGame.UNIT_SCALE));
         player.add(new RotationComponent());
-        player.add(new CenterCameraComponent());
         player.add(playerComponent);
-        DimensionComponent dc = Mapper.dimensionComponent.get(player);
+        DimensionComponent dc = new DimensionComponent(BloodHungerGame.worldUnits(2), BloodHungerGame.worldUnits(2));
         //Creates new boundscomponent with feet vertices for z-layer 0
         BoundsComponent bc = new BoundsComponent(dc.width, dc.height, Box2DBodyFactory.CATEGORY_BOUNDARY);
         bc.setPolygon(new float[]{
@@ -34,6 +32,7 @@ public final class EntityFactory {
                 0.703125f * dc.width, 0.28515625f * dc.height,
                 0.28125f * dc.width, 0.29296875f * dc.height
         }, 0);
+        player.add(dc);
         player.add(bc);
         return player;
     }

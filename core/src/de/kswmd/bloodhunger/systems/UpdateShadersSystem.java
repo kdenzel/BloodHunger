@@ -32,6 +32,6 @@ public class UpdateShadersSystem extends IteratingSystem {
         playerOrigin.set(positionComponent.getPosition()).add(dimensionComponent.originX,dimensionComponent.originY);
         shaderProgram.setUniformMatrix("u_worldView",camera.combined);
         shaderProgram.setUniformf("u_shadowPos", playerOrigin);
-        shaderProgram.setUniformf("u_distance",32* BloodHungerGame.UNIT_SCALE);
+        shaderProgram.setUniformf("u_distance",BloodHungerGame.worldUnits(0.5f));
     }
 }

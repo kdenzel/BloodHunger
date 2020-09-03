@@ -82,10 +82,10 @@ public final class LevelManager {
         MapProperties properties = mapObject.getProperties();
         if (!mapObject.isVisible())
             return;
-        float x = properties.get("x", Float.class) * BloodHungerGame.UNIT_SCALE;
-        float y = properties.get("y", Float.class) * BloodHungerGame.UNIT_SCALE;
-        float width = properties.get("width", Float.class) * BloodHungerGame.UNIT_SCALE;
-        float height = properties.get("height", Float.class) * BloodHungerGame.UNIT_SCALE;
+        float x = BloodHungerGame.toWorldUnits(properties.get("x", Float.class));
+        float y = BloodHungerGame.toWorldUnits(properties.get("y", Float.class));
+        float width = BloodHungerGame.toWorldUnits(properties.get("width", Float.class));
+        float height = BloodHungerGame.toWorldUnits(properties.get("height", Float.class));
         String type = (String) properties.get("type");
         if (type == null)
             return;
@@ -95,9 +95,9 @@ public final class LevelManager {
                 Rectangle rect = poly.getBoundingRectangle();
                 float[] v = new float[poly.getVertices().length];
                 for (int i = 0; i < poly.getVertices().length; i++) {
-                    v[i] = poly.getVertices()[i] * BloodHungerGame.UNIT_SCALE;
+                    v[i] = BloodHungerGame.toWorldUnits(poly.getVertices()[i]);
                 }
-                Entity stone = EntityFactory.createStone(x, y, rect.width * BloodHungerGame.UNIT_SCALE, rect.height * BloodHungerGame.UNIT_SCALE, v);
+                Entity stone = EntityFactory.createStone(x, y, BloodHungerGame.toWorldUnits(rect.width), BloodHungerGame.toWorldUnits(rect.height), v);
                 entities.add(stone);
                 break;
             case "wall":
@@ -109,7 +109,7 @@ public final class LevelManager {
                 Color c = properties.get("color", Color.class);
                 float directionDegree = properties.get("directionDegree", Float.class);
                 float coneDegree = properties.get("coneDegree", Float.class);
-                float distance = properties.get("distance", Float.class) * BloodHungerGame.UNIT * BloodHungerGame.UNIT_SCALE;
+                float distance = BloodHungerGame.worldUnits(properties.get("distance", Float.class));
                 int rays = properties.get("rays", Integer.class);
                 float lheight = properties.get("lheight", Float.class);
                 switch (lighttype.toLowerCase()) {
@@ -139,7 +139,7 @@ public final class LevelManager {
                 break;
             case "start":
                 entities.add(EntityFactory.createPlayer(x, y, game.playerComponent));
-                entities.add(EntityFactory.createCrosshair(0, 0, 48 * BloodHungerGame.UNIT_SCALE, 48 * BloodHungerGame.UNIT_SCALE));
+                entities.add(EntityFactory.createCrosshair(0, 0, BloodHungerGame.toWorldUnits(48), BloodHungerGame.toWorldUnits(48)));
                 break;
             case "roof":
                 entities.add(EntityFactory.createRoof(x, y, width, height, null));

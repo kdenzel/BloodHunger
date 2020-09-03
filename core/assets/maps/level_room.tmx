@@ -31,20 +31,20 @@
    <properties>
     <property name="color" type="color" value="#800055ff"/>
     <property name="coneDegree" type="float" value="0"/>
-    <property name="directionDegree" type="float" value="0"/>
+    <property name="directionDegree" type="float" value="179"/>
     <property name="distance" type="float" value="4"/>
-    <property name="lheight" type="float" value="90"/>
+    <property name="lheight" type="float" value="179"/>
     <property name="ltype" value="directional"/>
     <property name="rays" type="int" value="100"/>
    </properties>
    <point/>
   </object>
-  <object id="40" type="Light" x="928" y="944" visible="0">
+  <object id="40" type="Light" x="928" y="944">
    <properties>
     <property name="color" type="color" value="#ffffff00"/>
     <property name="coneDegree" type="float" value="360"/>
     <property name="directionDegree" type="float" value="0"/>
-    <property name="distance" type="float" value="10"/>
+    <property name="distance" type="float" value="5"/>
     <property name="lheight" type="float" value="1"/>
     <property name="ltype" value="point"/>
     <property name="rays" type="int" value="360"/>
