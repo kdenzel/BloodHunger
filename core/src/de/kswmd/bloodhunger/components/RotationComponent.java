@@ -6,6 +6,7 @@ public class RotationComponent implements Component {
 
     public float movementAngle;
     public float lookingAngle;
+    public float dst2;
 
     public RotationComponent(float movementAngle) {
         this.movementAngle = movementAngle;

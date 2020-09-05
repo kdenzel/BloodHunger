@@ -54,7 +54,7 @@ public class BloodHungerGame extends Game implements EntityListener {
     public BoundsCollisionSystem boundsCollisionSystem;
     public BulletSystem bulletSystem;
     public CenterCameraSystem centerCameraSystem;
-    public SunCyclusSystem sunCyclusSystem;
+    public SunCycleSystem sunCycleSystem;
     public UpdateShadersSystem updateShadersSystem;
     public DebugRenderSystem debugRenderSystem;
     public RenderingSystem renderingSystem;
@@ -127,7 +127,7 @@ public class BloodHungerGame extends Game implements EntityListener {
         updateShadersSystem = new UpdateShadersSystem(camera,shaderProgram);
         renderingSystem = new RenderingSystem(camera,spriteBatch, rayHandler, shaderProgram);
         bulletSystem = new BulletSystem();
-        sunCyclusSystem = new SunCyclusSystem();
+        sunCycleSystem = new SunCycleSystem();
 
         //Control
         engine.addSystem(followMouseSystem);
@@ -139,14 +139,14 @@ public class BloodHungerGame extends Game implements EntityListener {
         engine.addSystem(boundsCollisionSystem);
         engine.addSystem(bulletSystem);
         engine.addSystem(centerCameraSystem);
-        engine.addSystem(sunCyclusSystem);
+        engine.addSystem(sunCycleSystem);
         engine.addSystem(updateShadersSystem);
         //render
         engine.addSystem(renderingSystem);
         engine.addSystem(debugRenderSystem);
         //Debugsystems
         debugRenderSystem.setProcessing(debug);
-        sunCyclusSystem.setProcessing(debug);
+        sunCycleSystem.setProcessing(debug);
     }
 
     public void setUpLightEnvironment() {

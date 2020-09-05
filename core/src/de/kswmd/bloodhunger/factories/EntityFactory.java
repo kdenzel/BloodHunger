@@ -49,6 +49,29 @@ public final class EntityFactory {
         return wall;
     }
 
+    public static Entity createBasicObstacle(float x, float y, float width, float height) {
+        Entity obstacle = new Entity();
+        obstacle.add(new PositionComponent(x, y));
+        obstacle.add(new DimensionComponent(width, height));
+        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_BOUNDARY);
+        bc.setBoundaryRectangle(0);
+        bc.setPosition(x, y);
+        obstacle.add(bc);
+        return obstacle;
+    }
+
+
+    public static Entity createBasicObstacle(float x, float y, float width, float height, float[] vertices) {
+        Entity stone = new Entity();
+        stone.add(new PositionComponent(x, y));
+        stone.add(new DimensionComponent(width, height));
+        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_BOUNDARY);
+        bc.setPolygon(vertices, 0);
+        bc.setPosition(x, y);
+        stone.add(bc);
+        return stone;
+    }
+
     public static Entity createWindow(float x, float y, float width, float height, TextureRegion textureRegion) {
         Entity wall = new Entity();
         wall.add(new PositionComponent(x, y));
@@ -66,7 +89,7 @@ public final class EntityFactory {
         roof.add(new PositionComponent(x, y));
         roof.add(new TextureRegionComponent(textureRegion));
         roof.add(new DimensionComponent(width, height));
-        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_BOUNDARY);
+        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_ROOF);
         bc.setBoundaryRectangle(2);
         ((LightData) bc.getBody(2).getUserData()).shadow = true;
         bc.setPosition(x, y);
@@ -112,17 +135,6 @@ public final class EntityFactory {
         tile.add(new PositionComponent(x, y));
         tile.add(new TileComponent());
         return tile;
-    }
-
-    public static Entity createStone(float x, float y, float width, float height, float[] vertices) {
-        Entity stone = new Entity();
-        stone.add(new PositionComponent(x, y));
-        stone.add(new DimensionComponent(width, height));
-        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_BOUNDARY);
-        bc.setPolygon(vertices, 0);
-        bc.setPosition(x, y);
-        stone.add(bc);
-        return stone;
     }
 
     public static Entity createCrosshair(float x, float y, float width, float height) {

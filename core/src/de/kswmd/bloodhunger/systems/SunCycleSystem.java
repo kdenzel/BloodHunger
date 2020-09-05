@@ -8,11 +8,11 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import de.kswmd.bloodhunger.components.LightComponent;
 import de.kswmd.bloodhunger.utils.Mapper;
 
-public class SunCyclusSystem extends IteratingSystem {
+public class SunCycleSystem extends IteratingSystem {
 
     private float degrees = -1;
 
-    public SunCyclusSystem(){
+    public SunCycleSystem(){
         super(Family.all(LightComponent.class).get());
     }
 

@@ -8,7 +8,6 @@ import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.PolygonMapObject;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
@@ -90,15 +89,15 @@ public final class LevelManager {
         if (type == null)
             return;
         switch (type.toLowerCase()) {
-            case "stone":
+            case "obstacle":
                 Polygon poly = ((PolygonMapObject) mapObject).getPolygon();
                 Rectangle rect = poly.getBoundingRectangle();
                 float[] v = new float[poly.getVertices().length];
                 for (int i = 0; i < poly.getVertices().length; i++) {
                     v[i] = BloodHungerGame.toWorldUnits(poly.getVertices()[i]);
                 }
-                Entity stone = EntityFactory.createStone(x, y, BloodHungerGame.toWorldUnits(rect.width), BloodHungerGame.toWorldUnits(rect.height), v);
-                entities.add(stone);
+                Entity obstacle = EntityFactory.createBasicObstacle(x, y, BloodHungerGame.toWorldUnits(rect.width), BloodHungerGame.toWorldUnits(rect.height), v);
+                entities.add(obstacle);
                 break;
             case "wall":
                 Entity wall = EntityFactory.createWall(x, y, width, height, null);

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="64" tileheight="64" infinite="0" nextlayerid="4" nextobjectid="43">
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="64" tileheight="64" infinite="0" nextlayerid="4" nextobjectid="258">
  <tileset firstgid="1" name="terrain" tilewidth="64" tileheight="64" spacing="4" margin="2" tilecount="225" columns="15">
   <image source="tsx/terrain.png" width="1024" height="1024"/>
  </tileset>
@@ -8,12 +8,12 @@
  </tileset>
  <layer id="1" name="terrain" width="30" height="30">
   <data encoding="base64" compression="zlib">
-   eJxjYMAPYkjE1AKj9o7aO2rv0LGXCQ37AXE8kTgBi35y7Q0AYkEgZiSCjqOyvcTYKUgDe0f9O+rfUf+O+pcUe+2B2IBI7ECBvehguNeDo/aO2juU7QUAMb9cPA==
+   eJxjYMAPYkjEhPQSC4aivZSAUXtH7R3K9jKhYT8gjicSJ2DRT669AUAsCMSMRNBxVLaXGDsF8djrC8X09i+59lLqX2LAcIrfUf8Obv8+xYLp4V9s9tLav/ZAbEAkdqDAXnQw3OvBUXtH7R3K9gIATARpoA==
   </data>
  </layer>
  <layer id="3" name="decoration" width="30" height="30">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo2AUjALqgkdA/JiBYQExGKh2AbXsfUya2gMjyV5qgoGy98movXQBIy1dDYX8S017gWVuwmMi8SMq2jsKRsEoGLwAADWSMVU=
+   eJxjYBgFo2AUjALqgkdA/JiBYQExGKh2AbXsfUya2gMjyV5qgoGy98movXQB1IhffSgebvYOh3IDWOYmPCYSP6KivaNgFIyCwQsAOHYyEQ==
   </data>
  </layer>
  <objectgroup id="2" name="objects">
@@ -29,7 +29,7 @@
   <object id="28" type="Wall" x="1216" y="608" width="32" height="160"/>
   <object id="39" type="Light" x="0" y="960">
    <properties>
-    <property name="color" type="color" value="#800055ff"/>
+    <property name="color" type="color" value="#7f0055ff"/>
     <property name="coneDegree" type="float" value="0"/>
     <property name="directionDegree" type="float" value="179"/>
     <property name="distance" type="float" value="4"/>
@@ -41,7 +41,6 @@
   </object>
   <object id="40" type="Light" x="928" y="944">
    <properties>
-    <property name="color" type="color" value="#ffffff00"/>
     <property name="coneDegree" type="float" value="360"/>
     <property name="directionDegree" type="float" value="0"/>
     <property name="distance" type="float" value="5"/>

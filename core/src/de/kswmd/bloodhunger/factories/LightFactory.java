@@ -37,12 +37,13 @@ public final class LightFactory {
         Light light = new DirectionalLight(rayHandler, rays, c, directionDegree);
         setDefaultLightSettings(light);
         light.setHeight(height);
+        light.setContactFilter(Box2DBodyFactory.CATEGORY_LIGHT, (short) 0, (short) (Box2DBodyFactory.CATEGORY_BOUNDARY|Box2DBodyFactory.CATEGORY_ROOF));
         return light;
     }
 
     private static void setDefaultLightSettings(Light light){
         //i am category light and i am collide with category boundary per default, ignoring all others
-        light.setContactFilter(Box2DBodyFactory.CATEGORY_LIGHT, (short) 0, Box2DBodyFactory.CATEGORY_BOUNDARY);
+        light.setContactFilter(Box2DBodyFactory.CATEGORY_LIGHT, (short) 0, (short) (Box2DBodyFactory.CATEGORY_BOUNDARY));
         light.setSoftnessLength(0);
         light.setSoft(false);
         light.setHeight(1);

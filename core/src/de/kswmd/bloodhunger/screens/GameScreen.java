@@ -53,8 +53,8 @@ public class GameScreen extends BaseScreen implements InventoryListener {
         //engine.addEntity(EntityFactory.createSkinEntity(4, 4, 1, 1, PlayerSkin.create("player_skin_soldier", 0, -25f * BloodHungerGame.UNIT_SCALE, true)));
         //engine.addEntity(EntityFactory.createLevelExit(-0.5f, -0.5f, 1f, 1f, BloodHungerGame.SCREEN_INTRO, LevelManager.Level.EXAMPLE));
         game.setUpLightEnvironment();
-        game.playerComponent.inventory.addItem(new ItemComponent(ItemComponent.ItemType.FLASHLIGHT));
         game.playerComponent.inventory.addListener(this);
+        game.playerComponent.inventory.addItem(new ItemComponent(ItemComponent.ItemType.FLASHLIGHT));
     }
 
     private void createHUD() {

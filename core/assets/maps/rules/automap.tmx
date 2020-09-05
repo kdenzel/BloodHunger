@@ -1,29 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="64" tileheight="64" infinite="0" nextlayerid="5" nextobjectid="5">
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="64" tileheight="64" infinite="0" nextlayerid="14" nextobjectid="17">
  <tileset firstgid="1" name="Terrain_Pack" tilewidth="64" tileheight="64" spacing="4" margin="2" tilecount="225" columns="15">
-  <image source="../terrain_texture/Terrain_Pack.png" width="1024" height="1024"/>
+  <image source="../tsx/terrain.png" width="1024" height="1024"/>
+ </tileset>
+ <tileset firstgid="226" name="decorations" tilewidth="64" tileheight="64" spacing="4" margin="2" tilecount="225" columns="15">
+  <image source="../tsx/decorations.png" width="1024" height="1024"/>
  </tileset>
  <layer id="1" name="regions" width="20" height="20">
   <data encoding="base64" compression="zlib">
-   eJxjZGBgYGSAAFssmFTASGXzRsEoGAWjYBQMTgAAdPICZw==
+   eJzTY2Bg0GOAAD0sGJ84NkCMPlLMGwWjYBSMglEwOAEA2scEUQ==
   </data>
  </layer>
  <layer id="2" name="input_terrain" width="20" height="20">
   <data encoding="base64" compression="zlib">
-   eJzTY2Bg0GOAAFssmFSgR2XzRsEoGAWjYBQMTgAAvKYDGw==
+   eJzzZWBg8GWAgBgsGASeYsG4gC+VzRsFo2AUjIJRMDgBAPTvDb8=
   </data>
  </layer>
  <layer id="3" name="output_terrain" width="20" height="20">
   <data encoding="base64" compression="zlib">
-   eJzTY2Bg0GeAAAMgtkXCBgykAx8gFkAzz44C80bBKBgFo2AUDE4AAJBXAuk=
+   eJzzZWBgSGSAAH0gjkHC+lBxQSBmRKNxAR8gVkQzz44C80bBKBgFo2AUDE4AAPPfBEw=
+  </data>
+ </layer>
+ <layer id="10" name="output_decoration" width="20" height="20">
+  <data encoding="base64" compression="zlib">
+   eJxjYCAMngLxMyB+DsQvgPglEXrwgS9A/BWIvwHxdyD+QaF5o2AUjIJRMAroDwApHQlS
   </data>
  </layer>
  <objectgroup id="4" name="output_objects">
-  <object id="4" x="15.2727" y="74.1818">
-   <properties>
-    <property name="type" value="stone"/>
-   </properties>
+  <object id="4" name="Stone" type="Obstacle" x="15.2727" y="74.1818">
    <polygon points="0,0 97.4545,-1.81818 92.1818,-39.4545 50.3636,-53.2727 18,-44.3636"/>
+  </object>
+  <object id="16" name="Couch" type="Obstacle" x="592" y="112">
+   <polygon points="-16,16 304,16 304,-112 272,-112 272,-48 32,-48 32,-112 -16,-112"/>
   </object>
  </objectgroup>
 </map>

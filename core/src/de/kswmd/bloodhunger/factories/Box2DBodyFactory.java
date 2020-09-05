@@ -9,6 +9,7 @@ public final class Box2DBodyFactory {
     public static final short CATEGORY_BOUNDARY = 0x001;
     public static final short CATEGORY_LIGHT = 0x002;
     public static final short CATEGORY_IGNORE = 0x004;
+    public static final short CATEGORY_ROOF = 0x008;
 
     private Box2DBodyFactory() {
     }

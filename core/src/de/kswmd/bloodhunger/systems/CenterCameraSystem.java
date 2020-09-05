@@ -60,12 +60,12 @@ public class CenterCameraSystem extends EntitySystem {
         //remove camera position, so we get the middle of the screen coordinate.
         worldCoordsToScreenCoords.sub(camera.position.x, camera.position.y, 0);
 
-        tmpVec.set(Math.min(Math.abs(worldCoordsToScreenCoords.x / 2),Math.abs(playerCenterX - crosshairCenterX)),Math.min(Math.abs(worldCoordsToScreenCoords.y / 2),Math.abs(playerCenterY - crosshairCenterY)));
+        tmpVec.set(Math.min(Math.abs(worldCoordsToScreenCoords.x / 2), Math.abs(playerCenterX - crosshairCenterX)), Math.min(Math.abs(worldCoordsToScreenCoords.y / 2), Math.abs(playerCenterY - crosshairCenterY)));
         tmpVec.setAngle(playerRc.lookingAngle);
         //Reuse our Vector3 Object for setting the final position
-        worldCoordsToScreenCoords.set(playerCenterX+tmpVec.x,playerCenterY+tmpVec.y,0);
+        worldCoordsToScreenCoords.set(playerCenterX + tmpVec.x, playerCenterY + tmpVec.y, 0);
         //Improtant, moves smoothly to the position. Lerp to it
-        camera.position.lerp(worldCoordsToScreenCoords,deltaTime*2);
+        camera.position.lerp(worldCoordsToScreenCoords, deltaTime * 2);
         camera.update();
     }
 

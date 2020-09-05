@@ -49,7 +49,7 @@ public class PlayerControlSystem extends EntitySystem {
             boolean run = false;
 
             SkinElement feetSkinElement = pc.getSkin().getFeetAnimationSkinElement(pc.feetAnimationType);
-            if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+            if (Gdx.input.isKeyPressed(Input.Keys.W) && rotationComponent.dst2 > BloodHungerGame.worldUnits(0.25f)) {
                 pc.feetAnimationType = PlayerComponent.FeetAnimationType.MOVE_FORWARD;
 
                 if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
