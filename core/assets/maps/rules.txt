@@ -1,1 +1,2 @@
-./rules/automap.tmx
+./rules/automap_terrain.tmx
+./rules/automap_decoration.tmx

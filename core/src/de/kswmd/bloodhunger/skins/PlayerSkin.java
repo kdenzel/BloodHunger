@@ -8,15 +8,14 @@ import de.kswmd.bloodhunger.components.PlayerComponent;
 import de.kswmd.bloodhunger.components.PositionComponent;
 import de.kswmd.bloodhunger.components.RotationComponent;
 
-public class PlayerSkin {
+public class PlayerSkin extends Skin {
 
     private final Vector2 weaponOffset = new Vector2();
     private final Vector2 weaponPosition = new Vector2();
     private final float xWeaponOffset;
     private final float yWeaponOffset;
     public final boolean backpack;
-    public final Array<SkinElement> feetAnimations = new Array<>(PlayerComponent.FeetAnimationType.values().length);
-    public final Array<SkinElement> bodyAnimations = new Array<>(PlayerComponent.BodyAnimationType.values().length);
+
 
     private PlayerSkin(float xWeaponOffset, float yWeaponOffset,boolean backpack) {
         this.xWeaponOffset = xWeaponOffset;

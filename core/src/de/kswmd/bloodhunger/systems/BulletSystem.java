@@ -2,15 +2,11 @@ package de.kswmd.bloodhunger.systems;
 
 import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import de.kswmd.bloodhunger.components.BoundsComponent;
 import de.kswmd.bloodhunger.components.BulletComponent;
-import de.kswmd.bloodhunger.components.EnemyComponent;
-import de.kswmd.bloodhunger.factories.EntityFactory;
-import de.kswmd.bloodhunger.screens.GameScreen;
+import de.kswmd.bloodhunger.components.ZombieComponent;
 import de.kswmd.bloodhunger.utils.Mapper;
 
 public class BulletSystem extends EntitySystem {
@@ -43,10 +39,10 @@ public class BulletSystem extends EntitySystem {
                     boolean overlaps = Intersector.overlapConvexPolygons(bulletBoundsComponent.getPolygon(0), otherBoundsComponent.getPolygon(z));
                     if (overlaps) {
                         this.getEngine().removeEntity(bullet);
-                        if (Mapper.enemyComponent.has(otherBoundsEntity)) {
-                            EnemyComponent enemyComponent = Mapper.enemyComponent.get(otherBoundsEntity);
-                            enemyComponent.health -= MathUtils.random(20, 40);
-                            if (enemyComponent.health < 0) {
+                        if (Mapper.zombieComponent.has(otherBoundsEntity)) {
+                            ZombieComponent zombieComponent = Mapper.zombieComponent.get(otherBoundsEntity);
+                            zombieComponent.health -= MathUtils.random(20, 40);
+                            if (zombieComponent.health < 0) {
                                 this.getEngine().removeEntity(otherBoundsEntity);
                             }
                         }

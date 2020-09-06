@@ -49,11 +49,11 @@ public final class EntityFactory {
         return wall;
     }
 
-    public static Entity createBasicObstacle(float x, float y, float width, float height) {
+    public static Entity createBasicObstacle(float x, float y, float width, float height,short lightcategory) {
         Entity obstacle = new Entity();
         obstacle.add(new PositionComponent(x, y));
         obstacle.add(new DimensionComponent(width, height));
-        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_BOUNDARY);
+        BoundsComponent bc = new BoundsComponent(width, height, lightcategory);
         bc.setBoundaryRectangle(0);
         bc.setPosition(x, y);
         obstacle.add(bc);
@@ -61,12 +61,23 @@ public final class EntityFactory {
     }
 
 
-    public static Entity createBasicObstacle(float x, float y, float width, float height, float[] vertices) {
+    public static Entity createBasicObstacle(float x, float y, float width, float height, short lightcategory, float[] vertices) {
         Entity stone = new Entity();
         stone.add(new PositionComponent(x, y));
         stone.add(new DimensionComponent(width, height));
-        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_BOUNDARY);
+        BoundsComponent bc = new BoundsComponent(width, height, lightcategory);
         bc.setPolygon(vertices, 0);
+        bc.setPosition(x, y);
+        stone.add(bc);
+        return stone;
+    }
+
+    public static Entity createBasicObstacle(float x, float y, float width, float height, short lightcategory, float[] vertices, int z) {
+        Entity stone = new Entity();
+        stone.add(new PositionComponent(x, y));
+        stone.add(new DimensionComponent(width, height));
+        BoundsComponent bc = new BoundsComponent(width, height, lightcategory);
+        bc.setPolygon(vertices, z);
         bc.setPosition(x, y);
         stone.add(bc);
         return stone;
@@ -107,7 +118,7 @@ public final class EntityFactory {
         enemy.add(new RotationComponent());
         //Boundscomponent gets updated in Playercontrolsystem for each frame
         enemy.add(new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_BOUNDARY).setBoundaryRectangle(0));
-        enemy.add(new EnemyComponent());
+        enemy.add(new ZombieComponent());
         return enemy;
     }
 

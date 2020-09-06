@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="64" tileheight="64" infinite="0" nextlayerid="4" nextobjectid="258">
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="64" tileheight="64" infinite="0" nextlayerid="4" nextobjectid="347">
  <tileset firstgid="1" name="terrain" tilewidth="64" tileheight="64" spacing="4" margin="2" tilecount="225" columns="15">
   <image source="tsx/terrain.png" width="1024" height="1024"/>
  </tileset>
@@ -8,12 +8,12 @@
  </tileset>
  <layer id="1" name="terrain" width="30" height="30">
   <data encoding="base64" compression="zlib">
-   eJxjYMAPYkjEhPQSC4aivZSAUXtH7R3K9jKhYT8gjicSJ2DRT669AUAsCMSMRNBxVLaXGDsF8djrC8X09i+59lLqX2LAcIrfUf8Obv8+xYLp4V9s9tLav/ZAbEAkdqDAXnQw3OvBUXtH7R3K9gIATARpoA==
+   eJxjYMAP9IE4Bgnr4xCDsQnpJRbA9NphsRdZDJ+9yOpItZcc/1ICKPEvNewd9e/w9G8MiZhcwISG/YA4nkicgEU/ufYGALEgEDMSQcdR2V5i7BTEY68vECcOgH99gFhxAPxLDBhO8Tvq38HtX2z20MO/2PxGa//aA7EBkdiBAnvRwUirf0f9O+rfoeRfAFtBUv0=
   </data>
  </layer>
  <layer id="3" name="decoration" width="30" height="30">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo2AUjALqgkdA/JiBYQExGKh2AbXsfUya2gMjyV5qgoGy98movXQB1IhffSgebvYOh3IDWOYmPCYSP6KivaNgFIyCwQsAOHYyEQ==
+   eJztlDsKgDAQBfdGXsmj5Sg5S9ZvrzFlXmGpEGWJim9gugezEIgIIYTYEqCKuBKxdVZdvbb1f+pa8lS3Y7cKFu/b7H6l28MBjnCC8/nW3z7uoLvAFUa4wVShiz+31UKDYZcQ8l4yaeY7Yg==
   </data>
  </layer>
  <objectgroup id="2" name="objects">
@@ -62,6 +62,30 @@
     <property name="rays" type="int" value="10"/>
    </properties>
    <point/>
+  </object>
+  <object id="306" name="Stone" type="Obstacle" x="1615.27" y="778.182">
+   <properties>
+    <property name="lightcategory" type="int" value="1"/>
+   </properties>
+   <polygon points="0,0 97.4545,-1.81818 92.1818,-39.4545 50.3636,-53.2727 18,-44.3636"/>
+  </object>
+  <object id="344" name="Couch" type="Obstacle" x="576" y="1296">
+   <properties>
+    <property name="lightcategory" type="int" value="4"/>
+   </properties>
+   <polygon points="0,0 32,0 32,-80 0,-80"/>
+  </object>
+  <object id="345" name="Couch" type="Obstacle" x="864" y="1296">
+   <properties>
+    <property name="lightcategory" type="int" value="4"/>
+   </properties>
+   <polygon points="0,0 32,0 32,-80 0,-80"/>
+  </object>
+  <object id="346" name="Couch" type="Obstacle" x="576" y="1343">
+   <properties>
+    <property name="lightcategory" type="int" value="4"/>
+   </properties>
+   <polygon points="0,0 320,0 320,-48 0,-48"/>
   </object>
  </objectgroup>
 </map>

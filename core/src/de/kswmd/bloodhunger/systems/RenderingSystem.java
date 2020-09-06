@@ -25,6 +25,7 @@ public class RenderingSystem extends EntitySystem {
     private final Batch batch;
     private final OrthographicCamera camera;
     private ImmutableArray<Entity> playerAnimationEntities;
+    private ImmutableArray<Entity> zombieAnimationEntities;
     private ImmutableArray<Entity> crosshairEntities;
     private ImmutableArray<Entity> itemEntities;
     private OrthogonalTiledMapRenderer mapRenderer;
@@ -62,6 +63,7 @@ public class RenderingSystem extends EntitySystem {
     @Override
     public void addedToEngine(Engine engine) {
         playerAnimationEntities = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
+        zombieAnimationEntities = engine.getEntitiesFor(Family.all(ZombieComponent.class).get());
         crosshairEntities = engine.getEntitiesFor(Family.all(FollowMouseComponent.class).exclude(PlayerComponent.class).get());
         itemEntities = engine.getEntitiesFor(Family.all(ItemComponent.class).get());
     }
@@ -82,6 +84,7 @@ public class RenderingSystem extends EntitySystem {
         batch.setShader(null);
         renderItems(deltaTime);
         renderPlayers(deltaTime);
+        renderZombies(deltaTime);
         batch.end();
         rayHandler.setCombinedMatrix(camera);
         rayHandler.updateAndRender();
@@ -127,6 +130,36 @@ public class RenderingSystem extends EntitySystem {
 
             TextureRegion bodyRegion = bodySkinElement.getAnimation().getKeyFrame(playerComponent.timer);
             TextureRegion feetRegion = feetSkinElement.getAnimation().getKeyFrame(playerComponent.timer);
+
+            float bodyWidthInDimensions = dimensionComponent.width / bodyRegion.getRegionWidth();
+            float bodyHeightInDimensions = dimensionComponent.height / bodyRegion.getRegionHeight();
+
+            batch.draw(feetRegion, positionComponent.x + (bodyRegion.getRegionWidth() / 2f - feetRegion.getRegionWidth() / 2f) * bodyWidthInDimensions,
+                    positionComponent.y + (bodyRegion.getRegionHeight() / 2f - feetRegion.getRegionHeight() / 2f) * bodyHeightInDimensions,
+                    (feetRegion.getRegionWidth() / 2f) * bodyWidthInDimensions, (feetRegion.getRegionHeight() / 2f) * bodyHeightInDimensions,
+                    feetRegion.getRegionWidth() * bodyWidthInDimensions, feetRegion.getRegionHeight() * bodyHeightInDimensions, dimensionComponent.scaleX, dimensionComponent.scaleY,
+                    rotationComponent.lookingAngle);
+
+            batch.draw(bodyRegion, positionComponent.x, positionComponent.y,
+                    dimensionComponent.originX, dimensionComponent.originY,
+                    dimensionComponent.width, dimensionComponent.height, dimensionComponent.scaleX, dimensionComponent.scaleY,
+                    rotationComponent.lookingAngle);
+        }
+    }
+
+    private void renderZombies(float deltaTime) {
+        for (Entity entity : zombieAnimationEntities) {
+            PositionComponent positionComponent = Mapper.positionComponent.get(entity);
+            DimensionComponent dimensionComponent = Mapper.dimensionComponent.get(entity);
+            RotationComponent rotationComponent = Mapper.rotationComponent.get(entity);
+            ZombieComponent zombieComponent = Mapper.zombieComponent.get(entity);
+
+            ZombieComponent.BodyAnimationType bodyAnimationType = zombieComponent.getBodyAnimationType();
+            SkinElement bodySkinElement = zombieComponent.getSkin().getBodyAnimationSkinElement(bodyAnimationType);
+            SkinElement feetSkinElement = zombieComponent.getSkin().getFeetAnimationSkinElement(zombieComponent.feetAnimationType);
+
+            TextureRegion bodyRegion = bodySkinElement.getAnimation().getKeyFrame(zombieComponent.timer);
+            TextureRegion feetRegion = feetSkinElement.getAnimation().getKeyFrame(zombieComponent.timer);
 
             float bodyWidthInDimensions = dimensionComponent.width / bodyRegion.getRegionWidth();
             float bodyHeightInDimensions = dimensionComponent.height / bodyRegion.getRegionHeight();

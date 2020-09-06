@@ -10,7 +10,9 @@
   <property name="ltype" type="string" default="cone"/>
   <property name="rays" type="int" default="0"/>
  </objecttype>
- <objecttype name="Obstacle" color="#000000"/>
+ <objecttype name="Obstacle" color="#000000">
+  <property name="lightcategory" type="int" default="1"/>
+ </objecttype>
  <objecttype name="Player Spawn Point" color="#ff00ff"/>
  <objecttype name="Roof" color="#000000"/>
  <objecttype name="Start" color="#ff0000"/>

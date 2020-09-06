@@ -2,6 +2,7 @@ package de.kswmd.bloodhunger.utils;
 
 import box2dLight.Light;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
@@ -19,6 +20,8 @@ import de.kswmd.bloodhunger.factories.EntityFactory;
 import de.kswmd.bloodhunger.factories.LightFactory;
 
 public final class LevelManager {
+
+    private static final String TAG = LevelManager.class.getSimpleName();
 
     public enum Level {
         EXAMPLE(Assets.MAP_TMX_EXAMPLE),
@@ -86,6 +89,8 @@ public final class LevelManager {
         float width = BloodHungerGame.toWorldUnits(properties.get("width", Float.class));
         float height = BloodHungerGame.toWorldUnits(properties.get("height", Float.class));
         String type = (String) properties.get("type");
+        String name = (String) properties.get("name");
+        Gdx.app.debug(TAG, "Create " + type + ":" + name);
         if (type == null)
             return;
         switch (type.toLowerCase()) {
@@ -96,7 +101,8 @@ public final class LevelManager {
                 for (int i = 0; i < poly.getVertices().length; i++) {
                     v[i] = BloodHungerGame.toWorldUnits(poly.getVertices()[i]);
                 }
-                Entity obstacle = EntityFactory.createBasicObstacle(x, y, BloodHungerGame.toWorldUnits(rect.width), BloodHungerGame.toWorldUnits(rect.height), v);
+                short lightCategory = properties.get("lightcategory",Integer.class).shortValue();
+                Entity obstacle = EntityFactory.createBasicObstacle(x, y, BloodHungerGame.toWorldUnits(rect.width), BloodHungerGame.toWorldUnits(rect.height), lightCategory,v);
                 entities.add(obstacle);
                 break;
             case "wall":

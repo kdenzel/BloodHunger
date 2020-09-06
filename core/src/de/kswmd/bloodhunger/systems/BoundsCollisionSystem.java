@@ -2,7 +2,6 @@ package de.kswmd.bloodhunger.systems;
 
 import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Polygon;
@@ -78,7 +77,6 @@ public class BoundsCollisionSystem extends EntitySystem {
                         continue;
                     }
                     boolean polygonOverlap = Intersector.overlapConvexPolygons(poly1, poly2, mtv);
-
                     if (polygonOverlap) {
                         //If velocity is attached to the entity, it is a dynamic object that can be moved
                         if (Mapper.positionComponent.has(entity) && Mapper.velocityComponent.has(entity)) {
@@ -120,7 +118,7 @@ public class BoundsCollisionSystem extends EntitySystem {
                 pc.moveBy(x, y);
             }
         } //Otherwise the player overlaps with an enemy, take damage
-        else if (Mapper.enemyComponent.has(otherBoundsEntity)) {
+        else if (Mapper.zombieComponent.has(otherBoundsEntity)) {
             Gdx.app.debug("DAMAGE", "OUCH " + System.currentTimeMillis());
         } else {
             Gdx.app.debug("COLLISION DETECTED", "WITH SOME MOVING OBJECT");

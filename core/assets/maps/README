@@ -1,0 +1,5 @@
+How automapping rules work
+
+Make for every layer you want an automap_$name.tmx file and add them as new line to the rules.txt file.
+Define the regions layer, the input_$name layer and the output_$name layer and the output_objects layer in the .tmx file.
+Add your regions and input output and objects like you need it. 

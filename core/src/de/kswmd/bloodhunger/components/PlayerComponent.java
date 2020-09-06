@@ -250,4 +250,5 @@ public class PlayerComponent implements Component {
     public void update(float deltaTime) {
         this.timer += deltaTime % 100;
     }
+
 }
