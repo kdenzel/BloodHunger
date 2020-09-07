@@ -46,6 +46,7 @@ public class ZombieComponent implements Component {
 
     public float speed = MathUtils.random(50f, 200f) * BloodHungerGame.UNIT_SCALE;
     public float health = MathUtils.random(50f, 200f);
+    public float frustumAngle = 60;
     public float timer = 0;
 
     private ZombieSkin skin;

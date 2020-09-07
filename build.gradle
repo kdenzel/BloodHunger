@@ -26,6 +26,8 @@ allprojects {
         ashleyVersion = '1.7.3'
         aiVersion = '1.8.0'
         visuiVersion = '1.4.6'
+        junitVersion = '5.6.2'
+        junitPlatformLauncherVersion = '1.6.2'
     }
 
     repositories {
@@ -63,7 +65,6 @@ project(":desktop") {
 project(":core") {
     apply plugin: "java-library"
 
-
     dependencies {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.ashley:ashley:$ashleyVersion"
@@ -71,5 +72,10 @@ project(":core") {
         api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
         api "com.kotcrab.vis:vis-ui:$visuiVersion"
 
+        testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+
+        testRuntimeOnly "org.junit.platform:junit-platform-launcher:$junitPlatformLauncherVersion"
+        testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$junitVersion"
+        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
     }
 }

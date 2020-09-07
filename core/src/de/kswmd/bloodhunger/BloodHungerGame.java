@@ -48,7 +48,7 @@ public class BloodHungerGame extends Game implements EntityListener {
 
     public FollowMouseSystem followMouseSystem;
     public PlayerControlSystem playerControlSystem;
-    public EnemyFollowPlayerSystem enemyFollowPlayerSystem;
+    public ZombieSystem zombieSystem;
     public RotationSystem rotationSystem;
     public MovementSystem movementSystem;
     public BoundsCollisionSystem boundsCollisionSystem;
@@ -123,7 +123,7 @@ public class BloodHungerGame extends Game implements EntityListener {
         boundsCollisionSystem = new BoundsCollisionSystem(this);
         centerCameraSystem = new CenterCameraSystem(camera);
         debugRenderSystem = new DebugRenderSystem(shapeRenderer, camera, WORLD);
-        enemyFollowPlayerSystem = new EnemyFollowPlayerSystem();
+        zombieSystem = new ZombieSystem();
         updateShadersSystem = new UpdateShadersSystem(camera,shaderProgram);
         renderingSystem = new RenderingSystem(camera,spriteBatch, rayHandler, shaderProgram);
         bulletSystem = new BulletSystem();
@@ -133,7 +133,7 @@ public class BloodHungerGame extends Game implements EntityListener {
         engine.addSystem(followMouseSystem);
         engine.addSystem(playerControlSystem);
         //update
-        engine.addSystem(enemyFollowPlayerSystem);
+        engine.addSystem(zombieSystem);
         engine.addSystem(rotationSystem);
         engine.addSystem(movementSystem);
         engine.addSystem(boundsCollisionSystem);
