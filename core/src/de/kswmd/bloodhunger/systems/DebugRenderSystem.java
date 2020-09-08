@@ -102,8 +102,8 @@ public class DebugRenderSystem extends EntitySystem {
         RotationComponent zombieRotationComponent = Mapper.rotationComponent.get(zombieEntity);
         debugRenderer.set(ShapeRenderer.ShapeType.Line);
         debugRenderer.setColor(Color.GRAY);
-        float startAngle = zombieRotationComponent.lookingAngle - zombieComponent.frustumAngle/2;
-        float endAngle = zombieRotationComponent.lookingAngle + zombieComponent.frustumAngle/2;
+        float startAngle = zombieRotationComponent.lookingAngle - zombieComponent.frustumAngle / 2;
+        float endAngle = zombieRotationComponent.lookingAngle + zombieComponent.frustumAngle / 2;
         for (float angle = startAngle; angle <= endAngle; angle++) {
             tmpStartVec.set(zombiePosition.x + zombieDimensionComponent.originX,
                     zombiePosition.y + zombieDimensionComponent.originY);
@@ -112,7 +112,6 @@ public class DebugRenderSystem extends EntitySystem {
             tmpEndVec.add(tmpStartVec);
             for (Entity staticBound : staticBoundsEntities) {
                 BoundsComponent staticBoundsComponent = Mapper.boundsComponent.get(staticBound);
-                PositionComponent staticPositionComponent = Mapper.positionComponent.get(staticBound);
                 if (staticBoundsComponent.size() < 2)
                     continue;
                 Polygon poly = staticBoundsComponent.getPolygon(1);
@@ -121,6 +120,39 @@ public class DebugRenderSystem extends EntitySystem {
                 if (Intersector.intersectSegmentPolygon(tmpStartVec, tmpEndVec, poly, intersectorVector)) {
                     if (tmpStartVec.dst2(intersectorVector) < tmpStartVec.dst2(tmpEndVec))
                         tmpEndVec.set(intersectorVector);
+                }
+            }
+            debugRenderer.line(tmpStartVec.x, tmpStartVec.y, tmpEndVec.x, tmpEndVec.y);
+        }
+    }
+
+    /**
+     * only used for debugging the debug function for zombies
+     * @param player the player entity object
+     */
+    private void drawZombieViewForPlayer(Entity player) {
+        debugRenderer.set(ShapeRenderer.ShapeType.Line);
+        debugRenderer.setColor(Color.GRAY);
+        PositionComponent positionComponent = Mapper.positionComponent.get(player);
+        DimensionComponent dimensionComponent = Mapper.dimensionComponent.get(player);
+        RotationComponent rotationComponent = Mapper.rotationComponent.get(player);
+        float startAngle = rotationComponent.lookingAngle - 30;
+        float endAngle = rotationComponent.lookingAngle + 30;
+        for (float angle = startAngle; angle <= endAngle; angle++) {
+            tmpStartVec.set(positionComponent.x + dimensionComponent.originX,
+                    positionComponent.y + dimensionComponent.originY);
+            tmpEndVec.set(BloodHungerGame.worldUnits(10), 0);
+            tmpEndVec.rotate(angle);
+            tmpEndVec.add(tmpStartVec);
+            for (Entity staticBound : staticBoundsEntities) {
+                BoundsComponent staticBoundsComponent = Mapper.boundsComponent.get(staticBound);
+                if (staticBoundsComponent.size() < 2)
+                    continue;
+                Polygon poly = staticBoundsComponent.getPolygon(1);
+                if (poly == null)
+                    continue;
+                if (Intersector.intersectSegmentPolygon(tmpStartVec, tmpEndVec, poly, intersectorVector)) {
+                    tmpEndVec.set(intersectorVector);
                 }
             }
             debugRenderer.line(tmpStartVec.x, tmpStartVec.y, tmpEndVec.x, tmpEndVec.y);

@@ -48,6 +48,7 @@ public class ZombieSystem extends EntitySystem {
             RotationComponent zombieRotationComponent = Mapper.rotationComponent.get(zombieEntity);
             zombieComponent.update(deltaTime);
             zombieVelocity.velocityVec.setLength(0);
+            zombieComponent.feetAnimationType = ZombieComponent.FeetAnimationType.IDLE;
             //if zombie can see the player, walk direct to the player
             if (canZombieSeePlayer(zombieEntity, playerEntity)) {
                 float angleInRadians = MathUtils.atan2((zombiePosition.y + zombieDimensionComponent.originY) - (playerEntityPosition.y + playerDimensionComponent.originY),
@@ -56,7 +57,7 @@ public class ZombieSystem extends EntitySystem {
                 zombieRotationComponent.movementAngle = angleInDegrees;
                 zombieRotationComponent.lookingAngle = angleInDegrees;
                 zombieVelocity.velocityVec.set(zombieComponent.speed, 0);
-
+                zombieComponent.feetAnimationType = ZombieComponent.FeetAnimationType.MOVE;
             }
         }
     }
@@ -67,9 +68,8 @@ public class ZombieSystem extends EntitySystem {
         DimensionComponent zombieDimensionComponent = Mapper.dimensionComponent.get(zombieEntity);
         RotationComponent zombieRotationComponent = Mapper.rotationComponent.get(zombieEntity);
         BoundsComponent playerBoundsComponent = Mapper.boundsComponent.get(playerEntity);
-        boolean result = false;
-        float startAngle = zombieRotationComponent.lookingAngle - zombieComponent.frustumAngle/2;
-        float endAngle = zombieRotationComponent.lookingAngle + zombieComponent.frustumAngle/2;
+        float startAngle = zombieRotationComponent.lookingAngle - zombieComponent.frustumAngle / 2;
+        float endAngle = zombieRotationComponent.lookingAngle + zombieComponent.frustumAngle / 2;
 
         for (float angle = startAngle; angle <= endAngle; angle++) {
             tmpStartVec.set(zombiePosition.x + zombieDimensionComponent.originX,
@@ -84,9 +84,10 @@ public class ZombieSystem extends EntitySystem {
                 Polygon poly = staticBoundsComponent.getPolygon(1);
                 if (poly == null)
                     continue;
+                if(!Intersector.intersectSegmentPolygon(tmpStartVec, tmpEndVec, poly))
+                    continue;
                 if (de.kswmd.bloodhunger.math.Intersector.intersectSegmentPolygon(tmpStartVec, tmpEndVec, poly, intersectionVec)) {
-                    if (tmpStartVec.dst2(intersectionVec) < tmpStartVec.dst2(tmpEndVec))
-                        tmpEndVec.set(intersectionVec);
+                    tmpEndVec.set(intersectionVec);
                 }
             }
             for (int z = 0; z < playerBoundsComponent.size(); z++) {

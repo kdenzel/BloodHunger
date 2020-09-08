@@ -5,6 +5,14 @@ import com.badlogic.gdx.math.Vector2;
 
 public final class Intersector {
 
+    /**
+     * returns the nearest point to the start point where it intersects the polygon
+     * @param start the start point
+     * @param end the end point
+     * @param poly the polygon to check intersection
+     * @param intersection the intersection Vector (nearest point to start)
+     * @return true if intersects and false if it doesn't
+     */
     public static boolean intersectSegmentPolygon(Vector2 start, Vector2 end, Polygon poly, Vector2 intersection) {
         float[] verts = poly.getTransformedVertices();
         float x1, x2;
@@ -20,11 +28,11 @@ public final class Intersector {
 
         for (int i = 0; i < verts.length; i += 2) {
             if (i % 4 == 0) {
-                x2 = verts[i];
-                y2 = verts[i + 1];
-            } else {
                 x1 = verts[i];
                 y1 = verts[i + 1];
+            } else {
+                x2 = verts[i];
+                y2 = verts[i + 1];
             }
             if (com.badlogic.gdx.math.Intersector.intersectSegments(x1, y1, x2, y2,
                     start.x, start.y, end.x, end.y, intersection)) {

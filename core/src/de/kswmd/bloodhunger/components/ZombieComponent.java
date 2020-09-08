@@ -10,7 +10,7 @@ public class ZombieComponent implements Component {
 
     public enum FeetAnimationType {
         IDLE(1f, "feet/idle/zombie-idle", Animation.PlayMode.LOOP),
-        /*MOVE(1 / 24f, "feet/walk/zombie-walk", Animation.PlayMode.LOOP)*/;
+        MOVE(1 / 6f, "feet/walk/zombie-walk", Animation.PlayMode.LOOP);
 
         public final float initialFrameDuration;
         public String resource;
@@ -26,7 +26,7 @@ public class ZombieComponent implements Component {
     public enum BodyAnimationType {
         //None
         IDLE_NONE(1 / 3f, "none/idle/zombie-idle_none", Animation.PlayMode.LOOP),
-        /*MOVE_NONE(1 / 24f, "none/move/zombie-move_none", Animation.PlayMode.LOOP),
+        MOVE_NONE(1 / 6f, "none/move/zombie-move_none", Animation.PlayMode.LOOP);/*,
         MELEEATTACK_NONE(1 / 24f, "none/move/zombie-move_none", Animation.PlayMode.LOOP)*/;
 
         public final float initialFrameDuration;
@@ -67,7 +67,7 @@ public class ZombieComponent implements Component {
                 bodyAnimationType = BodyAnimationType.IDLE_NONE;
                 break;
             default:
-                bodyAnimationType = BodyAnimationType.IDLE_NONE;
+                bodyAnimationType = BodyAnimationType.MOVE_NONE;
                 break;
         }
         this.bodyAnimationType = bodyAnimationType;
