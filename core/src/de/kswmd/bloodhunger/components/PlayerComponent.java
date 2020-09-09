@@ -63,7 +63,7 @@ public class PlayerComponent implements Component {
         private final Vector2 position = new Vector2();
         private final Vector2 offset = new Vector2();
         private ToolStatus status = ToolStatus.IDLE;
-        private boolean shoot;
+        private final boolean shoot;
 
         Tool(boolean shoot) {
             this.shoot = shoot;

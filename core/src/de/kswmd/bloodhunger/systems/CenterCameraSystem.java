@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -13,12 +14,13 @@ import de.kswmd.bloodhunger.utils.Mapper;
 
 public class CenterCameraSystem extends EntitySystem {
 
+    private static final String TAG = CenterCameraSystem.class.getSimpleName();
     private ImmutableArray<Entity> playerEntities;
     private ImmutableArray<Entity> crosshairs;
-    private Camera camera;
-    private Vector2 tmpVec = new Vector2();
-    private Vector3 worldCoordsToScreenCoords = new Vector3();
-    private float timer = 0;
+    private final Camera camera;
+    private final Vector2 tmpVec = new Vector2();
+    private final Vector3 worldCoordsToScreenCoords = new Vector3();
+    private final float timer = 0;
 
     public CenterCameraSystem(Camera camera) {
         this.camera = camera;
@@ -38,6 +40,7 @@ public class CenterCameraSystem extends EntitySystem {
 
     @Override
     public void update(float deltaTime) {
+        //Gdx.app.debug(TAG, "EXECUTE " + deltaTime);
         Entity player = playerEntities.first();
         Entity crosshair = crosshairs.first();
 

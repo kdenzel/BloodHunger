@@ -15,7 +15,7 @@ public class InventorySlot extends WidgetGroup {
     private Inventory inventory;
     private ItemComponent item;
     private Image itemImage;
-    private Skin skin;
+    private final Skin skin;
     private boolean selected;
 
     public InventorySlot(Skin skin) {

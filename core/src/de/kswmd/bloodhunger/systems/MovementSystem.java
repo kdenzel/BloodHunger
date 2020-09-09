@@ -1,17 +1,23 @@
 package de.kswmd.bloodhunger.systems;
 
-import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.Gdx;
 import de.kswmd.bloodhunger.components.*;
 import de.kswmd.bloodhunger.utils.Mapper;
 
 public class MovementSystem extends IteratingSystem {
 
+    private static final String TAG = MovementSystem.class.getSimpleName();
+
     public MovementSystem() {
         super(Family.all(PositionComponent.class, VelocityComponent.class).get());
+    }
+
+    @Override
+    public void update(float deltaTime) {
+        //Gdx.app.debug(TAG, "EXECUTE " + deltaTime);
+        super.update(deltaTime);
     }
 
     @Override

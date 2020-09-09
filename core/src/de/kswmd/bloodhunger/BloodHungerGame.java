@@ -29,8 +29,9 @@ import de.kswmd.bloodhunger.screens.LoadNextLevelScreen;
 import de.kswmd.bloodhunger.systems.*;
 import de.kswmd.bloodhunger.ui.inventory.Inventory;
 import de.kswmd.bloodhunger.utils.LevelManager;
+import de.kswmd.bloodhunger.utils.Mapper;
 
-public class BloodHungerGame extends Game implements EntityListener {
+public final class BloodHungerGame extends Game implements EntityListener {
 
     private static final String TAG = BloodHungerGame.class.getSimpleName();
 
@@ -129,6 +130,7 @@ public class BloodHungerGame extends Game implements EntityListener {
         bulletSystem = new BulletSystem();
         sunCycleSystem = new SunCycleSystem();
 
+        //The executive order is the same as added
         //Control
         engine.addSystem(followMouseSystem);
         engine.addSystem(playerControlSystem);
@@ -164,6 +166,9 @@ public class BloodHungerGame extends Game implements EntityListener {
 
     @Override
     public void entityAdded(Entity entity) {
+        if(Mapper.boundsComponent.has(entity)){
+            Mapper.boundsComponent.get(entity).addListener(boundsCollisionSystem);
+        }
     }
 
     @Override

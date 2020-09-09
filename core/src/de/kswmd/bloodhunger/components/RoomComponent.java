@@ -10,11 +10,11 @@ import de.kswmd.bloodhunger.screens.GameScreen;
 
 public class RoomComponent implements Component {
 
-    private ComponentMapper<PositionComponent> cmpc = ComponentMapper.getFor(PositionComponent.class);
-    private ComponentMapper<TileComponent> cmtc = ComponentMapper.getFor(TileComponent.class);
+    private final ComponentMapper<PositionComponent> cmpc = ComponentMapper.getFor(PositionComponent.class);
+    private final ComponentMapper<TileComponent> cmtc = ComponentMapper.getFor(TileComponent.class);
 
-    private Engine engine;
-    private Entity[][] tiles;
+    private final Engine engine;
+    private final Entity[][] tiles;
 
     public RoomComponent(int tileSizeX, int tileSizeY, Engine engine, Entity roomEntity) {
         this.engine = engine;

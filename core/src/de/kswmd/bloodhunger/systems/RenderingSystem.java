@@ -22,6 +22,7 @@ import de.kswmd.bloodhunger.utils.Mapper;
 
 public class RenderingSystem extends EntitySystem {
 
+    private static final String TAG = RenderingSystem.class.getSimpleName();
     private final Batch batch;
     private final OrthographicCamera camera;
     private ImmutableArray<Entity> playerAnimationEntities;
@@ -29,13 +30,13 @@ public class RenderingSystem extends EntitySystem {
     private ImmutableArray<Entity> crosshairEntities;
     private ImmutableArray<Entity> itemEntities;
     private OrthogonalTiledMapRenderer mapRenderer;
-    private ParticleEffectPool shootEffectPool;
-    private Array<ParticleEffectPool.PooledEffect> effects = new Array<>();
-    private TextureAtlas images = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_IMAGES);
+    private final ParticleEffectPool shootEffectPool;
+    private final Array<ParticleEffectPool.PooledEffect> effects = new Array<>();
+    private final TextureAtlas images = BloodHungerGame.ASSET_MANAGER.get(Assets.TEXTURE_ATLAS_IMAGES);
 
     //Lights
-    private RayHandler rayHandler;
-    private ShaderProgram shaderProgram;
+    private final RayHandler rayHandler;
+    private final ShaderProgram shaderProgram;
 
     public RenderingSystem(OrthographicCamera camera, SpriteBatch batch, RayHandler rayHandler, ShaderProgram shaderProgram) {
         this.batch = batch;
@@ -77,6 +78,7 @@ public class RenderingSystem extends EntitySystem {
 
     @Override
     public void update(float deltaTime) {
+        //Gdx.app.debug(TAG, "EXECUTE " + deltaTime);
         batch.setShader(shaderProgram);
         renderLevel(deltaTime);
         batch.begin();

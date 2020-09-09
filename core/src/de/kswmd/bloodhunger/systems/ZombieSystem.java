@@ -2,6 +2,7 @@ package de.kswmd.bloodhunger.systems;
 
 import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
@@ -12,13 +13,14 @@ import de.kswmd.bloodhunger.utils.Mapper;
 
 public class ZombieSystem extends EntitySystem {
 
+    private static final String TAG = ZombieSystem.class.getSimpleName();
     private ImmutableArray<Entity> zombieEntities;
     private ImmutableArray<Entity> playerEntities;
     private ImmutableArray<Entity> staticBoundsEntities;
     //For calculating lookingdirection of zombie
-    private Vector2 tmpStartVec = new Vector2();
-    private Vector2 tmpEndVec = new Vector2();
-    private Vector2 intersectionVec = new Vector2();
+    private final Vector2 tmpStartVec = new Vector2();
+    private final Vector2 tmpEndVec = new Vector2();
+    private final Vector2 intersectionVec = new Vector2();
 
     @Override
     public void addedToEngine(Engine engine) {
@@ -36,6 +38,7 @@ public class ZombieSystem extends EntitySystem {
 
     @Override
     public void update(float deltaTime) {
+        //Gdx.app.debug(TAG, "EXECUTE " + deltaTime);
         Entity playerEntity = playerEntities.first();
         PositionComponent playerEntityPosition = Mapper.positionComponent.get(playerEntity);
         DimensionComponent playerDimensionComponent = Mapper.dimensionComponent.get(playerEntity);

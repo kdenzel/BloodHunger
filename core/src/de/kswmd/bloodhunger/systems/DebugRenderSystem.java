@@ -5,13 +5,18 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.EarClippingTriangulator;
 import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ShortArray;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.*;
 import de.kswmd.bloodhunger.math.Intersector;
@@ -19,6 +24,7 @@ import de.kswmd.bloodhunger.utils.Mapper;
 
 public class DebugRenderSystem extends EntitySystem {
 
+    private static final String TAG = DebugRenderSystem.class.getSimpleName();
     private final ShapeRenderer debugRenderer;
     private final Camera camera;
     private Family family;
@@ -27,9 +33,9 @@ public class DebugRenderSystem extends EntitySystem {
     private final World world;
     private final Box2DDebugRenderer box2dDebugRenderer;
     //For drawing lookingdirection of zombie
-    private Vector2 tmpStartVec = new Vector2();
-    private Vector2 tmpEndVec = new Vector2();
-    private Vector2 intersectorVector = new Vector2();
+    private final Vector2 tmpStartVec = new Vector2();
+    private final Vector2 tmpEndVec = new Vector2();
+    private final Vector2 intersectorVector = new Vector2();
 
 
     public DebugRenderSystem(ShapeRenderer debugRenderer, Camera camera, World world) {
@@ -52,6 +58,7 @@ public class DebugRenderSystem extends EntitySystem {
 
     @Override
     public void update(float deltaTime) {
+        //Gdx.app.debug(TAG, "EXECUTE " + deltaTime);
         debugRenderer.begin();
         debugRenderer.setProjectionMatrix(camera.combined);
         for (int i = 0; i < entities.size(); ++i) {
@@ -65,14 +72,22 @@ public class DebugRenderSystem extends EntitySystem {
                 debugRenderer.circle(pc.x + dc.originX, pc.y + dc.originY, 2 * BloodHungerGame.UNIT_SCALE);
             }
             if (Mapper.boundsComponent.has(entity)) {
-                debugRenderer.setColor(Color.CYAN);
+
                 BoundsComponent bc = Mapper.boundsComponent.get(entity);
                 //Draw every polygon on each layer
                 for (int z = 0; z < bc.size(); z++) {
-                    Polygon poly = bc.getPolygon(z);
-                    if (poly == null)
+                    debugRenderer.setColor(Color.CYAN);
+                    Polygon polygon = bc.getPolygon(z);
+                    if (polygon == null)
                         continue;
-                    debugRenderer.polygon(poly.getTransformedVertices());
+                    Array<Polygon> triangles = bc.getTriangles(z);
+                    for (int index = 0; index < triangles.size; index ++) {
+                        debugRenderer.polygon(triangles.get(index).getTransformedVertices());
+                    }
+                    debugRenderer.polygon(polygon.getTransformedVertices());
+                    debugRenderer.setColor(Color.GREEN);
+                    Rectangle r = polygon.getBoundingRectangle();
+                    debugRenderer.rect(r.getX(),r.getY(),r.width,r.height);
                 }
 
                 /*Rectangle r = bc.boundaryPolygon.getBoundingRectangle();
@@ -87,7 +102,7 @@ public class DebugRenderSystem extends EntitySystem {
         }
 
         debugRenderer.end();
-        box2dDebugRenderer.render(world, camera.combined);
+        //box2dDebugRenderer.render(world, camera.combined);
     }
 
     /**
@@ -128,6 +143,7 @@ public class DebugRenderSystem extends EntitySystem {
 
     /**
      * only used for debugging the debug function for zombies
+     *
      * @param player the player entity object
      */
     private void drawZombieViewForPlayer(Entity player) {

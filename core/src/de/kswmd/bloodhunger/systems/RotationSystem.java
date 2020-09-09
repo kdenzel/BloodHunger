@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.Gdx;
 import de.kswmd.bloodhunger.components.BoundsComponent;
 import de.kswmd.bloodhunger.components.RotationComponent;
 import de.kswmd.bloodhunger.components.VelocityComponent;
@@ -11,8 +12,16 @@ import de.kswmd.bloodhunger.utils.Mapper;
 
 public class RotationSystem extends IteratingSystem {
 
+    private static final String TAG = RotationSystem.class.getSimpleName();
+
     public RotationSystem() {
         super(Family.all(RotationComponent.class).get());
+    }
+
+    @Override
+    public void update(float deltaTime) {
+        //Gdx.app.debug(TAG, "EXECUTE " + deltaTime);
+        super.update(deltaTime);
     }
 
     @Override

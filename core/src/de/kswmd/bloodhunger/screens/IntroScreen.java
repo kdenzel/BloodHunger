@@ -24,23 +24,23 @@ public class IntroScreen extends BaseScreen {
 
     private Animation<TextureRegion> tvScreenAnimation;
     private TextureRegion backgroudTextureRegion;
-    private Image tvScreen = new Image();
-    private Image windowImage = new Image();
-    private TextureRegionDrawable tvScreenDrawable = new TextureRegionDrawable();
-    private TextureRegionDrawable windowDrawable = new TextureRegionDrawable();
+    private final Image tvScreen = new Image();
+    private final Image windowImage = new Image();
+    private final TextureRegionDrawable tvScreenDrawable = new TextureRegionDrawable();
+    private final TextureRegionDrawable windowDrawable = new TextureRegionDrawable();
 
     private TextureAtlas scenes;
 
     private float timer;
 
-    private String[] moderatorDialog = {
+    private final String[] moderatorDialog = {
             "Blahblahblah Trump Blahblahblah Corona Blahblahblah Fake News Blahblahblah Virus Blahblahblah stay at home Blahblahblah\n...",
             "Even more blahblahblah",
             "... New Virus... China ...makes people aggressive.",
             "Oh, something unexpected happens..."
     };
 
-    private String[] thinkingDialog = {
+    private final String[] thinkingDialog = {
             "... hmmmm... the power is gone. Maybe i should have a look whats going on."
     };
 

@@ -27,7 +27,7 @@ public class ZombieComponent implements Component {
         //None
         IDLE_NONE(1 / 3f, "none/idle/zombie-idle_none", Animation.PlayMode.LOOP),
         MOVE_NONE(1 / 6f, "none/move/zombie-move_none", Animation.PlayMode.LOOP);/*,
-        MELEEATTACK_NONE(1 / 24f, "none/move/zombie-move_none", Animation.PlayMode.LOOP)*/;
+        MELEEATTACK_NONE(1 / 24f, "none/move/zombie-move_none", Animation.PlayMode.LOOP)*/
 
         public final float initialFrameDuration;
         public final String resource;
@@ -49,7 +49,7 @@ public class ZombieComponent implements Component {
     public float frustumAngle = 60;
     public float timer = 0;
 
-    private ZombieSkin skin;
+    private final ZombieSkin skin;
 
     public ZombieComponent() {
         this.skin = ZombieSkin.create("zombie_skin_default");

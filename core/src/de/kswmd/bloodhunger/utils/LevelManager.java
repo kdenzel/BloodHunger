@@ -29,7 +29,7 @@ public final class LevelManager {
         LEVEL_2(Assets.MAP_TMX_LEVEL2);
 
         private TiledMap level;
-        private String map;
+        private final String map;
 
         Level(String map) {
             this.map = map;

@@ -6,8 +6,22 @@ sourceCompatibility = 1.8
 sourceSets.main.java.srcDirs = ["src/"]
 sourceSets.test.java.srcDirs = ["test/"]
 
+project.ext.mainClassName = "de.kswmd.bloodhunger.math.IntersectorTrianglePolygonTest"
+
 eclipse.project.name = appName + "-core"
 
 test {
     useJUnitPlatform()
+}
+
+task testJar(type: Jar, dependsOn: testClasses) {
+    manifest {
+        attributes 'Main-Class': project.mainClassName
+    }
+    classifier 'test'
+    dependsOn configurations.testCompileClasspath
+    from {
+        configurations.testCompileClasspath.filter{ it.exists() }.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    from sourceSets.test.output
 }

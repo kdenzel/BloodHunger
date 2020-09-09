@@ -2,7 +2,7 @@ package de.kswmd.bloodhunger.systems;
 
 import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import de.kswmd.bloodhunger.components.BoundsComponent;
 import de.kswmd.bloodhunger.components.BulletComponent;
@@ -10,6 +10,8 @@ import de.kswmd.bloodhunger.components.ZombieComponent;
 import de.kswmd.bloodhunger.utils.Mapper;
 
 public class BulletSystem extends EntitySystem {
+
+    private static final String TAG = BulletSystem.class.getSimpleName();
 
     private ImmutableArray<Entity> bulletEntities;
     private ImmutableArray<Entity> boundsEntities;
@@ -28,15 +30,13 @@ public class BulletSystem extends EntitySystem {
 
     @Override
     public void update(float deltaTime) {
+        //Gdx.app.debug(TAG, "EXECUTE " + deltaTime);
         for (Entity bullet : bulletEntities) {
             BoundsComponent bulletBoundsComponent = Mapper.boundsComponent.get(bullet);
             for (Entity otherBoundsEntity : boundsEntities) {
                 BoundsComponent otherBoundsComponent = Mapper.boundsComponent.get(otherBoundsEntity);
                 for (int z = 0; z < otherBoundsComponent.size(); z++) {
-                    if (!bulletBoundsComponent.getPolygon(0).getBoundingRectangle().overlaps(otherBoundsComponent.getPolygon(z).getBoundingRectangle())) {
-                        continue;
-                    }
-                    boolean overlaps = Intersector.overlapConvexPolygons(bulletBoundsComponent.getPolygon(0), otherBoundsComponent.getPolygon(z));
+                    boolean overlaps = bulletBoundsComponent.intersects(otherBoundsComponent,z);
                     if (overlaps) {
                         this.getEngine().removeEntity(bullet);
                         if (Mapper.zombieComponent.has(otherBoundsEntity)) {

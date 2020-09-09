@@ -15,6 +15,7 @@ import de.kswmd.bloodhunger.utils.Mapper;
 
 public class PlayerControlSystem extends EntitySystem {
 
+    private static final String TAG = PlayerControlSystem.class.getSimpleName();
     private ImmutableArray<Entity> entities;
     private ImmutableArray<Entity> flashLights;
     private ImmutableArray<Entity> playerLights;
@@ -33,6 +34,7 @@ public class PlayerControlSystem extends EntitySystem {
 
     @Override
     public void update(float deltaTime) {
+        //Gdx.app.debug(TAG, "EXECUTE " + deltaTime);
         for (Entity playerComponent : entities) {
             PositionComponent positionComponent = Mapper.positionComponent.get(playerComponent);
             VelocityComponent vc = Mapper.velocityComponent.get(playerComponent);

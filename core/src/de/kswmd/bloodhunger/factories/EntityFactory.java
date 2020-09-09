@@ -23,17 +23,12 @@ public final class EntityFactory {
         player.add(new VelocityComponent());
         player.add(new RotationComponent());
         player.add(playerComponent);
-        DimensionComponent dc = new DimensionComponent(BloodHungerGame.worldUnits(2), BloodHungerGame.worldUnits(2));
+        DimensionComponent dc = new DimensionComponent(BloodHungerGame.worldUnits(4), BloodHungerGame.worldUnits(4));
         //Creates new boundscomponent with feet vertices for z-layer 0
-        BoundsComponent bc = new BoundsComponent(dc.width, dc.height, Box2DBodyFactory.CATEGORY_BOUNDARY);
-        bc.setPolygon(new float[]{
-                0.28125f * dc.width, 0.6484375f * dc.height,
-                0.69921875f * dc.width, 0.65234375f * dc.height,
-                0.703125f * dc.width, 0.28515625f * dc.height,
-                0.28125f * dc.width, 0.29296875f * dc.height
-        }, 0);
+        BoundsComponent bc = new BoundsComponent(dc.width, dc.height, Box2DBodyFactory.CATEGORY_BOUNDARY, player);
         player.add(dc);
         player.add(bc);
+        bc.setPosition(x,y);
         return player;
     }
 
@@ -42,7 +37,7 @@ public final class EntityFactory {
         wall.add(new PositionComponent(x, y));
         wall.add(new TextureRegionComponent(textureRegion));
         wall.add(new DimensionComponent(width, height));
-        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_BOUNDARY);
+        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_BOUNDARY, wall);
         bc.setBoundaryRectangle(0).setBoundaryRectangle(1);
         bc.setPosition(x, y);
         wall.add(bc);
@@ -53,7 +48,7 @@ public final class EntityFactory {
         Entity obstacle = new Entity();
         obstacle.add(new PositionComponent(x, y));
         obstacle.add(new DimensionComponent(width, height));
-        BoundsComponent bc = new BoundsComponent(width, height, lightcategory);
+        BoundsComponent bc = new BoundsComponent(width, height, lightcategory, obstacle);
         bc.setBoundaryRectangle(0);
         bc.setPosition(x, y);
         obstacle.add(bc);
@@ -65,7 +60,7 @@ public final class EntityFactory {
         Entity stone = new Entity();
         stone.add(new PositionComponent(x, y));
         stone.add(new DimensionComponent(width, height));
-        BoundsComponent bc = new BoundsComponent(width, height, lightcategory);
+        BoundsComponent bc = new BoundsComponent(width, height, lightcategory, stone);
         bc.setPolygon(vertices, 0);
         bc.setPosition(x, y);
         stone.add(bc);
@@ -76,7 +71,7 @@ public final class EntityFactory {
         Entity stone = new Entity();
         stone.add(new PositionComponent(x, y));
         stone.add(new DimensionComponent(width, height));
-        BoundsComponent bc = new BoundsComponent(width, height, lightcategory);
+        BoundsComponent bc = new BoundsComponent(width, height, lightcategory, stone);
         bc.setPolygon(vertices, z);
         bc.setPosition(x, y);
         stone.add(bc);
@@ -88,7 +83,7 @@ public final class EntityFactory {
         wall.add(new PositionComponent(x, y));
         wall.add(new TextureRegionComponent(textureRegion));
         wall.add(new DimensionComponent(width, height));
-        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_IGNORE);
+        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_IGNORE, wall);
         bc.setBoundaryRectangle(0).setBoundaryRectangle(1);
         bc.setPosition(x, y);
         wall.add(bc);
@@ -100,7 +95,7 @@ public final class EntityFactory {
         roof.add(new PositionComponent(x, y));
         roof.add(new TextureRegionComponent(textureRegion));
         roof.add(new DimensionComponent(width, height));
-        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_ROOF);
+        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_ROOF, roof);
         bc.setBoundaryRectangle(2);
         ((LightData) bc.getBody(2).getUserData()).shadow = true;
         bc.setPosition(x, y);
@@ -117,7 +112,7 @@ public final class EntityFactory {
         enemy.add(dc);
         enemy.add(new RotationComponent());
         //Boundscomponent gets updated in Playercontrolsystem for each frame
-        enemy.add(new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_BOUNDARY).setBoundaryRectangle(0));
+        enemy.add(new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_BOUNDARY,enemy).setBoundaryRectangle(0));
         enemy.add(new ZombieComponent());
         return enemy;
     }
@@ -129,7 +124,7 @@ public final class EntityFactory {
         bullet.add(new PositionComponent(x, y));
         bullet.add(new VelocityComponent(2000 * BloodHungerGame.UNIT_SCALE, angle));
         bullet.add(new DimensionComponent(width, height));
-        bullet.add(new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_BOUNDARY).setBoundaryPolygon(16, 0));
+        bullet.add(new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_BOUNDARY, bullet).setBoundaryPolygon(16, 0));
         bullet.add(new BulletComponent());
         return bullet;
     }
@@ -190,7 +185,7 @@ public final class EntityFactory {
         Entity item = new Entity();
         item.add(new PositionComponent(x, y));
         item.add(new DimensionComponent(width, height));
-        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_IGNORE);
+        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_IGNORE, item);
         bc.setBoundaryRectangle(0);
         bc.setPosition(x, y);
         item.add(bc);
@@ -202,7 +197,7 @@ public final class EntityFactory {
         Entity item = new Entity();
         item.add(new PositionComponent(x, y));
         item.add(new DimensionComponent(width, height));
-        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_IGNORE);
+        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_IGNORE, item);
         bc.setBoundaryRectangle(0);
         bc.setPosition(x, y);
         item.add(bc);
@@ -214,7 +209,7 @@ public final class EntityFactory {
         Entity entity = new Entity();
         entity.add(new PositionComponent(x, y));
         entity.add(new DimensionComponent(width, height));
-        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_IGNORE);
+        BoundsComponent bc = new BoundsComponent(width, height, Box2DBodyFactory.CATEGORY_IGNORE, entity);
         bc.setBoundaryRectangle(0);
         bc.setPosition(x, y);
         entity.add(bc);

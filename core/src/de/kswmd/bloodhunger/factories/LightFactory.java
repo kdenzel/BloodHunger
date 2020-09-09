@@ -21,8 +21,8 @@ public final class LightFactory {
         return createPointLight(rayHandler, 4, null, BloodHungerGame.UNIT * BloodHungerGame.UNIT_SCALE, 0, 0);
     }
 
-    public static Light createPointLight(RayHandler rayHandler, int rays, Color c, float distance, float x ,float y){
-        Light light = new PointLight(rayHandler,rays,c,distance,x,y);
+    public static Light createPointLight(RayHandler rayHandler, int rays, Color c, float distance, float x, float y) {
+        Light light = new PointLight(rayHandler, rays, c, distance, x, y);
         setDefaultLightSettings(light);
         return light;
     }
@@ -33,17 +33,17 @@ public final class LightFactory {
         return light;
     }
 
-    public static Light createDirectionalLight(RayHandler rayHandler, int rays, Color c,float directionDegree,float height) {
+    public static Light createDirectionalLight(RayHandler rayHandler, int rays, Color c, float directionDegree, float height) {
         Light light = new DirectionalLight(rayHandler, rays, c, directionDegree);
         setDefaultLightSettings(light);
         light.setHeight(height);
-        light.setContactFilter(Box2DBodyFactory.CATEGORY_LIGHT, (short) 0, (short) (Box2DBodyFactory.CATEGORY_BOUNDARY|Box2DBodyFactory.CATEGORY_ROOF));
+        light.setContactFilter(Box2DBodyFactory.CATEGORY_LIGHT, (short) 0, (short) (Box2DBodyFactory.CATEGORY_BOUNDARY | Box2DBodyFactory.CATEGORY_ROOF));
         return light;
     }
 
-    private static void setDefaultLightSettings(Light light){
+    private static void setDefaultLightSettings(Light light) {
         //i am category light and i am collide with category boundary per default, ignoring all others
-        light.setContactFilter(Box2DBodyFactory.CATEGORY_LIGHT, (short) 0, (short) (Box2DBodyFactory.CATEGORY_BOUNDARY));
+        light.setContactFilter(Box2DBodyFactory.CATEGORY_LIGHT, (short) 0, Box2DBodyFactory.CATEGORY_BOUNDARY);
         light.setSoftnessLength(0);
         light.setSoft(false);
         light.setHeight(1);

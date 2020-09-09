@@ -142,10 +142,12 @@ public class GameScreen extends BaseScreen implements InventoryListener {
 
     @Override
     protected void update(float delta) {
+        //Gdx.app.debug(TAG, "EXECUTE ############################################## ");
         fpsCounterLabel.setText(Gdx.graphics.getFramesPerSecond());
         drawBackgroundGrid();
         game.engine.update(delta);
         doPhysicsStep(delta);
+        //Gdx.app.debug(TAG, "FINISH ############################################## ");
     }
 
     private void doPhysicsStep(float deltaTime) {

@@ -12,8 +12,9 @@ import de.kswmd.bloodhunger.utils.Mapper;
 
 public class FollowMouseSystem extends EntitySystem {
 
-    private Camera camera;
-    private Vector3 screenVector = new Vector3();
+    private static final String TAG = FollowMouseSystem.class.getSimpleName();
+    private final Camera camera;
+    private final Vector3 screenVector = new Vector3();
     private ImmutableArray<Entity> followMouseEntities;
     private ImmutableArray<Entity> players;
 
@@ -35,6 +36,7 @@ public class FollowMouseSystem extends EntitySystem {
 
     @Override
     public void update(float deltaTime) {
+        //Gdx.app.debug(TAG, "EXECUTE " + deltaTime);
         float mouseScreenX = Gdx.input.getX();
         float mouseScreenY = Gdx.input.getY();
         screenVector.set(mouseScreenX, mouseScreenY, 0);
