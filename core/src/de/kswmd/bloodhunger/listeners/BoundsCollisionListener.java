@@ -1,8 +1,9 @@
 package de.kswmd.bloodhunger.listeners;
 
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Polygon;
 import de.kswmd.bloodhunger.components.BoundsComponent;
+import de.kswmd.bloodhunger.math.Intersector;
+
 
 public interface BoundsCollisionListener {
 

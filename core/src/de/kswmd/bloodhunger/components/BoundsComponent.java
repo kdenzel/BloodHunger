@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.ShortArray;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.factories.Box2DBodyFactory;
 import de.kswmd.bloodhunger.listeners.BoundsCollisionListener;
+import de.kswmd.bloodhunger.math.Intersector;
 import de.kswmd.bloodhunger.utils.Mapper;
 
 /**
@@ -20,7 +21,7 @@ import de.kswmd.bloodhunger.utils.Mapper;
  */
 public class BoundsComponent implements Component, Disposable {
 
-    private static final de.kswmd.bloodhunger.math.EarClippingTriangulator earClippingTriangulator = new de.kswmd.bloodhunger.math.EarClippingTriangulator();
+    private static final EarClippingTriangulator earClippingTriangulator = new EarClippingTriangulator();
 
     private final float width;
     private final float height;

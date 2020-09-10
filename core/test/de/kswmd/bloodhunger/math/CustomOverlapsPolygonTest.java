@@ -10,22 +10,21 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Vector3;
+import de.kswmd.bloodhunger.math.Intersector;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+public class CustomOverlapsPolygonTest implements ApplicationListener {
 
-public class IntersectorTrianglePolygonTest implements ApplicationListener {
-
-    private static final String TAG = IntersectorTrianglePolygonTest.class.getSimpleName();
+    private static final String TAG = CustomOverlapsPolygonTest.class.getSimpleName();
     private OrthographicCamera camera;
     private ShapeRenderer shapeRenderer;
 
     private float triangleWidth = 10f;
     private float triangleHeight = 10f;
     //2 triangle polygons intersect at 0,10 - 10,10 will return the wrong direction
-    private float[] vertsTriangle1 = {0f, 0f, triangleWidth, 0f, triangleWidth, triangleHeight};
+    private float[] vertsTriangle1 = {0f, 0f, triangleWidth/2, 0f, triangleWidth/2, triangleHeight/2};
     private float[] vertsTriangle2 = {0f, 0f, triangleWidth, 0f, triangleWidth, triangleHeight};
 
     private Polygon triangle1 = new Polygon();
@@ -41,26 +40,15 @@ public class IntersectorTrianglePolygonTest implements ApplicationListener {
         triangle2.setVertices(vertsTriangle2);
         triangle1.setPosition(0, 0);
         triangle2.setPosition(10, 0);
+        Intersector.overlapConvexPolygons(triangle1,triangle2,mtv);
 
-        assertTrue(Intersector.overlapConvexPolygons(triangle1, triangle2, mtv));
-        assertEquals(0f, mtv.depth, 0.0001f);
-        assertEquals(new Vector2(-1, -0f), mtv.normal);
-
-        triangle2.setPosition(-10, 10);
-        assertFalse(Intersector.overlapConvexPolygons(triangle1, triangle2, mtv));
-        triangle2.setOrigin(triangleWidth, 0);
-        triangle2.rotate(180);
-        triangle2.getTransformedVertices();
-        assertTrue(Intersector.overlapConvexPolygons(triangle1, triangle2, mtv));
-        triangle1.setPosition(-triangleWidth, triangle1.getY());
-        assertTrue(Intersector.overlapConvexPolygons(triangle1, triangle2, mtv));
     }
 
     @Override
     public void create() {
         Gdx.app.setLogLevel(Application.LOG_DEBUG);
         camera = new OrthographicCamera();
-        camera.setToOrtho(true);
+        camera.setToOrtho(false);
         camera.position.set(0, 0, 0);
         shapeRenderer = new ShapeRenderer();
         testIntersectorTrianglePolygon();
@@ -85,7 +73,7 @@ public class IntersectorTrianglePolygonTest implements ApplicationListener {
             camera.unproject(mouseCoords);
             triangle1.setPosition(mouseCoords.x, mouseCoords.y);
             boolean overlaps = Intersector.overlapConvexPolygons(triangle1, triangle2, mtv);
-            Gdx.app.debug(TAG, mtv.normal + " " + mtv.depth + " overlaps: " + overlaps);
+            Gdx.app.debug(TAG, mtv.normal + " " + mtv.depth + " overlaps: " + overlaps + " " + mouseCoords);
         } else if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
             triangle1.rotate(90);
             boolean overlaps = Intersector.overlapConvexPolygons(triangle1, triangle2, mtv);
@@ -105,6 +93,8 @@ public class IntersectorTrianglePolygonTest implements ApplicationListener {
         shapeRenderer.polygon(triangle1.getTransformedVertices());
         shapeRenderer.setColor(Color.CYAN);
         shapeRenderer.polygon(triangle2.getTransformedVertices());
+        shapeRenderer.setColor(Color.RED);
+        shapeRenderer.line(mtv.normal.x,mtv.normal.y,mtv.normal.x * 10,mtv.normal.y * 10);
         shapeRenderer.end();
     }
 
@@ -129,6 +119,6 @@ public class IntersectorTrianglePolygonTest implements ApplicationListener {
         config.width = 800;
         config.height = 600;
         config.fullscreen = false;
-        new LwjglApplication(new IntersectorTrianglePolygonTest(), config);
+        new LwjglApplication(new CustomOverlapsPolygonTest(), config);
     }
 }

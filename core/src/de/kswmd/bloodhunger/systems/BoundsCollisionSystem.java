@@ -3,11 +3,11 @@ package de.kswmd.bloodhunger.systems;
 import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Polygon;
 import de.kswmd.bloodhunger.BloodHungerGame;
 import de.kswmd.bloodhunger.components.*;
 import de.kswmd.bloodhunger.listeners.BoundsCollisionListener;
+import de.kswmd.bloodhunger.math.Intersector;
 import de.kswmd.bloodhunger.skins.PlayerSkin;
 import de.kswmd.bloodhunger.utils.Mapper;
 

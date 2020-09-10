@@ -23,7 +23,7 @@ public final class EntityFactory {
         player.add(new VelocityComponent());
         player.add(new RotationComponent());
         player.add(playerComponent);
-        DimensionComponent dc = new DimensionComponent(BloodHungerGame.worldUnits(4), BloodHungerGame.worldUnits(4));
+        DimensionComponent dc = new DimensionComponent(BloodHungerGame.worldUnits(2), BloodHungerGame.worldUnits(2));
         //Creates new boundscomponent with feet vertices for z-layer 0
         BoundsComponent bc = new BoundsComponent(dc.width, dc.height, Box2DBodyFactory.CATEGORY_BOUNDARY, player);
         player.add(dc);
