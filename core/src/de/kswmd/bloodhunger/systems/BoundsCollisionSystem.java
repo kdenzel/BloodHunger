@@ -116,18 +116,17 @@ public class BoundsCollisionSystem extends EntitySystem implements BoundsCollisi
     public void onTriangleCollide(BoundsComponent bc, BoundsComponent other, Polygon triangle, Polygon otherTriangle, Intersector.MinimumTranslationVector mtv, int zlayer, int triangleCount) {
         //If velocity is attached to the entity, it is a dynamic object that can be moved
         Entity entity = bc.entity;
-        if (Mapper.playerComponent.has(entity)) {
-            if (!Mapper.velocityComponent.has(other.entity)) {
-                //If velocity is attached to the entity, it is a dynamic object that can be moved back
-                PositionComponent pc = Mapper.positionComponent.get(entity);
-                float x = mtv.depth * mtv.normal.x;
-                float y = mtv.depth * mtv.normal.y;
-                pc.moveBy(x,y);
-                bc.setPosition(pc.x,pc.y);
-                Gdx.app.debug(TAG, mtv.normal + " " + mtv.depth + ": TrIndex" + bc.getTriangles(zlayer).indexOf(triangle, true)
-                        + " | OtrIndex " + other.getTriangles(zlayer).indexOf(otherTriangle, true)
-                        + " zlayer: " + zlayer);
-            }
+        if (!Mapper.velocityComponent.has(other.entity) && Mapper.velocityComponent.has(entity)) {
+            //If velocity is attached to the entity, it is a dynamic object that can be moved back
+            PositionComponent pc = Mapper.positionComponent.get(entity);
+            float x = mtv.depth * mtv.normal.x;
+            float y = mtv.depth * mtv.normal.y;
+            pc.moveBy(x, y);
+            bc.setPosition(pc.x, pc.y);
+            Gdx.app.debug(TAG, mtv.normal + " " + mtv.depth + ": TrIndex" + bc.getTriangles(zlayer).indexOf(triangle, true)
+                    + " | OtrIndex " + other.getTriangles(zlayer).indexOf(otherTriangle, true)
+                    + " zlayer: " + zlayer);
         }
+
     }
 }

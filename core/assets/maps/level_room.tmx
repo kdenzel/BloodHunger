@@ -27,7 +27,7 @@
     <property name="coneDegree" type="float" value="0"/>
     <property name="directionDegree" type="float" value="179"/>
     <property name="distance" type="float" value="4"/>
-    <property name="lheight" type="float" value="179"/>
+    <property name="lheight" type="float" value="45"/>
     <property name="ltype" value="directional"/>
     <property name="rays" type="int" value="100"/>
    </properties>

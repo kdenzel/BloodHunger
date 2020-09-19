@@ -12,8 +12,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector3;
-import de.kswmd.bloodhunger.math.Intersector;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CustomOverlapsPolygonTest implements ApplicationListener {
 
@@ -21,11 +22,11 @@ public class CustomOverlapsPolygonTest implements ApplicationListener {
     private OrthographicCamera camera;
     private ShapeRenderer shapeRenderer;
 
-    private float triangleWidth = 10f;
-    private float triangleHeight = 10f;
+    private float triangleWidth = 1f;
+    private float triangleHeight = 1f;
     //2 triangle polygons intersect at 0,10 - 10,10 will return the wrong direction
-    private float[] vertsTriangle1 = {0f, 0f, triangleWidth/2, 0f, triangleWidth/2, triangleHeight/2};
-    private float[] vertsTriangle2 = {0f, 0f, triangleWidth, 0f, triangleWidth, triangleHeight};
+    private float[] vertsTriangle1 = {0f, 0f, triangleWidth, triangleHeight, triangleWidth, 0};
+    private float[] vertsTriangle2 = {0f, 0f, triangleWidth*2, 0, triangleWidth*2, triangleHeight*2};
 
     private Polygon triangle1 = new Polygon();
     private Polygon triangle2 = new Polygon();
@@ -36,12 +37,11 @@ public class CustomOverlapsPolygonTest implements ApplicationListener {
 
     @Test
     public void testIntersectorTrianglePolygon() {
+        //set inital position
         triangle1.setVertices(vertsTriangle1);
         triangle2.setVertices(vertsTriangle2);
         triangle1.setPosition(0, 0);
-        triangle2.setPosition(10, 0);
-        Intersector.overlapConvexPolygons(triangle1,triangle2,mtv);
-
+        triangle2.setPosition(1, 0);
     }
 
     @Override
@@ -51,13 +51,14 @@ public class CustomOverlapsPolygonTest implements ApplicationListener {
         camera.setToOrtho(false);
         camera.position.set(0, 0, 0);
         shapeRenderer = new ShapeRenderer();
+        shapeRenderer.setAutoShapeType(true);
         testIntersectorTrianglePolygon();
     }
 
     @Override
     public void resize(int width, int height) {
-        camera.viewportWidth = 80;
-        camera.viewportHeight = 60;
+        camera.viewportWidth = 8;
+        camera.viewportHeight = 6;
     }
 
     private void update(float deltaTime) {
@@ -94,7 +95,11 @@ public class CustomOverlapsPolygonTest implements ApplicationListener {
         shapeRenderer.setColor(Color.CYAN);
         shapeRenderer.polygon(triangle2.getTransformedVertices());
         shapeRenderer.setColor(Color.RED);
-        shapeRenderer.line(mtv.normal.x,mtv.normal.y,mtv.normal.x * 10,mtv.normal.y * 10);
+        shapeRenderer.line(0, 0, mtv.normal.x * 10, mtv.normal.y * 10);
+        shapeRenderer.setColor(Color.DARK_GRAY);
+        shapeRenderer.line(0, 0, mtv.normal.x * -10, mtv.normal.y * -10);
+        shapeRenderer.setColor(Color.GREEN);
+        shapeRenderer.line(0, 0, mtv.normal.x * mtv.depth, mtv.normal.y * mtv.depth);
         shapeRenderer.end();
     }
 

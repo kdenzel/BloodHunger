@@ -51,7 +51,7 @@ public class PlayerControlSystem extends EntitySystem {
             boolean run = false;
 
             SkinElement feetSkinElement = pc.getSkin().getFeetAnimationSkinElement(pc.feetAnimationType);
-            if (Gdx.input.isKeyPressed(Input.Keys.W) && rotationComponent.dst2 > BloodHungerGame.worldUnits(0.25f)) {
+            if (Gdx.input.isKeyPressed(Input.Keys.W)) {
                 pc.feetAnimationType = PlayerComponent.FeetAnimationType.MOVE_FORWARD;
 
                 if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
@@ -62,18 +62,19 @@ public class PlayerControlSystem extends EntitySystem {
                     feetSkinElement.getAnimation().setFrameDuration(feetSkinElement.initialFrameDuration);
                 }
                 vc.velocityVec.set(0, speed);
+                rotationComponent.movementAngle = 90;
             } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
                 vc.velocityVec.set(0, -speed);
                 pc.feetAnimationType = PlayerComponent.FeetAnimationType.MOVE_BACKWARD;
-                rotationComponent.movementAngle += -180;
+                rotationComponent.movementAngle = 270;
             } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
                 vc.velocityVec.set(-speed, 0);
                 pc.feetAnimationType = PlayerComponent.FeetAnimationType.MOVE_LEFT;
-                rotationComponent.movementAngle += 90;
+                rotationComponent.movementAngle = 180;
             } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
                 vc.velocityVec.set(speed, 0);
                 pc.feetAnimationType = PlayerComponent.FeetAnimationType.MOVE_RIGHT;
-                rotationComponent.movementAngle += -90;
+                rotationComponent.movementAngle = 0;
             }
 
             PlayerComponent.BodyAnimationType bodyAnimationType = pc.getBodyAnimationType();

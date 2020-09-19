@@ -268,7 +268,7 @@ public class BoundsComponent implements Component, Disposable {
         }*/
 
         boolean intersect = false;
-        //TODO: check why this is not working
+        //There is a bug in the libgdx Intersector class, it returns wrong minimumTranslationVector values so use your own for overlapConvexPolygons function.
         Array<Polygon> thisTriangles = this.trianglesArray.get(z);
         Array<Polygon> otherTriangles = other.trianglesArray.get(z);
         int intersectCount = 0;

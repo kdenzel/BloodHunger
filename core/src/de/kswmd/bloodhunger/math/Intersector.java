@@ -63,7 +63,7 @@ public final class Intersector {
     }
 
     public static boolean overlapConvexPolygons(float[] shapeA, int offsetA, int countA, float[] shapeB, int offsetB, int countB, MinimumTranslationVector mtv) {
-        boolean overlaps = true;
+        boolean overlaps;
         if (mtv != null) {
             mtv.depth = Float.MAX_VALUE;
             mtv.normal.setZero();
@@ -80,7 +80,7 @@ public final class Intersector {
             }
             return false;
         }
-        return overlaps;
+        return true;
     }
 
     /**

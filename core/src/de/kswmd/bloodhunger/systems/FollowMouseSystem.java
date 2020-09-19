@@ -55,7 +55,7 @@ public class FollowMouseSystem extends EntitySystem {
             float angle = (MathUtils.atan2(playerPosY - screenVector.y, playerPosX - screenVector.x) / MathUtils.PI) * 180;
             angle = 180 + angle;
             RotationComponent rc = Mapper.rotationComponent.get(entity);
-            rc.movementAngle = angle;
+            //rc.movementAngle = angle;
             rc.lookingAngle = angle;
             rc.dst2 = Math.abs(playerPosX - screenVector.x) * Math.abs(playerPosX - screenVector.x) + Math.abs(playerPosY - screenVector.y) * Math.abs(playerPosY - screenVector.y);
             toolOffset = playerComponent.getSkin().getTransformedToolOffset(dc, rc);
