@@ -48,19 +48,12 @@ public class PlayerControlSystem extends EntitySystem {
             vc.velocityVec.setLength(0);
             //Speed of player per default 100 units per second
             float speed = 100* BloodHungerGame.UNIT_SCALE;
-            boolean run = false;
-
+            boolean run = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
+            if(run)
+                speed *= 2;
             SkinElement feetSkinElement = pc.getSkin().getFeetAnimationSkinElement(pc.feetAnimationType);
             if (Gdx.input.isKeyPressed(Input.Keys.W)) {
                 pc.feetAnimationType = PlayerComponent.FeetAnimationType.MOVE_FORWARD;
-
-                if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-                    speed *= 2;
-                    feetSkinElement.getAnimation().setFrameDuration(feetSkinElement.initialFrameDuration/2);
-                    run = true;
-                } else {
-                    feetSkinElement.getAnimation().setFrameDuration(feetSkinElement.initialFrameDuration);
-                }
                 vc.velocityVec.set(0, speed);
                 rotationComponent.movementAngle = 90;
             } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
@@ -82,8 +75,10 @@ public class PlayerControlSystem extends EntitySystem {
             //Set speed of animation 2 times higher if the player is running
             if(run){
                 bodySkinElement.getAnimation().setFrameDuration(bodySkinElement.initialFrameDuration/2);
+                feetSkinElement.getAnimation().setFrameDuration(feetSkinElement.initialFrameDuration/2);
             } else {
                 bodySkinElement.getAnimation().setFrameDuration(bodySkinElement.initialFrameDuration);
+                feetSkinElement.getAnimation().setFrameDuration(feetSkinElement.initialFrameDuration);
             }
             //update Polygons for each frame defined in skinelement
             if(feetSkinElement.hasPolygons()){

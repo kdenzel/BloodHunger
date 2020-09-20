@@ -6,7 +6,7 @@ sourceCompatibility = 1.8
 sourceSets.main.java.srcDirs = ["src/"]
 sourceSets.test.java.srcDirs = ["test/"]
 
-project.ext.mainClassName = "de.kswmd.bloodhunger.math.IntersectorTrianglePolygonTest"
+project.ext.mainClassName = "de.kswmd.bloodhunger.ListTests"
 
 eclipse.project.name = appName + "-core"
 

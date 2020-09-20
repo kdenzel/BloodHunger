@@ -74,6 +74,8 @@ project(":core") {
 
 
         testImplementation project(":desktop")
+        testImplementation project(":core")
+        testImplementation "org.reflections:reflections:0.9.10"
         testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
 
         testRuntimeOnly "org.junit.platform:junit-platform-launcher:$junitPlatformLauncherVersion"

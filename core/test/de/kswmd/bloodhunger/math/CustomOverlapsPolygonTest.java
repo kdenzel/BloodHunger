@@ -1,7 +1,6 @@
 package de.kswmd.bloodhunger.math;
 
 import com.badlogic.gdx.Application;
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
@@ -12,11 +11,11 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector3;
+import de.kswmd.bloodhunger.BaseTest;
+import de.kswmd.bloodhunger.ListTestAdapter;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-public class CustomOverlapsPolygonTest implements ApplicationListener {
+public class CustomOverlapsPolygonTest extends BaseTest {
 
     private static final String TAG = CustomOverlapsPolygonTest.class.getSimpleName();
     private OrthographicCamera camera;
@@ -45,7 +44,7 @@ public class CustomOverlapsPolygonTest implements ApplicationListener {
     }
 
     @Override
-    public void create() {
+    public void show() {
         Gdx.app.setLogLevel(Application.LOG_DEBUG);
         camera = new OrthographicCamera();
         camera.setToOrtho(false);
@@ -83,8 +82,8 @@ public class CustomOverlapsPolygonTest implements ApplicationListener {
     }
 
     @Override
-    public void render() {
-        update(Gdx.graphics.getDeltaTime());
+    public void render(float deltaTime) {
+        update(deltaTime);
         camera.update();
         Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
@@ -114,6 +113,11 @@ public class CustomOverlapsPolygonTest implements ApplicationListener {
     }
 
     @Override
+    public void hide () {
+        shapeRenderer.dispose();
+    }
+
+    @Override
     public void dispose() {
 
     }
@@ -124,6 +128,7 @@ public class CustomOverlapsPolygonTest implements ApplicationListener {
         config.width = 800;
         config.height = 600;
         config.fullscreen = false;
-        new LwjglApplication(new CustomOverlapsPolygonTest(), config);
+        ListTestAdapter adapter = new ListTestAdapter(new CustomOverlapsPolygonTest());
+        new LwjglApplication(adapter, config);
     }
 }

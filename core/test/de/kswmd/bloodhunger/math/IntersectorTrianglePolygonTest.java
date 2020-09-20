@@ -1,7 +1,6 @@
 package de.kswmd.bloodhunger.math;
 
 import com.badlogic.gdx.Application;
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
@@ -10,13 +9,17 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import de.kswmd.bloodhunger.BaseTest;
+import de.kswmd.bloodhunger.ListTestAdapter;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class IntersectorTrianglePolygonTest implements ApplicationListener {
+public class IntersectorTrianglePolygonTest extends BaseTest {
 
     private static final String TAG = IntersectorTrianglePolygonTest.class.getSimpleName();
     private OrthographicCamera camera;
@@ -57,7 +60,7 @@ public class IntersectorTrianglePolygonTest implements ApplicationListener {
     }
 
     @Override
-    public void create() {
+    public void show() {
         Gdx.app.setLogLevel(Application.LOG_DEBUG);
         camera = new OrthographicCamera();
         camera.setToOrtho(true);
@@ -94,8 +97,8 @@ public class IntersectorTrianglePolygonTest implements ApplicationListener {
     }
 
     @Override
-    public void render() {
-        update(Gdx.graphics.getDeltaTime());
+    public void render(float deltaTime) {
+        update(deltaTime);
         camera.update();
         Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
@@ -110,12 +113,16 @@ public class IntersectorTrianglePolygonTest implements ApplicationListener {
 
     @Override
     public void pause() {
-
     }
 
     @Override
     public void resume() {
 
+    }
+
+    @Override
+    public void hide () {
+        shapeRenderer.dispose();
     }
 
     @Override
@@ -129,6 +136,7 @@ public class IntersectorTrianglePolygonTest implements ApplicationListener {
         config.width = 800;
         config.height = 600;
         config.fullscreen = false;
-        new LwjglApplication(new IntersectorTrianglePolygonTest(), config);
+        ListTestAdapter listTestAdapter = new ListTestAdapter(new IntersectorTrianglePolygonTest());
+        new LwjglApplication(listTestAdapter, config);
     }
 }
